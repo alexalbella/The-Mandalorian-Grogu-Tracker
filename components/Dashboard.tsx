@@ -206,29 +206,36 @@ function EraSection({ era, index, watchedItems, toggleItem }: { era: Era, index:
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      className="relative"
+      className="relative pt-12 md:pt-16"
     >
+      {index > 0 && (
+        <div className="absolute top-0 left-0 w-full flex items-center justify-center">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+          <div className="absolute w-1/3 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent blur-sm" />
+        </div>
+      )}
+
       {/* Timeline connector */}
-      <div className="absolute left-4 top-16 bottom-[-4rem] w-px bg-zinc-800 hidden md:block" />
+      <div className="absolute left-4 top-28 bottom-[-4rem] w-px bg-zinc-800 hidden md:block" />
       
       <div className="flex flex-col md:flex-row gap-6">
         {/* Era Header */}
         <div className="md:w-1/3 shrink-0 relative z-10">
           <div className="sticky top-8 space-y-4 bg-[#09090b] py-2">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' : 'bg-zinc-900 border-zinc-700 text-zinc-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shadow-lg ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-emerald-500/20' : 'bg-zinc-900 border-zinc-700 text-zinc-400'}`}>
                 {index + 1}
               </div>
-              <h2 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className={`text-2xl font-bold tracking-tight transition-colors ${isCompleted ? 'text-emerald-50' : 'text-zinc-100'}`} style={{ fontFamily: 'var(--font-display)' }}>
                 {era.title.split(': ')[0]}
               </h2>
             </div>
             <div className="pl-11">
-              <h3 className="text-lg font-medium text-zinc-200 mb-2">{era.title.split(': ')[1]}</h3>
+              <h3 className="text-lg font-medium text-zinc-300 mb-2">{era.title.split(': ')[1]}</h3>
               <p className="text-sm text-zinc-500 leading-relaxed mb-4">{era.description}</p>
               
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono">
-                <span className={isCompleted ? "text-emerald-400" : "text-zinc-300"}>
+                <span className={isCompleted ? "text-emerald-400 font-bold" : "text-zinc-300"}>
                   {eraWatchedCount} / {era.items.length}
                 </span>
                 <span className="text-zinc-500">vistos</span>
