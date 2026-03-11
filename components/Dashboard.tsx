@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Clock, Film, Tv, Info, PlayCircle, Star, Filter, EyeOff, Eye, Search, ChevronDown, ChevronUp, RotateCcw, CheckSquare, Square } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Film, Tv, Info, PlayCircle, Star, Filter, EyeOff, Eye, Search, ChevronDown, ChevronUp, RotateCcw, CheckSquare, Square, Volume2, VolumeX } from 'lucide-react';
 import { Era, MediaItem } from '@/data/starwars-list';
 import { useProgressStore } from '@/store/progress';
 import dynamic from 'next/dynamic';
 import confetti from 'canvas-confetti';
+import Image from 'next/image';
 
 const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false });
 
@@ -19,11 +20,56 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   const [preset, setPreset] = useState<Preset>('all');
   const [hideCompleted, setHideCompleted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMuted, setIsMuted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
+    
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const playSound = useCallback(() => {
+    if (isMuted) return;
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+      oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.1);
+    } catch (e) {
+      console.error("Audio playback failed", e);
+    }
+  }, [isMuted]);
+
+  const handleToggleItem = useCallback((id: string) => {
+    const isCurrentlyWatched = watchedItems.includes(id);
+    toggleItem(id);
+    
+    if (!isCurrentlyWatched) {
+      playSound();
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    }
+  }, [watchedItems, toggleItem, playSound]);
 
   // Memoized stats calculation
   const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = useMemo(() => {
@@ -108,29 +154,66 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-12">
-      {/* Header Section */}
-      <header className="relative pt-12 pb-8 border-b border-zinc-800">
+      {/* Header Section - Sticky */}
+      <header className={`sticky top-0 z-50 border-b border-zinc-800 bg-[#050505]/90 backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 md:-mx-8 md:px-8 transition-all duration-300 ${isScrolled ? 'pt-3 pb-3' : 'pt-4 pb-4 md:pt-8 md:pb-6'}`}>
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-20 pointer-events-none">
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/30 blur-[120px] rounded-full" />
           <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 blur-[120px] rounded-full" />
         </div>
         
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 uppercase tracking-wider">
-              <Star className="w-3 h-3 text-emerald-400" />
-              Watch Planner
+        <div className={`flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between`}>
+          <div className={`space-y-1 ${isScrolled ? '' : 'md:space-y-4'}`}>
+            <div className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 m-0' : 'max-h-20 opacity-100'}`}>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 uppercase tracking-wider">
+                <Star className="w-3 h-3 text-emerald-400" />
+                Watch Planner
+              </div>
+              <button 
+                onClick={() => setIsMuted(!isMuted)}
+                className="p-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-zinc-100 to-zinc-500" style={{ fontFamily: 'var(--font-display)' }}>
-              The Mandalorian <br />
-              <span className="text-emerald-400">& Grogu</span> Tracker
-            </h1>
-            <p className="text-zinc-400 max-w-xl text-lg">
-              La guía cronológica definitiva para prepararte antes del estreno en cines.
-            </p>
+            
+            <div className="flex items-center gap-3">
+              <h1 className={`font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-zinc-100 to-zinc-500 transition-all duration-300 ${isScrolled ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'}`} style={{ fontFamily: 'var(--font-display)' }}>
+                The Mandalorian {isScrolled ? '' : <br className="hidden md:block" />}
+                <span className="text-emerald-400">& Grogu</span> {isScrolled ? '' : 'Tracker'}
+              </h1>
+              {isScrolled && (
+                <button 
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="p-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                >
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
           </div>
 
-          <CountdownWidget remainingMinutes={remainingMinutes} />
+          <div className={`flex flex-col items-start md:items-end gap-3 w-full md:w-auto`}>
+            <div className={`transition-all duration-300 origin-right overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 m-0 hidden md:block md:max-h-0' : 'max-h-40 opacity-100'}`}>
+              <CountdownWidget remainingMinutes={remainingMinutes} />
+            </div>
+            {/* Darksaber Progress Bar in Header */}
+            <div className={`w-full transition-all duration-300 ${isScrolled ? 'md:w-64 mt-0' : 'md:w-[320px] mt-2'}`}>
+              <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
+                <span className={isScrolled ? 'hidden md:inline' : 'inline'}>Progreso</span>
+                <span className="text-emerald-400 font-bold">{progressPercent}%</span>
+              </div>
+              <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 relative shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_10px_#fff,0_0_20px_#fff]"
+                  style={{ width: `${progressPercent}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -255,7 +338,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                 era={era} 
                 index={index} 
                 watchedItems={watchedItems} 
-                toggleItem={toggleItem}
+                toggleItem={handleToggleItem}
                 markMultiple={markMultiple}
                 unmarkMultiple={unmarkMultiple}
               />
@@ -264,6 +347,46 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         </AnimatePresence>
       </section>
       
+      {/* Teaser Mode */}
+      <AnimatePresence>
+        {progressPercent === 100 && (
+          <motion.section 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="pt-12 pb-8 border-t border-zinc-800"
+          >
+            <div className="bg-zinc-900/50 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-8 text-center space-y-8 relative overflow-hidden">
+              <div className="absolute inset-0 bg-emerald-500/5 mix-blend-overlay pointer-events-none" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
+              
+              <div className="space-y-4 relative z-10">
+                <h2 className="text-3xl md:text-5xl font-bold text-emerald-400" style={{ fontFamily: 'var(--font-display)' }}>
+                  ¡Estás listo para el estreno!
+                </h2>
+                <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
+                  Has completado todo el material esencial. Ahora solo queda esperar a que The Mandalorian & Grogu llegue a los cines.
+                </p>
+              </div>
+
+              <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl relative z-10">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src="https://www.youtube.com/embed/IHWlvwu8t1w" 
+                  title="The Mandalorian & Grogu Trailer" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  referrerPolicy="strict-origin-when-cross-origin" 
+                  allowFullScreen
+                  className="w-full h-full"
+                ></iframe>
+              </div>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
+
       <footer className="pt-12 pb-24 text-center border-t border-zinc-800 text-zinc-500 text-sm">
         <p>Que la Fuerza te acompañe. Este es el camino.</p>
       </footer>
@@ -414,19 +537,50 @@ function EraSection({
 }
 
 function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatched: boolean, onToggle: () => void }) {
+  // Use a deterministic seed for the placeholder image based on the item ID
+  const getImageUrl = (id: string) => {
+    const map: Record<string, string> = {
+      'ep1': 'https://image.tmdb.org/t/p/w500/nwniMce0zQxWzFh2qtsLpG0hQ3z.jpg',
+      'tcw-movie': 'https://image.tmdb.org/t/p/w500/uK1hTjclig4wH5Qk2HjB2vE2r0D.jpg',
+      'tcw-t2-12-14': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t2-17': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t3-4': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t4-15-18': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t4-20-22': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t5-1': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t6-5': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'tcw-t7-9-12': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
+      'bb-t1-15-16': 'https://image.tmdb.org/t/p/w500/51mX2E4wK43zXkK1S8xP6k2Z1S.jpg',
+      'bb-t3-1-3-14-15': 'https://image.tmdb.org/t/p/w500/51mX2E4wK43zXkK1S8xP6k2Z1S.jpg',
+      'rebels-t1-1-2': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
+      'rebels-t2-17': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
+      'rebels-t3-15': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
+      'rebels-t3-t4': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
+      'ep4': 'https://image.tmdb.org/t/p/w500/4iJfYYoQzZcONB9hNzg0J0wQ3z.jpg',
+      'ep5': 'https://image.tmdb.org/t/p/w500/2l05cFWJacyIsTpsqSgH0wQXe4V.jpg',
+      'ep6': 'https://image.tmdb.org/t/p/w500/mDCWXN9L211L1LTaQvL93q7dE6Q.jpg',
+      'mando-t1': 'https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg',
+      'mando-t2': 'https://image.tmdb.org/t/p/w500/bksy8mCWaUaNCqHw1kX0kFI5zDU.jpg',
+      'bobafett-1-4': 'https://image.tmdb.org/t/p/w500/gNbdjDi1OIRC2JmtvnEoPllUs0Q.jpg',
+      'bobafett-5-7': 'https://image.tmdb.org/t/p/w500/gNbdjDi1OIRC2JmtvnEoPllUs0Q.jpg',
+      'mando-t3': 'https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg',
+      'ahsoka-t1': 'https://image.tmdb.org/t/p/w500/laCJxobHoPVaLQTKxc14Y2zV64J.jpg',
+      'skeleton-crew-t1': 'https://image.tmdb.org/t/p/w500/eK1kX0kFI5zDUbksy8mCWaUaNCqHw1.jpg'
+    };
+    
+    return map[id] || `https://placehold.co/600x400/09090b/10b981?text=${encodeURIComponent(item.title)}`;
+  };
+
+  const [imgSrc, setImgSrc] = useState(getImageUrl(item.id));
+
   return (
-    <motion.label 
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
+    <div 
       className={`group relative p-4 rounded-xl border transition-all cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#09090b] ${
         isWatched 
           ? 'bg-emerald-950/10 border-emerald-900/30 hover:border-emerald-800/50' 
-          : 'bg-zinc-900/30 border-zinc-800/50 hover:bg-zinc-900/80 hover:border-zinc-700'
+          : 'bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:border-white/20'
       }`}
+      onClick={onToggle}
     >
       <input 
         type="checkbox" 
@@ -434,38 +588,62 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
         checked={isWatched}
         onChange={onToggle}
         aria-label={`Marcar ${item.title} como visto`}
+        onClick={(e) => e.stopPropagation()}
       />
       
-      <div className="flex gap-4">
-        <div className="shrink-0 mt-1">
-          <motion.div
-            initial={false}
-            animate={{ 
-              scale: isWatched ? [1, 1.2, 1] : 1,
-              rotate: isWatched ? [0, 10, 0] : 0 
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* Thumbnail */}
+        <div className="relative w-full sm:w-56 aspect-video rounded-lg overflow-hidden shrink-0 border border-white/5 bg-zinc-900">
+          <Image 
+            src={imgSrc} 
+            alt={`Thumbnail for ${item.title}`}
+            fill
+            className={`object-cover transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
+            sizes="(max-width: 640px) 100vw, 192px"
+            referrerPolicy="no-referrer"
+            onError={() => {
+              // If TMDB image fails, fallback to placehold.co
+              setImgSrc(`https://placehold.co/600x400/09090b/10b981?text=${encodeURIComponent(item.title)}`);
             }}
-            transition={{ duration: 0.3 }}
-          >
-            {isWatched ? (
-              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-            ) : (
-              <Circle className="w-6 h-6 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
-            )}
-          </motion.div>
+            unoptimized={imgSrc.includes('placehold.co')}
+          />
+          {isWatched && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500 drop-shadow-lg" />
+            </div>
+          )}
         </div>
-        
-        <div className="space-y-3 flex-1">
+
+        <div className="space-y-3 flex-1 flex flex-col justify-center">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-            <h4 className={`font-medium text-base transition-colors ${isWatched ? 'text-zinc-300' : 'text-zinc-100'}`}>
-              {item.title}
-            </h4>
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 mt-1 hidden sm:block">
+                <motion.div
+                  initial={false}
+                  animate={{ 
+                    scale: isWatched ? [1, 1.2, 1] : 1,
+                    rotate: isWatched ? [0, 10, 0] : 0 
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isWatched ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                  )}
+                </motion.div>
+              </div>
+              <h4 className={`font-medium text-lg transition-colors ${isWatched ? 'text-zinc-400 line-through decoration-zinc-600' : 'text-zinc-100'}`}>
+                {item.title}
+              </h4>
+            </div>
             <div className="flex items-center gap-3 shrink-0">
               {item.essential && (
                 <span className="inline-flex items-center px-2 py-1 rounded-md bg-orange-500/10 text-orange-400 text-[10px] font-bold uppercase tracking-wider border border-orange-500/20">
                   Esencial
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800/50">
+              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-black/40 px-2 py-1 rounded-md border border-white/5">
                 {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
                 {item.duration}m
               </span>
@@ -482,6 +660,6 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
           </div>
         </div>
       </div>
-    </motion.label>
+    </div>
   );
 }
