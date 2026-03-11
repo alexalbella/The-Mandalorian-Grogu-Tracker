@@ -74,14 +74,22 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   // Memoized stats calculation
   const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = useMemo(() => {
     const allItems = eras.flatMap(e => e.items);
-    const total = allItems.length;
-    const watched = watchedItems.length;
+    const total = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
+    const watched = allItems.reduce((acc, item) => {
+      if (item.subItems) {
+        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id)).length;
+      }
+      return acc + (watchedItems.includes(item.id) ? 1 : 0);
+    }, 0);
     const percent = total === 0 ? 0 : Math.round((watched / total) * 100);
     
     const tMins = allItems.reduce((acc, item) => acc + item.duration, 0);
-    const wMins = allItems
-      .filter(item => watchedItems.includes(item.id))
-      .reduce((acc, item) => acc + item.duration, 0);
+    const wMins = allItems.reduce((acc, item) => {
+      if (item.subItems) {
+        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id)).reduce((sum, sub) => sum + sub.duration, 0);
+      }
+      return acc + (watchedItems.includes(item.id) ? item.duration : 0);
+    }, 0);
     
     return {
       totalItems: total,
@@ -136,7 +144,13 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       // Type filter
       if (filterType !== 'all' && item.type !== filterType) return false;
       // Completed filter
-      if (hideCompleted && watchedItems.includes(item.id)) return false;
+      if (hideCompleted) {
+        if (item.subItems) {
+          if (item.subItems.every(sub => watchedItems.includes(sub.id)) && item.subItems.length > 0) return false;
+        } else {
+          if (watchedItems.includes(item.id)) return false;
+        }
+      }
       // Search filter
       if (searchQuery && !item.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       
@@ -432,9 +446,10 @@ function EraSection({
 }) {
   const [isExpanded, setIsExpanded] = useState(true);
   
-  const eraItemIds = era.items.map(i => i.id);
-  const eraWatchedCount = era.items.filter(item => watchedItems.includes(item.id)).length;
-  const isCompleted = eraWatchedCount === era.items.length && era.items.length > 0;
+  const eraItemIds = era.items.flatMap(i => i.subItems ? i.subItems.map(s => s.id) : [i.id]);
+  const eraTotalCount = eraItemIds.length;
+  const eraWatchedCount = eraItemIds.filter(id => watchedItems.includes(id)).length;
+  const isCompleted = eraWatchedCount === eraTotalCount && eraTotalCount > 0;
   const isPartiallyCompleted = eraWatchedCount > 0 && !isCompleted;
 
   const handleToggleAll = () => {
@@ -523,8 +538,10 @@ function EraSection({
                   <MediaItemCard 
                     key={item.id} 
                     item={item} 
-                    isWatched={watchedItems.includes(item.id)} 
-                    onToggle={() => toggleItem(item.id)} 
+                    watchedItems={watchedItems}
+                    toggleItem={toggleItem}
+                    markMultiple={markMultiple}
+                    unmarkMultiple={unmarkMultiple}
                   />
                 ))}
               </AnimatePresence>
@@ -536,12 +553,43 @@ function EraSection({
   );
 }
 
-function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatched: boolean, onToggle: () => void }) {
+function MediaItemCard({ 
+  item, 
+  watchedItems, 
+  toggleItem,
+  markMultiple,
+  unmarkMultiple
+}: { 
+  item: MediaItem; 
+  watchedItems: string[]; 
+  toggleItem: (id: string) => void;
+  markMultiple: (ids: string[]) => void;
+  unmarkMultiple: (ids: string[]) => void;
+}) {
+  const isWatched = item.subItems 
+    ? item.subItems.every(sub => watchedItems.includes(sub.id)) && item.subItems.length > 0
+    : watchedItems.includes(item.id);
+
+  const isPartiallyWatched = item.subItems
+    ? item.subItems.some(sub => watchedItems.includes(sub.id)) && !isWatched
+    : false;
+
+  const handleToggle = () => {
+    if (item.subItems) {
+      if (isWatched) {
+        unmarkMultiple(item.subItems.map(s => s.id));
+      } else {
+        markMultiple(item.subItems.map(s => s.id));
+      }
+    } else {
+      toggleItem(item.id);
+    }
+  };
   // Use a deterministic seed for the placeholder image based on the item ID
   const getImageUrl = (id: string) => {
     const map: Record<string, string> = {
       'ep1': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
-      'tcw-movie': 'https://image.tmdb.org/t/p/w500/uK1hTjclig4wH5Qk2HjB2vE2r0D.jpg',
+      'tcw-movie': 'https://image.tmdb.org/t/p/w500/iJQfixW818LUdSXlCDL3JZm0S0g.jpg',
       'tcw-t2-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
@@ -556,9 +604,9 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
       'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
       'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
       'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
-      'ep5': 'https://image.tmdb.org/t/p/w500/2l05cFWJacyIsTpsqSgH0wQXe4V.jpg',
-      'ep6': 'https://image.tmdb.org/t/p/w500/mDCWXN9L211L1LTaQvL93q7dE6Q.jpg',
+      'ep4': 'https://image.tmdb.org/t/p/w500/fbrXPbObN3zenLpCq8Mj9eCHjQ5.jpg',
+      'ep5': 'https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg',
+      'ep6': 'https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg',
       'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
       'mando-t2': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
       'bobafett-1-4': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
@@ -580,13 +628,13 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
           ? 'bg-emerald-950/10 border-emerald-900/30 hover:border-emerald-800/50' 
           : 'bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:border-white/20'
       }`}
-      onClick={onToggle}
+      onClick={handleToggle}
     >
       <input 
         type="checkbox" 
         className="sr-only" 
         checked={isWatched}
-        onChange={onToggle}
+        onChange={handleToggle}
         aria-label={`Marcar ${item.title} como visto`}
         onClick={(e) => e.stopPropagation()}
       />
@@ -628,6 +676,10 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
                 >
                   {isWatched ? (
                     <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  ) : isPartiallyWatched ? (
+                    <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
+                    </div>
                   ) : (
                     <Circle className="w-5 h-5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
                   )}
@@ -658,6 +710,38 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
               {item.reason}
             </div>
           </div>
+
+          {item.subItems && item.subItems.length > 0 && (
+            <div className="mt-4 space-y-2 border-t border-white/5 pt-4" onClick={(e) => e.stopPropagation()}>
+              {item.subItems.map(sub => {
+                const isSubWatched = watchedItems.includes(sub.id);
+                return (
+                  <div 
+                    key={sub.id}
+                    className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
+                      isSubWatched ? 'bg-emerald-950/20 hover:bg-emerald-950/40' : 'bg-white/5 hover:bg-white/10'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleItem(sub.id);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {isSubWatched ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      ) : (
+                        <Circle className="w-4 h-4 text-zinc-500" />
+                      )}
+                      <span className={`text-sm ${isSubWatched ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>
+                        {sub.title}
+                      </span>
+                    </div>
+                    <span className="text-xs font-mono text-zinc-500">{sub.duration}m</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

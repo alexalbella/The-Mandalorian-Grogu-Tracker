@@ -1,3 +1,9 @@
+export type SubItem = {
+  id: string;
+  title: string;
+  duration: number;
+};
+
 export type MediaItem = {
   id: string;
   title: string;
@@ -6,6 +12,7 @@ export type MediaItem = {
   reason: string;
   essential: boolean;
   tags: string[];
+  subItems?: SubItem[];
 };
 
 export type Era = {
@@ -56,7 +63,12 @@ export const eras: Era[] = [
         duration: 66,
         reason: "Arco de la Guardia de la Muerte. Conocerás a la secta extremista mandaloriana (Death Watch) que años más tarde rescataría al niño Din Djarin, forjando sus creencias religiosas.",
         essential: true,
-        tags: ['mandalore']
+        tags: ['mandalore'],
+        subItems: [
+          { id: "tcw-t2-12", title: "Episodio 12: El Complot de Mandalore", duration: 22 },
+          { id: "tcw-t2-13", title: "Episodio 13: Viaje de Tentación", duration: 22 },
+          { id: "tcw-t2-14", title: "Episodio 14: La Duquesa de Mandalore", duration: 22 }
+        ]
       },
       {
         id: "tcw-t2-17",
@@ -83,7 +95,13 @@ export const eras: Era[] = [
         duration: 88,
         reason: "Arco de Obi-Wan Infiltrado. Embo demuestra por qué es la élite de la galaxia sobreviviendo a pruebas brutales junto a otros cazarrecompensas míticos como Cad Bane.",
         essential: false,
-        tags: ['bounty-hunters']
+        tags: ['bounty-hunters'],
+        subItems: [
+          { id: "tcw-t4-15", title: "Episodio 15: Decepción", duration: 22 },
+          { id: "tcw-t4-16", title: "Episodio 16: Amigos y Enemigos", duration: 22 },
+          { id: "tcw-t4-17", title: "Episodio 17: La Caja", duration: 22 },
+          { id: "tcw-t4-18", title: "Episodio 18: Crisis en Naboo", duration: 22 }
+        ]
       },
       {
         id: "tcw-t4-20-22",
@@ -92,7 +110,11 @@ export const eras: Era[] = [
         duration: 44,
         reason: "Bounty / Revenge. Muestra a Embo trabajando con un joven Boba Fett y forjando alianzas en el inframundo criminal.",
         essential: false,
-        tags: ['bounty-hunters']
+        tags: ['bounty-hunters'],
+        subItems: [
+          { id: "tcw-t4-20", title: "Episodio 20: Recompensa", duration: 22 },
+          { id: "tcw-t4-22", title: "Episodio 22: Venganza", duration: 22 }
+        ]
       },
       {
         id: "tcw-t5-1",
@@ -119,7 +141,13 @@ export const eras: Era[] = [
         duration: 88,
         reason: "El Asedio de Mandalore. El evento traumático que dejó las cicatrices en Bo-Katan y explica la caída de la civilización mandaloriana antes de la llegada del Imperio.",
         essential: true,
-        tags: ['mandalore']
+        tags: ['mandalore'],
+        subItems: [
+          { id: "tcw-t7-9", title: "Episodio 9: Viejos Amigos no Olvidados", duration: 22 },
+          { id: "tcw-t7-10", title: "Episodio 10: El Aprendiz Fantasma", duration: 22 },
+          { id: "tcw-t7-11", title: "Episodio 11: Destrozados", duration: 22 },
+          { id: "tcw-t7-12", title: "Episodio 12: Victoria y Muerte", duration: 22 }
+        ]
       }
     ]
   },
@@ -136,7 +164,11 @@ export const eras: Era[] = [
         duration: 50,
         reason: "Muestra la destrucción de las instalaciones de clonación en Kamino y cómo el Imperio secuestra a los científicos para sus propios fines.",
         essential: false,
-        tags: ['empire']
+        tags: ['empire'],
+        subItems: [
+          { id: "bb-t1-15", title: "Episodio 15: Regreso a Kamino", duration: 25 },
+          { id: "bb-t1-16", title: "Episodio 16: Kamino Perdido", duration: 25 }
+        ]
       },
       {
         id: "bb-t3-1-3-14-15",
@@ -145,7 +177,14 @@ export const eras: Era[] = [
         duration: 125,
         reason: "Explora a fondo la base secreta del Monte Tantiss y se menciona por primera vez el Proyecto Nigromante (el plan para clonar la Fuerza y resucitar a Palpatine), la razón exacta por la que Moff Gideon quería la sangre de Grogu.",
         essential: true,
-        tags: ['empire']
+        tags: ['empire'],
+        subItems: [
+          { id: "bb-t3-1", title: "Episodio 1: Confinados", duration: 25 },
+          { id: "bb-t3-2", title: "Episodio 2: Caminos Desconocidos", duration: 25 },
+          { id: "bb-t3-3", title: "Episodio 3: Sombras de Tantiss", duration: 25 },
+          { id: "bb-t3-14", title: "Episodio 14: Ataque Rápido", duration: 25 },
+          { id: "bb-t3-15", title: "Episodio 15: La Caballería Llega", duration: 25 }
+        ]
       }
     ]
   },
@@ -162,7 +201,11 @@ export const eras: Era[] = [
         duration: 44,
         reason: "Spark of Rebellion. Introducción del guerrero Lasat Garazeb 'Zeb' Orrelios (quien estará en la película como Ranger de la Nueva República) y su rifle-bo.",
         essential: false,
-        tags: ['new-republic']
+        tags: ['new-republic'],
+        subItems: [
+          { id: "rebels-t1-1", title: "Episodio 1: La Chispa de la Rebelión (Parte 1)", duration: 22 },
+          { id: "rebels-t1-2", title: "Episodio 2: La Chispa de la Rebelión (Parte 2)", duration: 22 }
+        ]
       },
       {
         id: "rebels-t2-17",
@@ -189,7 +232,15 @@ export const eras: Era[] = [
         duration: 220,
         reason: "Para ver en acción las tácticas despiadadas y calculadoras del Gran Almirante Thrawn antes de su exilio.",
         essential: true,
-        tags: ['thrawn']
+        tags: ['thrawn'],
+        subItems: [
+          { id: "rebels-t3-1", title: "T3 Ep 1: Pasos en la Sombra", duration: 44 },
+          { id: "rebels-t3-5", title: "T3 Ep 5: El Último Combate de Hera", duration: 22 },
+          { id: "rebels-t3-10", title: "T3 Ep 10: Un Infiltrado", duration: 22 },
+          { id: "rebels-t3-17", title: "T3 Ep 17: A Través de Ojos Imperiales", duration: 22 },
+          { id: "rebels-t3-21", title: "T3 Ep 21: Hora Cero", duration: 44 },
+          { id: "rebels-t4-15", title: "T4 Ep 15: Reunión Familiar y Despedida", duration: 66 }
+        ]
       }
     ]
   },
@@ -241,7 +292,17 @@ export const eras: Era[] = [
         duration: 320,
         reason: "El credo, la traición al Gremio de Cazarrecompensas, el descubrimiento de Grogu y el primer cara a cara contra el remanente imperial de Gideon.",
         essential: true,
-        tags: ['mandalore', 'empire']
+        tags: ['mandalore', 'empire'],
+        subItems: [
+          { id: "mando-t1-e1", title: "Capítulo 1: El Mandaloriano", duration: 40 },
+          { id: "mando-t1-e2", title: "Capítulo 2: El Niño", duration: 40 },
+          { id: "mando-t1-e3", title: "Capítulo 3: El Pecado", duration: 40 },
+          { id: "mando-t1-e4", title: "Capítulo 4: Santuario", duration: 40 },
+          { id: "mando-t1-e5", title: "Capítulo 5: El Pistolero", duration: 40 },
+          { id: "mando-t1-e6", title: "Capítulo 6: El Prisionero", duration: 40 },
+          { id: "mando-t1-e7", title: "Capítulo 7: El Ajuste de Cuentas", duration: 40 },
+          { id: "mando-t1-e8", title: "Capítulo 8: Redención", duration: 40 }
+        ]
       },
       {
         id: "mando-t2",
@@ -250,7 +311,17 @@ export const eras: Era[] = [
         duration: 320,
         reason: "La búsqueda de los Jedi (Ahsoka y Luke Skywalker), alianzas con Bo-Katan y la dolorosa separación temporal de Din y Grogu.",
         essential: true,
-        tags: ['mandalore']
+        tags: ['mandalore'],
+        subItems: [
+          { id: "mando-t2-e9", title: "Capítulo 9: El Marshal", duration: 40 },
+          { id: "mando-t2-e10", title: "Capítulo 10: El Pasajero", duration: 40 },
+          { id: "mando-t2-e11", title: "Capítulo 11: La Heredera", duration: 40 },
+          { id: "mando-t2-e12", title: "Capítulo 12: El Asedio", duration: 40 },
+          { id: "mando-t2-e13", title: "Capítulo 13: La Jedi", duration: 40 },
+          { id: "mando-t2-e14", title: "Capítulo 14: La Tragedia", duration: 40 },
+          { id: "mando-t2-e15", title: "Capítulo 15: El Creyente", duration: 40 },
+          { id: "mando-t2-e16", title: "Capítulo 16: El Rescate", duration: 40 }
+        ]
       },
       {
         id: "bobafett-1-4",
@@ -259,7 +330,13 @@ export const eras: Era[] = [
         duration: 180,
         reason: "Introducción de los Gemelos Hutt y el Wookiee cazarrecompensas Black Krrsantan. Reclaman el imperio de Jabba y, sin duda, chocarán con Rotta en la película. Además, Boba se consolida como el Daimyo (jefe mafioso) local.",
         essential: false,
-        tags: ['hutt', 'bounty-hunters']
+        tags: ['hutt', 'bounty-hunters'],
+        subItems: [
+          { id: "bobafett-e1", title: "Capítulo 1: Forastero en Tierra Extraña", duration: 45 },
+          { id: "bobafett-e2", title: "Capítulo 2: Las Tribus de Tatooine", duration: 45 },
+          { id: "bobafett-e3", title: "Capítulo 3: Las Calles de Mos Espa", duration: 45 },
+          { id: "bobafett-e4", title: "Capítulo 4: La Tormenta se Avecina", duration: 45 }
+        ]
       },
       {
         id: "bobafett-5-7",
@@ -268,7 +345,12 @@ export const eras: Era[] = [
         duration: 135,
         reason: "Crucial. Explica cómo Mando consigue su nueva nave (el caza N-1) y por qué Grogu abandona su entrenamiento con Luke para volver con su papá adoptivo. Din y Boba se vuelven hermanos de armas aquí.",
         essential: true,
-        tags: ['mandalore']
+        tags: ['mandalore'],
+        subItems: [
+          { id: "bobafett-e5", title: "Capítulo 5: El Retorno del Mandaloriano", duration: 45 },
+          { id: "bobafett-e6", title: "Capítulo 6: Del Desierto Llega un Forastero", duration: 45 },
+          { id: "bobafett-e7", title: "Capítulo 7: En el Nombre del Honor", duration: 45 }
+        ]
       },
       {
         id: "mando-t3",
@@ -277,7 +359,17 @@ export const eras: Era[] = [
         duration: 320,
         reason: "La redención de Mando en las Aguas Vivas, la unión de los clanes, la reconquista del planeta Mandalore, la adopción oficial de 'Din Grogu', y el pacto de Mando para trabajar cazando imperiales para la Nueva República (donde arranca la película).",
         essential: true,
-        tags: ['mandalore', 'new-republic']
+        tags: ['mandalore', 'new-republic'],
+        subItems: [
+          { id: "mando-t3-e17", title: "Capítulo 17: El Apóstata", duration: 40 },
+          { id: "mando-t3-e18", title: "Capítulo 18: Las Minas de Mandalore", duration: 40 },
+          { id: "mando-t3-e19", title: "Capítulo 19: El Converso", duration: 40 },
+          { id: "mando-t3-e20", title: "Capítulo 20: El Expósito", duration: 40 },
+          { id: "mando-t3-e21", title: "Capítulo 21: El Pirata", duration: 40 },
+          { id: "mando-t3-e22", title: "Capítulo 22: Mercenarios", duration: 40 },
+          { id: "mando-t3-e23", title: "Capítulo 23: Los Espías", duration: 40 },
+          { id: "mando-t3-e24", title: "Capítulo 24: El Regreso", duration: 40 }
+        ]
       },
       {
         id: "ahsoka-t1",
@@ -286,7 +378,17 @@ export const eras: Era[] = [
         duration: 360,
         reason: "El Consejo en la Sombra en The Mandalorian lo anticipó, pero aquí ocurre de verdad: El Gran Almirante Thrawn regresa a la galaxia. Su presencia es la principal razón por la que la Nueva República está al borde de una nueva guerra y necesita a Din Djarin.",
         essential: true,
-        tags: ['thrawn', 'new-republic']
+        tags: ['thrawn', 'new-republic'],
+        subItems: [
+          { id: "ahsoka-e1", title: "Parte 1: Maestro y Aprendiz", duration: 45 },
+          { id: "ahsoka-e2", title: "Parte 2: Trabajo y Problemas", duration: 45 },
+          { id: "ahsoka-e3", title: "Parte 3: Hora de Volar", duration: 45 },
+          { id: "ahsoka-e4", title: "Parte 4: Jedi Caído", duration: 45 },
+          { id: "ahsoka-e5", title: "Parte 5: El Guerrero de las Sombras", duration: 45 },
+          { id: "ahsoka-e6", title: "Parte 6: Muy, Muy Lejos", duration: 45 },
+          { id: "ahsoka-e7", title: "Parte 7: Sueños y Locura", duration: 45 },
+          { id: "ahsoka-e8", title: "Parte 8: El Jedi, la Bruja y el Caudillo", duration: 45 }
+        ]
       },
       {
         id: "skeleton-crew-t1",
@@ -295,7 +397,17 @@ export const eras: Era[] = [
         duration: 360,
         reason: "Para entender cómo la piratería se ha salido de control en el Borde Exterior y por qué los Rangers de Adelphi (el escuadrón de la Nueva República donde están Carson Teva y Zeb) están tan desbordados que necesitan contratar cazarrecompensas privados como Mando.",
         essential: false,
-        tags: ['new-republic']
+        tags: ['new-republic'],
+        subItems: [
+          { id: "skeleton-crew-e1", title: "Episodio 1", duration: 45 },
+          { id: "skeleton-crew-e2", title: "Episodio 2", duration: 45 },
+          { id: "skeleton-crew-e3", title: "Episodio 3", duration: 45 },
+          { id: "skeleton-crew-e4", title: "Episodio 4", duration: 45 },
+          { id: "skeleton-crew-e5", title: "Episodio 5", duration: 45 },
+          { id: "skeleton-crew-e6", title: "Episodio 6", duration: 45 },
+          { id: "skeleton-crew-e7", title: "Episodio 7", duration: 45 },
+          { id: "skeleton-crew-e8", title: "Episodio 8", duration: 45 }
+        ]
       }
     ]
   }
