@@ -11,7 +11,7 @@ import Image from 'next/image';
 
 const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false });
 
-type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt';
+type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | '2h' | 'essential-background' | 'movie-background';
 
 export default function Dashboard({ eras }: { eras: Era[] }) {
   const { watchedItems, toggleItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
@@ -72,8 +72,26 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   }, [watchedItems, toggleItem, playSound]);
 
   // Memoized stats calculation
-  const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = useMemo(() => {
+  const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes, nextItem } = useMemo(() => {
     const allItems = eras.flatMap(e => e.items);
+    
+    // Find next item
+    let nextItem = null;
+    for (const item of allItems) {
+      if (item.subItems) {
+        const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id));
+        if (incompleteSub) {
+          nextItem = { item, subItem: incompleteSub };
+          break;
+        }
+      } else {
+        if (!watchedItems.includes(item.id)) {
+          nextItem = { item };
+          break;
+        }
+      }
+    }
+
     const total = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
     const watched = allItems.reduce((acc, item) => {
       if (item.subItems) {
@@ -97,7 +115,8 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       progressPercent: percent,
       totalMinutes: tMins,
       watchedMinutes: wMins,
-      remainingMinutes: tMins - wMins
+      remainingMinutes: tMins - wMins,
+      nextItem
     };
   }, [eras, watchedItems]);
 
@@ -160,6 +179,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       if (preset === 'mandalore' && !item.tags.includes('mandalore')) return false;
       if (preset === 'thrawn' && !item.tags.includes('thrawn') && !item.tags.includes('new-republic')) return false;
       if (preset === 'hutt' && !item.tags.includes('hutt') && !item.tags.includes('bounty-hunters')) return false;
+      if (preset === '2h' && item.duration > 120) return false;
+      if (preset === 'essential-background' && !item.essential) return false;
+      if (preset === 'movie-background' && item.type !== 'movie') return false;
 
       return true;
     });
@@ -232,6 +254,30 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
             </div>
           </div>
         </header>
+
+        {/* CTA "Continue Where You Left Off" */}
+        {nextItem && (
+          <div className="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-6 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-emerald-400 font-semibold mb-1">Continuar donde lo dejaste</p>
+              <h3 className="text-xl font-bold text-zinc-100">
+                Siguiente parada: {nextItem.subItem ? nextItem.subItem.title : nextItem.item.title}
+              </h3>
+            </div>
+            <button 
+              onClick={() => {
+                // Scroll to the item
+                const element = document.getElementById(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors"
+            >
+              Continuar
+            </button>
+          </div>
+        )}
 
       {/* Stats Dashboard */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -320,7 +366,10 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
             { id: 'fast', label: 'Modo Rápido' },
             { id: 'mandalore', label: 'Solo Mandalore' },
             { id: 'thrawn', label: 'Nueva República / Thrawn' },
-            { id: 'hutt', label: 'Trama Hutt' }
+            { id: 'hutt', label: 'Trama Hutt' },
+            { id: '2h', label: 'Tengo 2 horas' },
+            { id: 'essential-background', label: 'Entendido (no completista)' },
+            { id: 'movie-background', label: 'Solo trasfondo peli' }
           ].map((p) => (
             <button
               key={p.id}
@@ -662,6 +711,7 @@ function MediaItemCard({
 
   return (
     <div 
+      id={item.id}
       className={`group relative p-4 rounded-xl border transition-all cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#09090b] ${
         isWatched 
           ? 'bg-emerald-950/10 border-emerald-900/30 hover:border-emerald-800/50' 
@@ -757,6 +807,7 @@ function MediaItemCard({
                 return (
                   <div 
                     key={sub.id}
+                    id={sub.id}
                     className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
                       isSubWatched ? 'bg-emerald-950/20 hover:bg-emerald-950/40' : 'bg-white/5 hover:bg-white/10'
                     }`}
