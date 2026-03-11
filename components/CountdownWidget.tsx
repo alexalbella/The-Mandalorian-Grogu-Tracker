@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Flame, PlayCircle } from 'lucide-react';
 
-export default function CountdownWidget({ remainingMinutes }: { remainingMinutes: number }) {
+export default function CountdownWidget({ remainingMinutes, isScrolled = false }: { remainingMinutes: number, isScrolled?: boolean }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0 });
   const [isMounted, setIsMounted] = useState(false);
   const [isReleased, setIsReleased] = useState(false);
@@ -35,30 +35,32 @@ export default function CountdownWidget({ remainingMinutes }: { remainingMinutes
 
   if (!isMounted) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex items-center gap-6 shrink-0 min-w-[280px] min-h-[90px] animate-pulse" />
+      <div className={`bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center gap-6 shrink-0 animate-pulse transition-all duration-300 ${isScrolled ? 'p-3 min-w-[200px] min-h-[60px]' : 'p-5 min-w-[280px] min-h-[90px]'}`} />
     );
   }
 
   if (isReleased) {
     return (
-      <div className="bg-emerald-950/30 border border-emerald-900/50 rounded-2xl p-5 flex flex-col gap-4 shrink-0">
-        <div className="flex items-center gap-6">
-          <div className="bg-emerald-900/50 p-3 rounded-xl border border-emerald-800/50">
-            <PlayCircle className="w-6 h-6 text-emerald-400" />
+      <div className={`bg-emerald-950/30 border border-emerald-900/50 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
+        <div className={`flex items-center ${isScrolled ? 'gap-4' : 'gap-6'}`}>
+          <div className={`bg-emerald-900/50 rounded-xl border border-emerald-800/50 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
+            <PlayCircle className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-emerald-400`} />
           </div>
           <div>
-            <p className="text-xs text-emerald-500 uppercase tracking-wider font-semibold mb-1">¡El momento ha llegado!</p>
-            <div className="text-xl font-bold text-emerald-50">Ya en cines</div>
+            <p className={`text-emerald-500 uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>¡El momento ha llegado!</p>
+            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-emerald-50`}>Ya en cines</div>
           </div>
         </div>
-        <a 
-          href="https://www.youtube.com/results?search_query=the+mandalorian+and+grogu+trailer" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors text-center"
-        >
-          Ver Tráiler Oficial
-        </a>
+        {!isScrolled && (
+          <a 
+            href="https://www.youtube.com/results?search_query=the+mandalorian+and+grogu+trailer" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors text-center"
+          >
+            Ver Tráiler Oficial
+          </a>
+        )}
       </div>
     );
   }
@@ -66,23 +68,23 @@ export default function CountdownWidget({ remainingMinutes }: { remainingMinutes
   const pace = timeLeft.days > 0 ? Math.ceil(remainingMinutes / timeLeft.days) : remainingMinutes;
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col gap-4 shrink-0">
-      <div className="flex items-center gap-6">
-        <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/50">
-          <Calendar className="w-6 h-6 text-zinc-400" />
+    <div className={`bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
+      <div className={`flex items-center ${isScrolled ? 'gap-4' : 'gap-6'}`}>
+        <div className={`bg-zinc-950 rounded-xl border border-zinc-800/50 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
+          <Calendar className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-zinc-400`} />
         </div>
         <div>
-          <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold mb-1">Estreno en Cines</p>
+          <p className={`text-zinc-500 uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en Cines</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-emerald-400">{timeLeft.days}</span>
-            <span className="text-sm text-zinc-400">días</span>
-            <span className="text-2xl font-bold font-mono text-zinc-300 ml-2">{timeLeft.hours}</span>
-            <span className="text-sm text-zinc-400">hrs</span>
+            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-emerald-400`}>{timeLeft.days}</span>
+            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-zinc-400`}>días</span>
+            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-zinc-300 ml-2`}>{timeLeft.hours}</span>
+            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-zinc-400`}>hrs</span>
           </div>
         </div>
       </div>
       
-      {remainingMinutes > 0 && (
+      {!isScrolled && remainingMinutes > 0 && (
         <div className="pt-3 border-t border-zinc-800/50 flex items-start gap-3">
           <Flame className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
           <p className="text-xs text-zinc-400 leading-relaxed max-w-[220px]">

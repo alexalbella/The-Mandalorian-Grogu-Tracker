@@ -167,36 +167,23 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   }).filter(era => era.items.length > 0);
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-12">
-      {/* Header Section - Sticky */}
-      <header className={`sticky top-0 z-50 border-b border-zinc-800 bg-[#050505]/90 backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 md:-mx-8 md:px-8 transition-all duration-300 ${isScrolled ? 'pt-3 pb-3' : 'pt-4 pb-4 md:pt-8 md:pb-6'}`}>
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-20 pointer-events-none">
-          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/30 blur-[120px] rounded-full" />
-          <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 blur-[120px] rounded-full" />
-        </div>
-        
-        <div className={`flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between`}>
-          <div className={`space-y-1 ${isScrolled ? '' : 'md:space-y-4'}`}>
-            <div className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 m-0' : 'max-h-20 opacity-100'}`}>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 uppercase tracking-wider">
-                <Star className="w-3 h-3 text-emerald-400" />
-                Watch Planner
-              </div>
-              <button 
-                onClick={() => setIsMuted(!isMuted)}
-                className="p-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
-                title={isMuted ? "Activar sonido" : "Silenciar sonido"}
-              >
-                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <h1 className={`font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-zinc-100 to-zinc-500 transition-all duration-300 ${isScrolled ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'}`} style={{ fontFamily: 'var(--font-display)' }}>
-                The Mandalorian {isScrolled ? '' : <br className="hidden md:block" />}
-                <span className="text-emerald-400">& Grogu</span> {isScrolled ? '' : 'Tracker'}
-              </h1>
-              {isScrolled && (
+    <div className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
+      {/* Main Content */}
+      <div className="flex-1 space-y-12 min-w-0">
+        {/* Header Section - Sticky */}
+        <header className={`sticky top-0 lg:top-4 z-50 border-b lg:border border-zinc-800 bg-[#050505]/90 backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 lg:mx-0 lg:px-6 lg:rounded-2xl transition-all duration-300 ${isScrolled ? 'pt-3 pb-3' : 'pt-4 pb-4 md:pt-6 md:pb-6'}`}>
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-20 pointer-events-none">
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/30 blur-[120px] rounded-full" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 blur-[120px] rounded-full" />
+          </div>
+          
+          <div className={`flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between`}>
+            <div className={`space-y-1 ${isScrolled ? '' : 'md:space-y-4'}`}>
+              <div className={`flex items-center gap-3 transition-all duration-300 overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 m-0' : 'max-h-20 opacity-100'}`}>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 uppercase tracking-wider">
+                  <Star className="w-3 h-3 text-emerald-400" />
+                  Watch Planner
+                </div>
                 <button 
                   onClick={() => setIsMuted(!isMuted)}
                   className="p-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
@@ -204,32 +191,47 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                 >
                   {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                 </button>
-              )}
-            </div>
-          </div>
-
-          <div className={`flex flex-col items-start md:items-end gap-3 w-full md:w-auto`}>
-            <div className={`transition-all duration-300 origin-right overflow-hidden ${isScrolled ? 'max-h-0 opacity-0 m-0 hidden md:block md:max-h-0' : 'max-h-40 opacity-100'}`}>
-              <CountdownWidget remainingMinutes={remainingMinutes} />
-            </div>
-            {/* Darksaber Progress Bar in Header */}
-            <div className={`w-full transition-all duration-300 ${isScrolled ? 'md:w-64 mt-0' : 'md:w-[320px] mt-2'}`}>
-              <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
-                <span className={isScrolled ? 'hidden md:inline' : 'inline'}>Progreso</span>
-                <span className="text-emerald-400 font-bold">{progressPercent}%</span>
               </div>
-              <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 relative shadow-[0_0_10px_rgba(0,0,0,0.5)]">
-                <div 
-                  className="absolute top-0 left-0 h-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_10px_#fff,0_0_20px_#fff]"
-                  style={{ width: `${progressPercent}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+              
+              <div className="flex items-center gap-3">
+                <h1 className={`font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-zinc-100 to-zinc-500 transition-all duration-300 ${isScrolled ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'}`} style={{ fontFamily: 'var(--font-display)' }}>
+                  The Mandalorian {isScrolled ? '' : <br className="hidden md:block" />}
+                  <span className="text-emerald-400">& Grogu</span> {isScrolled ? '' : 'Tracker'}
+                </h1>
+                {isScrolled && (
+                  <button 
+                    onClick={() => setIsMuted(!isMuted)}
+                    className="p-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+                    title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                  >
+                    {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className={`flex flex-col items-start md:items-end gap-3 w-full md:w-auto`}>
+              <div className={`transition-all duration-300 origin-right`}>
+                <CountdownWidget remainingMinutes={remainingMinutes} isScrolled={isScrolled} />
+              </div>
+              {/* Darksaber Progress Bar in Header (Mobile only) */}
+              <div className={`w-full lg:hidden transition-all duration-300 ${isScrolled ? 'mt-0' : 'mt-2'}`}>
+                <div className="flex justify-between text-xs font-mono text-zinc-400 mb-1">
+                  <span className={isScrolled ? 'hidden md:inline' : 'inline'}>Progreso</span>
+                  <span className="text-emerald-400 font-bold">{progressPercent}%</span>
+                </div>
+                <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 relative shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_10px_#fff,0_0_20px_#fff]"
+                    style={{ width: `${progressPercent}%` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Stats Dashboard */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -404,6 +406,43 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       <footer className="pt-12 pb-24 text-center border-t border-zinc-800 text-zinc-500 text-sm">
         <p>Que la Fuerza te acompañe. Este es el camino.</p>
       </footer>
+      </div>
+
+      {/* Sidebar - Vertical Progress */}
+      <aside className="hidden lg:flex flex-col items-center w-24 shrink-0 pt-8">
+        <div className="sticky top-24 flex flex-col items-center gap-6 h-[calc(100vh-8rem)]">
+          <div className="text-center space-y-1">
+            <div className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Progreso</div>
+            <div className="text-2xl font-bold text-emerald-400">{progressPercent}%</div>
+          </div>
+          
+          {/* Vertical Darksaber */}
+          <div className="flex-1 w-4 flex flex-col justify-end items-center relative">
+            {/* Blade container */}
+            <div className="w-full flex-1 bg-zinc-900 rounded-t-full overflow-hidden border border-zinc-800 border-b-0 relative shadow-[0_0_15px_rgba(0,0,0,0.8)] flex flex-col justify-end">
+              <div 
+                className="w-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_15px_#fff,0_0_30px_#fff]"
+                style={{ height: `${progressPercent}%` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+              </div>
+            </div>
+            
+            {/* Darksaber Hilt (bottom) */}
+            <div className="w-6 h-20 bg-gradient-to-b from-zinc-700 to-zinc-950 border border-zinc-600 rounded-b-md rounded-t-sm flex flex-col items-center justify-evenly py-2 shadow-xl z-10 shrink-0">
+              <div className="w-full h-px bg-zinc-900/80" />
+              <div className="w-full h-px bg-zinc-900/80" />
+              <div className="w-full h-px bg-zinc-900/80" />
+              <div className="w-full h-px bg-zinc-900/80" />
+              <div className="w-full h-px bg-zinc-900/80" />
+            </div>
+          </div>
+          
+          <div className="text-xs font-mono text-zinc-500">
+            {watchedCount}/{totalItems}
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }
