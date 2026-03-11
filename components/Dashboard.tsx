@@ -540,35 +540,35 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
   // Use a deterministic seed for the placeholder image based on the item ID
   const getImageUrl = (id: string) => {
     const map: Record<string, string> = {
-      'ep1': 'https://image.tmdb.org/t/p/w500/nwniMce0zQxWzFh2qtsLpG0hQ3z.jpg',
+      'ep1': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
       'tcw-movie': 'https://image.tmdb.org/t/p/w500/uK1hTjclig4wH5Qk2HjB2vE2r0D.jpg',
-      'tcw-t2-12-14': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t2-17': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t3-4': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t4-15-18': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t4-20-22': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t5-1': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t6-5': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'tcw-t7-9-12': 'https://image.tmdb.org/t/p/w500/p6s2svKEtpEWflK8OucGz8Z6FvY.jpg',
-      'bb-t1-15-16': 'https://image.tmdb.org/t/p/w500/51mX2E4wK43zXkK1S8xP6k2Z1S.jpg',
-      'bb-t3-1-3-14-15': 'https://image.tmdb.org/t/p/w500/51mX2E4wK43zXkK1S8xP6k2Z1S.jpg',
-      'rebels-t1-1-2': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
-      'rebels-t2-17': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
-      'rebels-t3-15': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
-      'rebels-t3-t4': 'https://image.tmdb.org/t/p/w500/jB1B72YhXwB2B1B72YhXwB2.jpg',
-      'ep4': 'https://image.tmdb.org/t/p/w500/4iJfYYoQzZcONB9hNzg0J0wQ3z.jpg',
+      'tcw-t2-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t4-15-18': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t4-20-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t5-1': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t6-5': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t7-9-12': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'bb-t1-15-16': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
+      'bb-t3-1-3-14-15': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
+      'rebels-t1-1-2': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
       'ep5': 'https://image.tmdb.org/t/p/w500/2l05cFWJacyIsTpsqSgH0wQXe4V.jpg',
       'ep6': 'https://image.tmdb.org/t/p/w500/mDCWXN9L211L1LTaQvL93q7dE6Q.jpg',
-      'mando-t1': 'https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg',
-      'mando-t2': 'https://image.tmdb.org/t/p/w500/bksy8mCWaUaNCqHw1kX0kFI5zDU.jpg',
-      'bobafett-1-4': 'https://image.tmdb.org/t/p/w500/gNbdjDi1OIRC2JmtvnEoPllUs0Q.jpg',
-      'bobafett-5-7': 'https://image.tmdb.org/t/p/w500/gNbdjDi1OIRC2JmtvnEoPllUs0Q.jpg',
-      'mando-t3': 'https://image.tmdb.org/t/p/w500/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg',
-      'ahsoka-t1': 'https://image.tmdb.org/t/p/w500/laCJxobHoPVaLQTKxc14Y2zV64J.jpg',
-      'skeleton-crew-t1': 'https://image.tmdb.org/t/p/w500/eK1kX0kFI5zDUbksy8mCWaUaNCqHw1.jpg'
+      'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'mando-t2': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'bobafett-1-4': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
+      'bobafett-5-7': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
+      'mando-t3': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'ahsoka-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
+      'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
     };
     
-    return map[id] || `https://placehold.co/600x400/09090b/10b981?text=${encodeURIComponent(item.title)}`;
+    return map[id] || `https://placehold.co/400x600/09090b/10b981?text=${encodeURIComponent(item.title)}`;
   };
 
   const [imgSrc, setImgSrc] = useState(getImageUrl(item.id));
@@ -591,21 +591,21 @@ function MediaItemCard({ item, isWatched, onToggle }: { item: MediaItem, isWatch
         onClick={(e) => e.stopPropagation()}
       />
       
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-row gap-4">
         {/* Thumbnail */}
-        <div className="relative w-full sm:w-56 aspect-video rounded-lg overflow-hidden shrink-0 border border-white/5 bg-zinc-900">
+        <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-zinc-900">
           <Image 
             src={imgSrc} 
-            alt={`Thumbnail for ${item.title}`}
+            alt={`Poster for ${item.title}`}
             fill
             className={`object-cover transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
-            sizes="(max-width: 640px) 100vw, 192px"
+            sizes="(max-width: 640px) 96px, 128px"
             referrerPolicy="no-referrer"
             onError={() => {
-              // If TMDB image fails, fallback to placehold.co
-              setImgSrc(`https://placehold.co/600x400/09090b/10b981?text=${encodeURIComponent(item.title)}`);
+              // If image fails, fallback to placehold.co
+              setImgSrc(`https://placehold.co/400x600/09090b/10b981?text=${encodeURIComponent(item.title)}`);
             }}
-            unoptimized={imgSrc.includes('placehold.co')}
+            unoptimized={imgSrc.includes('placehold.co') || imgSrc.includes('tvmaze.com')}
           />
           {isWatched && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">

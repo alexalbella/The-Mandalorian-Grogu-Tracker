@@ -26,6 +26,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'static.tvmaze.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'placehold.co',
         port: '',
         pathname: '/**',
