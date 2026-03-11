@@ -14,23 +14,32 @@ const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false 
 type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | '2h' | 'essential-background' | 'movie-background';
 
 export default function Dashboard({ eras }: { eras: Era[] }) {
-  const { watchedItems, toggleItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
-  const [isMounted, setIsMounted] = useState(false);
-  const [filterType, setFilterType] = useState<'all' | 'movie' | 'series'>('all');
-  const [preset, setPreset] = useState<Preset>('all');
-  const [hideCompleted, setHideCompleted] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isMuted, setIsMuted] = useState(false);
+  const {
+    watchedItems,
+    toggleItem,
+    markMultiple,
+    unmarkMultiple,
+    resetProgress,
+    filterType,
+    setFilterType,
+    preset,
+    setPreset,
+    hideCompleted,
+    setHideCompleted,
+    searchQuery,
+    setSearchQuery,
+    isMuted,
+    setIsMuted,
+    collapsedEraIds,
+    toggleEraExpanded
+  } = useProgressStore();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
-    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -122,7 +131,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
 
   // Confetti effect when reaching 100%
   useEffect(() => {
-    if (isMounted && progressPercent === 100 && totalItems > 0) {
+    if (progressPercent === 100 && totalItems > 0) {
       const duration = 3 * 1000;
       const end = Date.now() + duration;
 
@@ -148,7 +157,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       };
       frame();
     }
-  }, [progressPercent, isMounted, totalItems]);
+  }, [progressPercent, totalItems]);
 
   const formatTime = (mins: number) => {
     const hours = Math.floor(mins / 60);
@@ -156,7 +165,6 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
     return `${hours}h ${minutes}m`;
   };
 
-  if (!isMounted) return null; // Prevent hydration mismatch
 
   const filteredEras = eras.map(era => {
     const filteredItems = era.items.filter(item => {
@@ -171,7 +179,19 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         }
       }
       // Search filter
-      if (searchQuery && !item.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const searchableFields = [
+          item.title,
+          item.reason,
+          era.eraLabel,
+          ...item.tags,
+          ...(item.subItems?.map((sub) => sub.title) ?? [])
+        ];
+
+        const matchesSearch = searchableFields.some((field) => field.toLowerCase().includes(query));
+        if (!matchesSearch) return false;
+      }
       
       // Presets
       if (preset === 'essential' && !item.essential) return false;
@@ -406,6 +426,8 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                 toggleItem={handleToggleItem}
                 markMultiple={markMultiple}
                 unmarkMultiple={unmarkMultiple}
+                isExpanded={!collapsedEraIds.includes(era.id)}
+                onToggleExpand={() => toggleEraExpanded(era.id)}
               />
             ))
           )}
@@ -523,16 +545,19 @@ function EraSection({
   watchedItems, 
   toggleItem,
   markMultiple,
-  unmarkMultiple
+  unmarkMultiple,
+  isExpanded,
+  onToggleExpand
 }: { 
   era: Era, 
   index: number, 
   watchedItems: string[], 
   toggleItem: (id: string) => void,
   markMultiple: (ids: string[]) => void,
-  unmarkMultiple: (ids: string[]) => void
+  unmarkMultiple: (ids: string[]) => void,
+  isExpanded: boolean,
+  onToggleExpand: () => void
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
   
   const eraItemIds = era.items.flatMap(i => i.subItems ? i.subItems.map(s => s.id) : [i.id]);
   const eraTotalCount = eraItemIds.length;
@@ -585,7 +610,7 @@ function EraSection({
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono">
                   <span className={isCompleted ? "text-emerald-400 font-bold" : "text-zinc-300"}>
-                    {eraWatchedCount} / {era.items.length}
+                    {eraWatchedCount} / {eraTotalCount}
                   </span>
                   <span className="text-zinc-500">vistos</span>
                 </div>
@@ -600,7 +625,7 @@ function EraSection({
                 </button>
 
                 <button 
-                  onClick={() => setIsExpanded(!isExpanded)}
+                  onClick={onToggleExpand}
                   className="p-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors md:hidden"
                   aria-expanded={isExpanded}
                   aria-label={isExpanded ? "Colapsar era" : "Expandir era"}
