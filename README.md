@@ -1,24 +1,44 @@
-# 🌌 Mando & Grogu Tracker
+# 🌌 The Mandalorian & Grogu Tracker
 
-La guía cronológica definitiva para prepararte antes del estreno en cines de **The Mandalorian & Grogu**.
+Una aplicación web progresiva (PWA) diseñada para ayudar a los fans de Star Wars a prepararse para el estreno en cines de "The Mandalorian & Grogu". Funciona como un planificador de visionado (Watch Planner) interactivo y accesible.
 
-Este proyecto es un dashboard interactivo que te permite llevar el control de tu visionado de la "Lista Maestra Definitiva" del universo Star Wars.
+## ✨ Características Principales
 
-## ✨ Características
+*   **Planificador de Visionado (Watch Planner):** Más que una simple lista, permite organizar qué ver antes del estreno.
+*   **Filtros Avanzados y Presets:**
+    *   Filtra por tipo (Películas, Series).
+    *   Oculta lo que ya has visto.
+    *   Buscador integrado.
+    *   Presets temáticos: "Imprescindible", "Modo Rápido", "Solo Mandalore", "Nueva República / Thrawn", "Trama Hutt".
+*   **Gestión de Progreso:**
+    *   Marca episodios o películas individuales.
+    *   Acciones rápidas por Era: Marca o desmarca toda una era con un clic.
+    *   Resetea todo tu progreso fácilmente.
+    *   El progreso se guarda automáticamente en tu navegador (localStorage).
+*   **Cuenta Atrás Dinámica:**
+    *   Muestra el tiempo exacto hasta el estreno.
+    *   "Pace Tracker": Calcula cuántos minutos necesitas ver al día para llegar al día del estreno.
+    *   Cambia automáticamente a un estado de "Ya en cines" con enlaces relevantes una vez pasada la fecha.
+*   **Experiencia de Usuario (UX) y Gamificación:**
+    *   Animaciones fluidas con Framer Motion en interacciones y transiciones.
+    *   Efecto de confeti al alcanzar el 100% de progreso.
+    *   Diseño oscuro, moderno y temático (Star Wars).
+*   **Accesibilidad (a11y):**
+    *   Navegación completa por teclado.
+    *   Elementos semánticos correctos (checkboxes ocultos accesibles).
+    *   Foco visible y atributos ARIA para lectores de pantalla.
+*   **PWA (Progressive Web App):** Instalable en dispositivos móviles y de escritorio para una experiencia nativa.
 
-- **Checklist Interactivo:** Marca los episodios y películas que ya has visto.
-- **Progreso Local:** Tu progreso se guarda automáticamente en el navegador (`localStorage`), por lo que no necesitas crear una cuenta. Cada usuario que visite la web tendrá su propio progreso.
-- **Estadísticas en Tiempo Real:** Calcula el tiempo invertido, el tiempo restante y el porcentaje total completado.
-- **Cuenta Atrás:** Widget con los días y horas restantes para el estreno en cines.
-- **Contexto Detallado:** Cada pieza incluye la duración y la razón exacta por la que es importante verla (easter eggs, cameos, trama).
+## 🚀 Stack Tecnológico
 
-## 🚀 Tecnologías
-
-- [Next.js 15](https://nextjs.org/) (App Router)
-- [React 19](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- [Framer Motion](https://motion.dev/) para animaciones
-- [Lucide Icons](https://lucide.dev/)
+*   **Framework:** Next.js 15 (App Router)
+*   **Librería UI:** React 19
+*   **Estilos:** Tailwind CSS v4
+*   **Gestión de Estado:** Zustand (con middleware de persistencia)
+*   **Animaciones:** Framer Motion (`motion/react`)
+*   **Iconos:** Lucide React
+*   **Efectos:** `canvas-confetti`
+*   **Lenguaje:** TypeScript
 
 ## 🛠️ Desarrollo Local
 

@@ -9,6 +9,13 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mon
 export const metadata: Metadata = {
   title: 'Mando & Grogu Tracker',
   description: 'Dashboard checklist para controlar el visionado hasta The Mandalorian & Grogu',
+  manifest: '/manifest.json',
+  themeColor: '#10b981',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Mando Tracker',
+  },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
