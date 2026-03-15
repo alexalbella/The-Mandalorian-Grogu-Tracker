@@ -1,70 +1,109 @@
-# 🌌 The Mandalorian & Grogu Tracker
+<div align="center">
+  <h1>🌌 The Mandalorian & Grogu Tracker</h1>
+  <p><strong>El planificador de visionado definitivo para prepararte para el estreno en cines.</strong></p>
+  
+  [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+  [![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://react.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+  [![Zustand](https://img.shields.io/badge/State-Zustand-brown?style=flat-square)](https://zustand-demo.pmnd.rs/)
+  [![Framer Motion](https://img.shields.io/badge/Animation-Framer_Motion-f08?style=flat-square)](https://www.framer.com/motion/)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+</div>
 
-Una aplicación web progresiva (PWA) diseñada para ayudar a los fans de Star Wars a prepararse para el estreno en cines de "The Mandalorian & Grogu". Funciona como un planificador de visionado (Watch Planner) interactivo y accesible.
+<br />
+
+Una aplicación web progresiva (PWA) diseñada meticulosamente para ayudar a los fans de Star Wars a organizar y trackear su progreso antes del estreno de la película "The Mandalorian & Grogu". No es solo una lista, es una experiencia gamificada.
 
 ## ✨ Características Principales
 
-*   **Planificador de Visionado (Watch Planner):** Más que una simple lista, permite organizar qué ver antes del estreno.
-*   **Filtros Avanzados y Presets:**
+*   **Planificador de Visionado Inteligente:** Organiza qué ver antes del estreno con una lista curada cronológicamente.
+*   **Filtros y Presets Dinámicos:**
     *   Filtra por tipo (Películas, Series).
-    *   Oculta lo que ya has visto.
-    *   Buscador integrado.
+    *   Oculta el contenido ya completado.
+    *   Buscador en tiempo real.
     *   Presets temáticos: "Imprescindible", "Modo Rápido", "Solo Mandalore", "Nueva República / Thrawn", "Trama Hutt".
-*   **Gestión de Progreso:**
+*   **Motor de Gamificación:**
+    *   **Modo Misión:** Sugiere bloques de contenido diario basados en el tiempo disponible (15m, 30m, 1h, 2h).
+    *   **Sistema de Logros:** Desbloquea medallas temáticas (Mandalore, Imperio, Cazarrecompensas) a medida que avanzas.
+*   **Gestión de Progreso Persistente:**
     *   Marca episodios o películas individuales.
     *   Acciones rápidas por Era: Marca o desmarca toda una era con un clic.
-    *   Resetea todo tu progreso fácilmente.
-    *   El progreso se guarda automáticamente en tu navegador (localStorage).
-*   **Cuenta Atrás Dinámica:**
+    *   El progreso se guarda automáticamente y de forma segura en tu navegador (localStorage mediante Zustand).
+*   **Cuenta Atrás y Pace Tracker:**
     *   Muestra el tiempo exacto hasta el estreno.
-    *   "Pace Tracker": Calcula cuántos minutos necesitas ver al día para llegar al día del estreno.
-    *   Cambia automáticamente a un estado de "Ya en cines" con enlaces relevantes una vez pasada la fecha.
-*   **Experiencia de Usuario (UX) y Gamificación:**
+    *   Calcula cuántos minutos necesitas ver al día para llegar al día del estreno con los deberes hechos.
+*   **Experiencia de Usuario (UX) Premium:**
     *   Animaciones fluidas con Framer Motion en interacciones y transiciones.
-    *   Efecto de confeti al alcanzar el 100% de progreso.
-    *   Diseño oscuro, moderno y temático (Star Wars).
-*   **Accesibilidad (a11y):**
-    *   Navegación completa por teclado.
-    *   Elementos semánticos correctos (checkboxes ocultos accesibles).
-    *   Foco visible y atributos ARIA para lectores de pantalla.
-*   **PWA (Progressive Web App):** Instalable en dispositivos móviles y de escritorio para una experiencia nativa.
+    *   Efecto de confeti al alcanzar el 100% de progreso o desbloquear logros especiales.
+    *   Diseño oscuro, moderno y temático (Star Wars) con Tailwind CSS v4.
+*   **Accesibilidad (a11y) y PWA:**
+    *   Navegación completa por teclado y soporte para lectores de pantalla.
+    *   Instalable en dispositivos móviles y de escritorio para una experiencia nativa.
 
 ## 🚀 Stack Tecnológico
 
-*   **Framework:** Next.js 15 (App Router)
-*   **Librería UI:** React 19
-*   **Estilos:** Tailwind CSS v4
-*   **Gestión de Estado:** Zustand (con middleware de persistencia)
-*   **Animaciones:** Framer Motion (`motion/react`)
-*   **Iconos:** Lucide React
-*   **Efectos:** `canvas-confetti`
-*   **Lenguaje:** TypeScript
+Este proyecto está construido con tecnologías web modernas, priorizando el rendimiento y la experiencia de desarrollo:
+
+*   **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+*   **Librería UI:** [React 19](https://react.dev/)
+*   **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/)
+*   **Gestión de Estado:** [Zustand](https://zustand-demo.pmnd.rs/) (con middleware de persistencia)
+*   **Animaciones:** [Framer Motion](https://www.framer.com/motion/) (`motion/react`)
+*   **Iconos:** [Lucide React](https://lucide.dev/)
+*   **Efectos Visuales:** `canvas-confetti`
+*   **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
 
 ## 🛠️ Desarrollo Local
 
-1. Clona el repositorio:
+Para ejecutar este proyecto en tu máquina local, sigue estos pasos:
+
+1. **Clona el repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/mando-grogu-tracker.git
+   git clone https://github.com/alexalbella/mando-grogu-tracker.git
+   cd mando-grogu-tracker
    ```
-2. Instala las dependencias:
+
+2. **Instala las dependencias:**
+   Asegúrate de tener Node.js instalado (v18 o superior).
    ```bash
    npm install
    ```
-3. Inicia el servidor de desarrollo:
+
+3. **Inicia el servidor de desarrollo:**
    ```bash
    npm run dev
    ```
-4. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-## 🚀 Despliegue en Vercel
+4. **Visualiza la aplicación:**
+   Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## 📦 Estructura del Proyecto
+
+```text
+├── app/                  # Rutas y layouts de Next.js (App Router)
+├── components/           # Componentes UI reutilizables (Dashboard, Widgets, etc.)
+├── data/                 # Datos estáticos (Lista de Star Wars, Logros)
+├── hooks/                # Custom React hooks (Motor de gamificación)
+├── store/                # Stores de Zustand (Progreso, Preferencias)
+├── types/                # Definiciones de tipos TypeScript
+└── public/               # Assets estáticos y PWA manifest
+```
+
+## 🚀 Despliegue
 
 La forma más sencilla de desplegar esta aplicación es usando [Vercel](https://vercel.com/):
 
-1. Sube tu código a un repositorio de GitHub.
+1. Haz un fork o sube tu código a un repositorio de GitHub.
 2. Inicia sesión en Vercel y haz clic en **Add New... > Project**.
 3. Importa tu repositorio de GitHub.
 4. Vercel detectará automáticamente que es un proyecto de Next.js. Haz clic en **Deploy**.
 5. ¡Listo! Tendrás tu tracker público con una URL personalizada.
 
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+
 ---
-*Que la Fuerza te acompañe. Este es el camino.*
+<div align="center">
+  <i>Que la Fuerza te acompañe. Este es el camino.</i>
+</div>
