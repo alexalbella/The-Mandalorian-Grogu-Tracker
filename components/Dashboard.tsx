@@ -11,7 +11,11 @@ import Image from 'next/image';
 
 const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false });
 
-type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | '2h' | 'essential-background' | 'movie-background';
+type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'essential-background' | 'movie-background';
+
+import MissionWidget from './MissionWidget';
+import AchievementsPanel from './AchievementsPanel';
+import { useGamificationEngine } from '@/hooks/useGamificationEngine';
 
 export default function Dashboard({ eras }: { eras: Era[] }) {
   const { watchedItems, toggleItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
@@ -22,6 +26,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMuted, setIsMuted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Initialize Gamification Engine
+  const { generateMission, handleCompleteMission, calculateProgress } = useGamificationEngine(eras);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -179,7 +186,6 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       if (preset === 'mandalore' && !item.tags.includes('mandalore')) return false;
       if (preset === 'thrawn' && !item.tags.includes('thrawn') && !item.tags.includes('new-republic')) return false;
       if (preset === 'hutt' && !item.tags.includes('hutt') && !item.tags.includes('bounty-hunters')) return false;
-      if (preset === '2h' && item.duration > 120) return false;
       if (preset === 'essential-background' && !item.essential) return false;
       if (preset === 'movie-background' && item.type !== 'movie') return false;
 
@@ -302,6 +308,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         />
       </section>
 
+      <MissionWidget eras={eras} generateMission={generateMission} handleCompleteMission={handleCompleteMission} />
+      <AchievementsPanel eras={eras} calculateProgress={calculateProgress} />
+
       {/* Filters & Presets */}
       <section className="space-y-4">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
@@ -367,7 +376,6 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
             { id: 'mandalore', label: 'Solo Mandalore' },
             { id: 'thrawn', label: 'Nueva República / Thrawn' },
             { id: 'hutt', label: 'Trama Hutt' },
-            { id: '2h', label: 'Tengo 2 horas' },
             { id: 'essential-background', label: 'Entendido (no completista)' },
             { id: 'movie-background', label: 'Solo trasfondo peli' }
           ].map((p) => (
@@ -692,7 +700,7 @@ function MediaItemCard({
       'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
       'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
       'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'ep4': 'https://image.tmdb.org/t/p/w500/fbrXPbObN3zenLpCq8Mj9eCHjQ5.jpg',
+      'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
       'ep5': 'https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg',
       'ep6': 'https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg',
       'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
@@ -735,7 +743,7 @@ function MediaItemCard({
             src={imgSrc} 
             alt={`Poster for ${item.title}`}
             fill
-            className={`object-cover transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
+            className={`${item.subItems && item.subItems.length > 0 ? 'object-contain' : 'object-cover'} transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
             sizes="(max-width: 640px) 96px, 128px"
             referrerPolicy="no-referrer"
             onError={() => {
