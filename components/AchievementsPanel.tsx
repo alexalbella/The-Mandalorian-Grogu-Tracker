@@ -26,7 +26,7 @@ export default function AchievementsPanel({
   generateMission: (lengthPref?: any, forceRegenerate?: boolean, specificTag?: string) => void
 }) {
   const { unlockedAchievements } = useGamificationStore();
-  const { watchedItems, skippedItems } = useProgressStore();
+  const { isCompleted } = useProgressStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
@@ -67,13 +67,13 @@ export default function AchievementsPanel({
             item.subItems.forEach(sub => {
               if (item.tags.includes(rule.tag!)) {
                 totalItemsWithTag++;
-                if (watchedItems.includes(sub.id)) watchedItemsWithTag++;
+                if (isCompleted(sub.id)) watchedItemsWithTag++;
               }
             });
           } else {
             if (item.tags.includes(rule.tag!)) {
               totalItemsWithTag++;
-              if (watchedItems.includes(item.id)) watchedItemsWithTag++;
+              if (isCompleted(item.id)) watchedItemsWithTag++;
             }
           }
         });
@@ -95,11 +95,11 @@ export default function AchievementsPanel({
           if (item.subItems) {
             totalItems += item.subItems.length;
             item.subItems.forEach(sub => {
-              if (watchedItems.includes(sub.id)) watched++;
+              if (isCompleted(sub.id)) watched++;
             });
           } else {
             totalItems++;
-            if (watchedItems.includes(item.id)) watched++;
+            if (isCompleted(item.id)) watched++;
           }
         });
       });

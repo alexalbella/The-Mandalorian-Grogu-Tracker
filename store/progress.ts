@@ -11,6 +11,8 @@ interface ProgressState {
   markMultiple: (ids: string[]) => void;
   unmarkMultiple: (ids: string[]) => void;
   resetProgress: () => void;
+  isCompleted: (id: string) => boolean;
+  getCompletedItems: () => string[];
 }
 
 const updateStreak = (state: ProgressState) => {
@@ -29,7 +31,7 @@ const updateStreak = (state: ProgressState) => {
 
 export const useProgressStore = create<ProgressState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       watchedItems: [],
       skippedItems: [],
       streak: 0,
@@ -70,6 +72,8 @@ export const useProgressStore = create<ProgressState>()(
         skippedItems: state.skippedItems.filter(i => !ids.includes(i))
       })),
       resetProgress: () => set({ watchedItems: [], skippedItems: [], streak: 0, lastWatchedDate: null }),
+      isCompleted: (id) => get().watchedItems.includes(id) || get().skippedItems.includes(id),
+      getCompletedItems: () => [...get().watchedItems, ...get().skippedItems],
     }),
     {
       name: 'mando-grogu-progress',

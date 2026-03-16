@@ -15,12 +15,14 @@ const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false 
 
 type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'essential-background' | 'movie-background';
 
-import MissionWidget from './MissionWidget';
+// ... (sin import)
+import ResumeFlow from './ResumeFlow';
 import AchievementsPanel from './AchievementsPanel';
 import { useGamificationEngine } from '@/hooks/useGamificationEngine';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 
 export default function Dashboard({ eras }: { eras: Era[] }) {
-  const { watchedItems, skippedItems, streak, toggleItem, skipItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
+  const { watchedItems, skippedItems, streak, toggleItem, skipItem, markMultiple, unmarkMultiple, resetProgress, isCompleted } = useProgressStore();
   const { 
     filterType, setFilterType, 
     preset, setPreset, 
@@ -33,13 +35,11 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   
   const { currentMission } = useGamificationStore();
   
-  const completedItems = useMemo(() => [...watchedItems, ...skippedItems], [watchedItems, skippedItems]);
-
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Initialize Gamification Engine
-  const { generateMission, handleCompleteMission, calculateProgress } = useGamificationEngine(eras);
+  const { generateMission, calculateProgress } = useGamificationEngine(eras);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -93,32 +93,34 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   }, [isMuted]);
 
   const handleToggleItem = useCallback((id: string) => {
-    const isCurrentlyWatched = watchedItems.includes(id) || skippedItems.includes(id);
+    const isCurrentlyCompleted = isCompleted(id);
     toggleItem(id);
     setLastViewedId(id);
     
-    if (!isCurrentlyWatched) {
+    if (!isCurrentlyCompleted) {
       playSound();
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
         navigator.vibrate(50);
       }
     }
-  }, [watchedItems, skippedItems, toggleItem, playSound, setLastViewedId]);
+  }, [toggleItem, playSound, setLastViewedId, isCompleted]);
 
   const handleSkipItem = useCallback((id: string) => {
-    const isCurrentlySkipped = skippedItems.includes(id);
+    const isCurrentlyCompleted = isCompleted(id);
     skipItem(id);
     setLastViewedId(id);
     
-    if (!isCurrentlySkipped) {
+    if (!isCurrentlyCompleted) {
       playSound();
     }
-  }, [skippedItems, skipItem, playSound, setLastViewedId]);
+  }, [skipItem, playSound, setLastViewedId, isCompleted]);
 
-  // Memoized stats calculation
-  const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes, nextItem } = useMemo(() => {
-    const allItems = eras.flatMap(e => e.items);
-    
+  // Stats are now handled by useDashboardStats hook
+  const stats = useDashboardStats(eras);
+  const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = stats;
+  
+  // Next item logic
+  const nextItem = useMemo(() => {
     // Find next item
     let nextItem = null;
     
@@ -146,13 +148,13 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       for (const era of eras) {
         for (const item of era.items) {
           if (item.subItems) {
-            const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id) && !skippedItems.includes(sub.id));
+            const incompleteSub = item.subItems.find(sub => !isCompleted(sub.id));
             if (incompleteSub) {
               nextItem = { item, subItem: incompleteSub, eraId: era.id, isSkippedEssential: false };
               break;
             }
           } else {
-            if (!watchedItems.includes(item.id) && !skippedItems.includes(item.id)) {
+            if (!isCompleted(item.id)) {
               nextItem = { item, eraId: era.id, isSkippedEssential: false };
               break;
             }
@@ -161,34 +163,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         if (nextItem) break;
       }
     }
-
-    const total = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
-    const watched = allItems.reduce((acc, item) => {
-      if (item.subItems) {
-        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id) || skippedItems.includes(sub.id)).length;
-      }
-      return acc + (watchedItems.includes(item.id) || skippedItems.includes(item.id) ? 1 : 0);
-    }, 0);
-    const percent = total === 0 ? 0 : Math.round((watched / total) * 100);
     
-    const tMins = allItems.reduce((acc, item) => acc + item.duration, 0);
-    const wMins = allItems.reduce((acc, item) => {
-      if (item.subItems) {
-        return acc + item.subItems.filter(sub => completedItems.includes(sub.id)).reduce((sum, sub) => sum + sub.duration, 0);
-      }
-      return acc + (completedItems.includes(item.id) ? item.duration : 0);
-    }, 0);
-    
-    return {
-      totalItems: total,
-      watchedCount: watched,
-      progressPercent: percent,
-      totalMinutes: tMins,
-      watchedMinutes: wMins,
-      remainingMinutes: tMins - wMins,
-      nextItem
-    };
-  }, [eras, completedItems]);
+    return nextItem;
+  }, [eras, isCompleted, skippedItems]);
 
   // Confetti effect when reaching 100%
   useEffect(() => {
@@ -348,141 +325,13 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
           </div>
         </header>
 
-        {/* CTA "Continue Where You Left Off" / "Next Action" */}
-        {(() => {
-          // 1. Check if there's an active mission
-          if (currentMission) {
-            const firstUnwatchedMissionUnitId = currentMission.targetItems.find(id => !completedItems.includes(id));
-            if (firstUnwatchedMissionUnitId) {
-              // Find the item details for this unit
-              let missionNextItem = null;
-              for (const era of eras) {
-                for (const item of era.items) {
-                  if (item.id === firstUnwatchedMissionUnitId) {
-                    missionNextItem = { eraId: era.id, item };
-                    break;
-                  }
-                  if (item.subItems) {
-                    const sub = item.subItems.find(s => s.id === firstUnwatchedMissionUnitId);
-                    if (sub) {
-                      missionNextItem = { eraId: era.id, item, subItem: sub };
-                      break;
-                    }
-                  }
-                }
-                if (missionNextItem) break;
-              }
-
-              if (missionNextItem) {
-                return (
-                  <div className="bg-zinc-900 border border-blue-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm text-blue-400 font-semibold mb-1">Misión Activa: {currentMission.title}</p>
-                      <h3 className="text-xl font-bold text-zinc-100">
-                        Siguiente objetivo: {missionNextItem.subItem ? missionNextItem.subItem.title : missionNextItem.item.title}
-                      </h3>
-                      <p className="text-xs text-zinc-500 mt-1">{currentMission.description}</p>
-                    </div>
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <button 
-                        onClick={() => {
-                          if (!expandedEras[missionNextItem.eraId]) {
-                            toggleEraExpanded(missionNextItem.eraId);
-                          }
-                          setTimeout(() => {
-                            const elementId = missionNextItem.subItem ? missionNextItem.subItem.id : missionNextItem.item.id;
-                            const element = document.getElementById(elementId);
-                            if (element) {
-                              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                              element.classList.add('ring-2', 'ring-blue-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
-                              setTimeout(() => {
-                                element.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-4', 'ring-offset-zinc-950');
-                              }, 2000);
-                            }
-                          }, 150);
-                        }}
-                        className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors text-sm"
-                      >
-                        Ir al objetivo
-                      </button>
-                    </div>
-                  </div>
-                );
-              }
-            }
-          }
-
-          // 2. Default to next unwatched item
-          if (nextItem) {
-            const isSkippedEssential = (nextItem as any).isSkippedEssential;
-            return (
-              <div className={`bg-zinc-900 border ${isSkippedEssential ? 'border-amber-500/30' : 'border-emerald-500/30'} rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`}>
-                <div>
-                  <p className={`text-sm ${isSkippedEssential ? 'text-amber-400' : 'text-emerald-400'} font-semibold mb-1`}>
-                    {isSkippedEssential ? 'Te saltaste algo importante' : 'Tu siguiente paso'}
-                  </p>
-                  <h3 className="text-xl font-bold text-zinc-100">
-                    {nextItem.subItem ? nextItem.subItem.title : nextItem.item.title}
-                  </h3>
-                  {!nextItem.item.essential && !isSkippedEssential && (
-                    <p className="text-xs text-zinc-500 mt-1">Este episodio no es esencial para la trama principal.</p>
-                  )}
-                  {isSkippedEssential && (
-                    <p className="text-xs text-zinc-500 mt-1">Este episodio es esencial para la trama, te recomendamos verlo.</p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  {!nextItem.item.essential && !isSkippedEssential && (
-                    <button
-                      onClick={() => {
-                        if (window.confirm('¿Quieres saltarte este episodio de relleno y marcarlo como visto sin sumar tiempo?')) {
-                          handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
-                        }
-                      }}
-                      className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
-                    >
-                      Saltar relleno
-                    </button>
-                  )}
-                  {isSkippedEssential && (
-                    <button
-                      onClick={() => {
-                        // Un-skip it
-                        handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
-                      }}
-                      className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
-                    >
-                      Ignorar aviso
-                    </button>
-                  )}
-                  <button 
-                    onClick={() => {
-                      if (!expandedEras[nextItem.eraId]) {
-                        toggleEraExpanded(nextItem.eraId);
-                      }
-                      setTimeout(() => {
-                        const elementId = nextItem.subItem ? nextItem.subItem.id : nextItem.item.id;
-                        const element = document.getElementById(elementId);
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          element.classList.add('ring-2', isSkippedEssential ? 'ring-amber-500' : 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
-                          setTimeout(() => {
-                            element.classList.remove('ring-2', isSkippedEssential ? 'ring-amber-500' : 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
-                          }, 2000);
-                        }
-                      }, 150);
-                    }}
-                    className={`flex-1 sm:flex-none px-4 py-2 ${isSkippedEssential ? 'bg-amber-600 hover:bg-amber-500' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-medium rounded-lg transition-colors text-sm`}
-                  >
-                    {isSkippedEssential ? 'Ver ahora' : 'Continuar'}
-                  </button>
-                </div>
-              </div>
-            );
-          }
-
-          return null;
-        })()}
+        {/* Resume Flow */}
+        <ResumeFlow 
+          nextItem={nextItem} 
+          handleSkipItem={handleSkipItem} 
+          toggleEraExpanded={toggleEraExpanded} 
+          expandedEras={expandedEras} 
+        />
 
       {/* Stats Dashboard */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -513,7 +362,6 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         />
       </section>
 
-      <MissionWidget eras={eras} generateMission={generateMission} handleCompleteMission={handleCompleteMission} />
       <AchievementsPanel eras={eras} calculateProgress={calculateProgress} generateMission={generateMission} />
 
       {/* Filters & Presets */}
@@ -615,7 +463,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                 key={era.id} 
                 era={era} 
                 index={index} 
-                completedItems={completedItems} 
+                isCompleted={isCompleted} 
                 toggleItem={handleToggleItem}
                 markMultiple={markMultiple}
                 unmarkMultiple={unmarkMultiple}
@@ -786,14 +634,14 @@ function StatCard({ title, value, subtitle, icon, progress }: { title: string, v
 function EraSection({ 
   era, 
   index, 
-  completedItems, 
+  isCompleted, 
   toggleItem,
   markMultiple,
   unmarkMultiple
 }: { 
   era: Era, 
   index: number, 
-  completedItems: string[], 
+  isCompleted: (id: string) => boolean, 
   toggleItem: (id: string) => void,
   markMultiple: (ids: string[]) => void,
   unmarkMultiple: (ids: string[]) => void
@@ -805,12 +653,12 @@ function EraSection({
   
   const eraItemIds = era.items.flatMap(i => i.subItems ? i.subItems.map(s => s.id) : [i.id]);
   const eraTotalCount = eraItemIds.length;
-  const eraWatchedCount = eraItemIds.filter(id => completedItems.includes(id)).length;
-  const isCompleted = eraWatchedCount === eraTotalCount && eraTotalCount > 0;
-  const isPartiallyCompleted = eraWatchedCount > 0 && !isCompleted;
+  const eraWatchedCount = eraItemIds.filter(id => isCompleted(id)).length;
+  const isEraCompleted = eraWatchedCount === eraTotalCount && eraTotalCount > 0;
+  const isPartiallyCompleted = eraWatchedCount > 0 && !isEraCompleted;
 
   const handleToggleAll = () => {
-    if (isCompleted) {
+    if (isEraCompleted) {
       unmarkMultiple(eraItemIds);
     } else {
       markMultiple(eraItemIds);
@@ -840,10 +688,10 @@ function EraSection({
         <div className="md:w-1/3 shrink-0 relative z-10">
           <div className="sticky top-8 space-y-4 bg-[#09090b] py-2">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shadow-lg ${isCompleted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-emerald-500/20' : 'bg-zinc-900 border-zinc-700 text-zinc-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shadow-lg ${isEraCompleted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-emerald-500/20' : 'bg-zinc-900 border-zinc-700 text-zinc-400'}`}>
                 {era.eraNumber}
               </div>
-              <h2 className={`text-2xl font-bold tracking-tight transition-colors ${isCompleted ? 'text-emerald-50' : 'text-zinc-100'}`} style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className={`text-2xl font-bold tracking-tight transition-colors ${isEraCompleted ? 'text-emerald-50' : 'text-zinc-100'}`} style={{ fontFamily: 'var(--font-display)' }}>
                 ERA {era.eraNumber}
               </h2>
             </div>
@@ -853,7 +701,7 @@ function EraSection({
               
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono">
-                  <span className={isCompleted ? "text-emerald-400 font-bold" : "text-zinc-300"}>
+                  <span className={isCompleted(era.id) ? "text-emerald-400 font-bold" : "text-zinc-300"}>
                     {eraWatchedCount} / {eraTotalCount}
                   </span>
                   <span className="text-zinc-500">vistos</span>
@@ -862,10 +710,10 @@ function EraSection({
                 <button 
                   onClick={handleToggleAll}
                   className="p-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
-                  title={isCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
-                  aria-label={isCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
+                  title={isEraCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
+                  aria-label={isEraCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
                 >
-                  {isCompleted ? <CheckSquare className="w-4 h-4 text-emerald-500" /> : isPartiallyCompleted ? <Square className="w-4 h-4 text-emerald-500/50" fill="currentColor" /> : <Square className="w-4 h-4" />}
+                  {isEraCompleted ? <CheckSquare className="w-4 h-4 text-emerald-500" /> : isPartiallyCompleted ? <Square className="w-4 h-4 text-emerald-500/50" fill="currentColor" /> : <Square className="w-4 h-4" />}
                 </button>
 
                 <button 
@@ -895,7 +743,7 @@ function EraSection({
                   <MediaItemCard 
                     key={item.id} 
                     item={item} 
-                    completedItems={completedItems}
+                    isCompleted={isCompleted}
                     toggleItem={toggleItem}
                     markMultiple={markMultiple}
                     unmarkMultiple={unmarkMultiple}
@@ -912,23 +760,23 @@ function EraSection({
 
 function MediaItemCard({ 
   item, 
-  completedItems, 
+  isCompleted, 
   toggleItem,
   markMultiple,
   unmarkMultiple
 }: { 
   item: MediaItem; 
-  completedItems: string[]; 
+  isCompleted: (id: string) => boolean; 
   toggleItem: (id: string) => void;
   markMultiple: (ids: string[]) => void;
   unmarkMultiple: (ids: string[]) => void;
 }) {
   const isWatched = item.subItems 
-    ? item.subItems.every(sub => completedItems.includes(sub.id)) && item.subItems.length > 0
-    : completedItems.includes(item.id);
+    ? item.subItems.every(sub => isCompleted(sub.id)) && item.subItems.length > 0
+    : isCompleted(item.id);
 
   const isPartiallyWatched = item.subItems
-    ? item.subItems.some(sub => completedItems.includes(sub.id)) && !isWatched
+    ? item.subItems.some(sub => isCompleted(sub.id)) && !isWatched
     : false;
 
   const handleToggle = () => {
@@ -1082,7 +930,7 @@ function MediaItemCard({
           {item.subItems && item.subItems.length > 0 && (
             <div className="mt-4 space-y-2 border-t border-white/5 pt-4" onClick={(e) => e.stopPropagation()}>
               {item.subItems.map(sub => {
-                const isSubWatched = completedItems.includes(sub.id);
+                const isSubWatched = isCompleted(sub.id);
                 return (
                   <div 
                     key={sub.id}

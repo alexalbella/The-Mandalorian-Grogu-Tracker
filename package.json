@@ -1,12 +1,12 @@
 {
   "name": "mando-grogu-tracker",
   "version": "1.0.0",
-  "description": "Watch planner y checklist interactivo para The Mandalorian & Grogu",
+  "description": "Dashboard checklist interactivo para controlar el visionado hasta The Mandalorian & Grogu",
   "author": "Alex Albella",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexalbella/The-Mandalorian-Grogu-Tracker.git"
+    "url": "https://github.com/alexalbella/mando-grogu-tracker.git"
   },
   "keywords": [
     "star-wars",
