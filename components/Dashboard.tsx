@@ -33,6 +33,8 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   
   const { currentMission } = useGamificationStore();
   
+  const completedItems = useMemo(() => [...watchedItems, ...skippedItems], [watchedItems, skippedItems]);
+
   const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -119,22 +121,45 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
     
     // Find next item
     let nextItem = null;
+    
+    // 1. Check for skipped essential items first
     for (const era of eras) {
       for (const item of era.items) {
         if (item.subItems) {
-          const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id) && !skippedItems.includes(sub.id));
-          if (incompleteSub) {
-            nextItem = { item, subItem: incompleteSub, eraId: era.id };
+          const skippedEssentialSub = item.subItems.find(sub => skippedItems.includes(sub.id) && item.essential);
+          if (skippedEssentialSub) {
+            nextItem = { item, subItem: skippedEssentialSub, eraId: era.id, isSkippedEssential: true };
             break;
           }
         } else {
-          if (!watchedItems.includes(item.id) && !skippedItems.includes(item.id)) {
-            nextItem = { item, eraId: era.id };
+          if (skippedItems.includes(item.id) && item.essential) {
+            nextItem = { item, eraId: era.id, isSkippedEssential: true };
             break;
           }
         }
       }
       if (nextItem) break;
+    }
+
+    // 2. If no skipped essential items, find the next chronological unwatched item
+    if (!nextItem) {
+      for (const era of eras) {
+        for (const item of era.items) {
+          if (item.subItems) {
+            const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id) && !skippedItems.includes(sub.id));
+            if (incompleteSub) {
+              nextItem = { item, subItem: incompleteSub, eraId: era.id, isSkippedEssential: false };
+              break;
+            }
+          } else {
+            if (!watchedItems.includes(item.id) && !skippedItems.includes(item.id)) {
+              nextItem = { item, eraId: era.id, isSkippedEssential: false };
+              break;
+            }
+          }
+        }
+        if (nextItem) break;
+      }
     }
 
     const total = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
@@ -149,9 +174,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
     const tMins = allItems.reduce((acc, item) => acc + item.duration, 0);
     const wMins = allItems.reduce((acc, item) => {
       if (item.subItems) {
-        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id)).reduce((sum, sub) => sum + sub.duration, 0);
+        return acc + item.subItems.filter(sub => completedItems.includes(sub.id)).reduce((sum, sub) => sum + sub.duration, 0);
       }
-      return acc + (watchedItems.includes(item.id) ? item.duration : 0);
+      return acc + (completedItems.includes(item.id) ? item.duration : 0);
     }, 0);
     
     return {
@@ -163,7 +188,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       remainingMinutes: tMins - wMins,
       nextItem
     };
-  }, [eras, watchedItems]);
+  }, [eras, completedItems]);
 
   // Confetti effect when reaching 100%
   useEffect(() => {
@@ -224,9 +249,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       // Completed filter
       if (hideCompleted) {
         if (item.subItems) {
-          if (item.subItems.every(sub => watchedItems.includes(sub.id)) && item.subItems.length > 0) return false;
+          if (item.subItems.every(sub => watchedItems.includes(sub.id) || skippedItems.includes(sub.id)) && item.subItems.length > 0) return false;
         } else {
-          if (watchedItems.includes(item.id)) return false;
+          if (watchedItems.includes(item.id) || skippedItems.includes(item.id)) return false;
         }
       }
       // Search filter
@@ -323,60 +348,141 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
           </div>
         </header>
 
-        {/* CTA "Continue Where You Left Off" */}
-        {nextItem && (
-          <div className="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm text-emerald-400 font-semibold mb-1">Continuar donde lo dejaste</p>
-              <h3 className="text-xl font-bold text-zinc-100">
-                Siguiente parada: {nextItem.subItem ? nextItem.subItem.title : nextItem.item.title}
-              </h3>
-              {!nextItem.item.essential && (
-                <p className="text-xs text-zinc-500 mt-1">Este episodio no es esencial para la trama principal.</p>
-              )}
-            </div>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              {!nextItem.item.essential && (
-                <button
-                  onClick={() => {
-                    if (window.confirm('¿Quieres saltarte este episodio de relleno y marcarlo como visto sin sumar tiempo?')) {
-                      handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
-                    }
-                  }}
-                  className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
-                >
-                  Saltar relleno
-                </button>
-              )}
-              <button 
-                onClick={() => {
-                  // Open era if closed
-                  if (!expandedEras[nextItem.eraId]) {
-                    toggleEraExpanded(nextItem.eraId);
+        {/* CTA "Continue Where You Left Off" / "Next Action" */}
+        {(() => {
+          // 1. Check if there's an active mission
+          if (currentMission) {
+            const firstUnwatchedMissionUnitId = currentMission.targetItems.find(id => !completedItems.includes(id));
+            if (firstUnwatchedMissionUnitId) {
+              // Find the item details for this unit
+              let missionNextItem = null;
+              for (const era of eras) {
+                for (const item of era.items) {
+                  if (item.id === firstUnwatchedMissionUnitId) {
+                    missionNextItem = { eraId: era.id, item };
+                    break;
                   }
-                  
-                  // Wait for DOM to update then scroll and highlight
-                  setTimeout(() => {
-                    const elementId = nextItem.subItem ? nextItem.subItem.id : nextItem.item.id;
-                    const element = document.getElementById(elementId);
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      
-                      // Add temporary highlight
-                      element.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
-                      setTimeout(() => {
-                        element.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
-                      }, 2000);
+                  if (item.subItems) {
+                    const sub = item.subItems.find(s => s.id === firstUnwatchedMissionUnitId);
+                    if (sub) {
+                      missionNextItem = { eraId: era.id, item, subItem: sub };
+                      break;
                     }
-                  }, 150);
-                }}
-                className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors text-sm"
-              >
-                Continuar
-              </button>
-            </div>
-          </div>
-        )}
+                  }
+                }
+                if (missionNextItem) break;
+              }
+
+              if (missionNextItem) {
+                return (
+                  <div className="bg-zinc-900 border border-blue-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-blue-400 font-semibold mb-1">Misión Activa: {currentMission.title}</p>
+                      <h3 className="text-xl font-bold text-zinc-100">
+                        Siguiente objetivo: {missionNextItem.subItem ? missionNextItem.subItem.title : missionNextItem.item.title}
+                      </h3>
+                      <p className="text-xs text-zinc-500 mt-1">{currentMission.description}</p>
+                    </div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <button 
+                        onClick={() => {
+                          if (!expandedEras[missionNextItem.eraId]) {
+                            toggleEraExpanded(missionNextItem.eraId);
+                          }
+                          setTimeout(() => {
+                            const elementId = missionNextItem.subItem ? missionNextItem.subItem.id : missionNextItem.item.id;
+                            const element = document.getElementById(elementId);
+                            if (element) {
+                              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                              element.classList.add('ring-2', 'ring-blue-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
+                              setTimeout(() => {
+                                element.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-4', 'ring-offset-zinc-950');
+                              }, 2000);
+                            }
+                          }, 150);
+                        }}
+                        className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg transition-colors text-sm"
+                      >
+                        Ir al objetivo
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+            }
+          }
+
+          // 2. Default to next unwatched item
+          if (nextItem) {
+            const isSkippedEssential = (nextItem as any).isSkippedEssential;
+            return (
+              <div className={`bg-zinc-900 border ${isSkippedEssential ? 'border-amber-500/30' : 'border-emerald-500/30'} rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4`}>
+                <div>
+                  <p className={`text-sm ${isSkippedEssential ? 'text-amber-400' : 'text-emerald-400'} font-semibold mb-1`}>
+                    {isSkippedEssential ? 'Te saltaste algo importante' : 'Tu siguiente paso'}
+                  </p>
+                  <h3 className="text-xl font-bold text-zinc-100">
+                    {nextItem.subItem ? nextItem.subItem.title : nextItem.item.title}
+                  </h3>
+                  {!nextItem.item.essential && !isSkippedEssential && (
+                    <p className="text-xs text-zinc-500 mt-1">Este episodio no es esencial para la trama principal.</p>
+                  )}
+                  {isSkippedEssential && (
+                    <p className="text-xs text-zinc-500 mt-1">Este episodio es esencial para la trama, te recomendamos verlo.</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {!nextItem.item.essential && !isSkippedEssential && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm('¿Quieres saltarte este episodio de relleno y marcarlo como visto sin sumar tiempo?')) {
+                          handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
+                        }
+                      }}
+                      className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
+                    >
+                      Saltar relleno
+                    </button>
+                  )}
+                  {isSkippedEssential && (
+                    <button
+                      onClick={() => {
+                        // Un-skip it
+                        handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
+                      }}
+                      className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
+                    >
+                      Ignorar aviso
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => {
+                      if (!expandedEras[nextItem.eraId]) {
+                        toggleEraExpanded(nextItem.eraId);
+                      }
+                      setTimeout(() => {
+                        const elementId = nextItem.subItem ? nextItem.subItem.id : nextItem.item.id;
+                        const element = document.getElementById(elementId);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          element.classList.add('ring-2', isSkippedEssential ? 'ring-amber-500' : 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
+                          setTimeout(() => {
+                            element.classList.remove('ring-2', isSkippedEssential ? 'ring-amber-500' : 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
+                          }, 2000);
+                        }
+                      }, 150);
+                    }}
+                    className={`flex-1 sm:flex-none px-4 py-2 ${isSkippedEssential ? 'bg-amber-600 hover:bg-amber-500' : 'bg-emerald-600 hover:bg-emerald-500'} text-white font-medium rounded-lg transition-colors text-sm`}
+                  >
+                    {isSkippedEssential ? 'Ver ahora' : 'Continuar'}
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        })()}
 
       {/* Stats Dashboard */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -408,7 +514,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       </section>
 
       <MissionWidget eras={eras} generateMission={generateMission} handleCompleteMission={handleCompleteMission} />
-      <AchievementsPanel eras={eras} calculateProgress={calculateProgress} />
+      <AchievementsPanel eras={eras} calculateProgress={calculateProgress} generateMission={generateMission} />
 
       {/* Filters & Presets */}
       <section className="space-y-4">
@@ -509,7 +615,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                 key={era.id} 
                 era={era} 
                 index={index} 
-                watchedItems={watchedItems} 
+                completedItems={completedItems} 
                 toggleItem={handleToggleItem}
                 markMultiple={markMultiple}
                 unmarkMultiple={unmarkMultiple}
@@ -652,53 +758,6 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
           </div>
         </div>
       </aside>
-
-      {/* Floating Action Button (Auto-pilot / Quick Resume) */}
-      <div className="fixed bottom-6 right-6 z-50">
-        {currentMission && !currentMission.completed ? (
-          <button
-            onClick={() => {
-              const mission = currentMission;
-              if (!mission) return;
-              
-              // Find the era of the first item to expand it if needed
-              const firstItemId = mission.targetItems[0];
-              const era = eras.find(e => e.items.some(i => i.id === firstItemId || i.subItems?.some(s => s.id === firstItemId)));
-              if (era) {
-                useUIStore.getState().setEraExpanded(era.id, true);
-              }
-              
-              setTimeout(() => {
-                const element = document.getElementById(firstItemId);
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  element.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
-                  setTimeout(() => {
-                    element.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
-                  }, 2000);
-                }
-              }, 150);
-            }}
-            className="flex items-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg shadow-emerald-900/20 font-medium transition-all hover:scale-105 active:scale-95"
-          >
-            <PlayCircle className="w-5 h-5" />
-            Continuar misión
-          </button>
-        ) : (
-          <button
-            onClick={() => {
-              generateMission('medium', true);
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 100);
-            }}
-            className="flex items-center gap-2 px-6 py-4 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-emerald-500/30 rounded-full shadow-lg shadow-black/50 font-medium transition-all hover:scale-105 active:scale-95"
-          >
-            <Target className="w-5 h-5" />
-            ¿Qué veo ahora?
-          </button>
-        )}
-      </div>
     </div>
   );
 }
@@ -727,14 +786,14 @@ function StatCard({ title, value, subtitle, icon, progress }: { title: string, v
 function EraSection({ 
   era, 
   index, 
-  watchedItems, 
+  completedItems, 
   toggleItem,
   markMultiple,
   unmarkMultiple
 }: { 
   era: Era, 
   index: number, 
-  watchedItems: string[], 
+  completedItems: string[], 
   toggleItem: (id: string) => void,
   markMultiple: (ids: string[]) => void,
   unmarkMultiple: (ids: string[]) => void
@@ -746,7 +805,7 @@ function EraSection({
   
   const eraItemIds = era.items.flatMap(i => i.subItems ? i.subItems.map(s => s.id) : [i.id]);
   const eraTotalCount = eraItemIds.length;
-  const eraWatchedCount = eraItemIds.filter(id => watchedItems.includes(id)).length;
+  const eraWatchedCount = eraItemIds.filter(id => completedItems.includes(id)).length;
   const isCompleted = eraWatchedCount === eraTotalCount && eraTotalCount > 0;
   const isPartiallyCompleted = eraWatchedCount > 0 && !isCompleted;
 
@@ -836,7 +895,7 @@ function EraSection({
                   <MediaItemCard 
                     key={item.id} 
                     item={item} 
-                    watchedItems={watchedItems}
+                    completedItems={completedItems}
                     toggleItem={toggleItem}
                     markMultiple={markMultiple}
                     unmarkMultiple={unmarkMultiple}
@@ -853,23 +912,23 @@ function EraSection({
 
 function MediaItemCard({ 
   item, 
-  watchedItems, 
+  completedItems, 
   toggleItem,
   markMultiple,
   unmarkMultiple
 }: { 
   item: MediaItem; 
-  watchedItems: string[]; 
+  completedItems: string[]; 
   toggleItem: (id: string) => void;
   markMultiple: (ids: string[]) => void;
   unmarkMultiple: (ids: string[]) => void;
 }) {
   const isWatched = item.subItems 
-    ? item.subItems.every(sub => watchedItems.includes(sub.id)) && item.subItems.length > 0
-    : watchedItems.includes(item.id);
+    ? item.subItems.every(sub => completedItems.includes(sub.id)) && item.subItems.length > 0
+    : completedItems.includes(item.id);
 
   const isPartiallyWatched = item.subItems
-    ? item.subItems.some(sub => watchedItems.includes(sub.id)) && !isWatched
+    ? item.subItems.some(sub => completedItems.includes(sub.id)) && !isWatched
     : false;
 
   const handleToggle = () => {
@@ -1023,7 +1082,7 @@ function MediaItemCard({
           {item.subItems && item.subItems.length > 0 && (
             <div className="mt-4 space-y-2 border-t border-white/5 pt-4" onClick={(e) => e.stopPropagation()}>
               {item.subItems.map(sub => {
-                const isSubWatched = watchedItems.includes(sub.id);
+                const isSubWatched = completedItems.includes(sub.id);
                 return (
                   <div 
                     key={sub.id}

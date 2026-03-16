@@ -18,7 +18,7 @@ export type Achievement = {
   };
 };
 
-export type MissionMode = 'auto' | 'manual';
+export type MissionMode = 'auto' | 'manual' | 'thematic';
 export type MissionLength = 'short' | 'medium' | 'long' | 'marathon';
 
 export type Mission = {

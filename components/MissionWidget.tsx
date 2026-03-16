@@ -105,6 +105,21 @@ export default function MissionWidget({
                         transition={{ duration: 0.15 }}
                         className="absolute right-0 top-full mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl p-2 z-50 origin-top-right"
                       >
+                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Modo</div>
+                        {(['auto', 'manual', 'thematic'] as const).map(mode => (
+                          <button
+                            key={mode}
+                            onClick={() => {
+                              setMissionPreferences({ mode });
+                              generateMission(missionPreferences.length, true);
+                              setIsSettingsOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${missionPreferences.mode === mode ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+                          >
+                            {mode === 'auto' ? 'Automático' : mode === 'manual' ? 'Manual' : 'Temático'}
+                          </button>
+                        ))}
+                        <div className="h-px bg-zinc-800 my-2" />
                         <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Duración</div>
                         {(['short', 'medium', 'long', 'marathon'] as MissionLength[]).map(len => (
                           <button

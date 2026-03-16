@@ -7,7 +7,7 @@ import { Mission, MissionLength } from '@/types/gamification';
 import confetti from 'canvas-confetti';
 
 export function useGamificationEngine(eras: Era[]) {
-  const { watchedItems, markMultiple } = useProgressStore();
+  const { watchedItems, skippedItems, markMultiple } = useProgressStore();
   const { 
     unlockedAchievements, 
     unlockAchievement, 
@@ -37,17 +37,17 @@ export function useGamificationEngine(eras: Era[]) {
     targetItems.forEach(item => {
       if (item.subItems && item.subItems.length > 0) {
         totalUnits += item.subItems.length;
-        watchedUnits += item.subItems.filter(sub => watchedItems.includes(sub.id)).length;
+        watchedUnits += item.subItems.filter(sub => watchedItems.includes(sub.id) || skippedItems.includes(sub.id)).length;
       } else {
         totalUnits += 1;
-        if (watchedItems.includes(item.id)) {
+        if (watchedItems.includes(item.id) || skippedItems.includes(item.id)) {
           watchedUnits += 1;
         }
       }
     });
 
     return totalUnits > 0 ? (watchedUnits / totalUnits) * 100 : 0;
-  }, [allItems, watchedItems]);
+  }, [allItems, watchedItems, skippedItems]);
 
   // Check achievements
   useEffect(() => {
@@ -75,21 +75,21 @@ export function useGamificationEngine(eras: Era[]) {
         });
       }
     }
-  }, [watchedItems, unlockedAchievements, calculateProgress, unlockAchievement]);
+  }, [watchedItems, skippedItems, unlockedAchievements, calculateProgress, unlockAchievement]);
 
   // Mission Generation Logic
-  const generateMission = useCallback((lengthPref: MissionLength = missionPreferences.length, forceRegenerate = false) => {
+  const generateMission = useCallback((lengthPref: MissionLength = missionPreferences.length, forceRegenerate = false, specificTag?: string) => {
     if (currentMission && !currentMission.completed && !forceRegenerate) {
       return; // Already have an active mission
     }
 
     // Find next unwatched items
-    const unwatchedUnits: { id: string, title: string, duration: number, parentId?: string, tags: string[], essential: boolean }[] = [];
+    let unwatchedUnits: { id: string, title: string, duration: number, parentId?: string, tags: string[], essential: boolean }[] = [];
     
     for (const item of allItems) {
       if (item.subItems && item.subItems.length > 0) {
         for (const sub of item.subItems) {
-          if (!watchedItems.includes(sub.id)) {
+          if (!watchedItems.includes(sub.id) && !skippedItems.includes(sub.id)) {
             unwatchedUnits.push({
               id: sub.id,
               title: sub.title,
@@ -101,7 +101,7 @@ export function useGamificationEngine(eras: Era[]) {
           }
         }
       } else {
-        if (!watchedItems.includes(item.id)) {
+        if (!watchedItems.includes(item.id) && !skippedItems.includes(item.id)) {
           unwatchedUnits.push({
             id: item.id,
             title: item.title,
@@ -111,6 +111,10 @@ export function useGamificationEngine(eras: Era[]) {
           });
         }
       }
+    }
+
+    if (specificTag) {
+      unwatchedUnits = unwatchedUnits.filter(u => u.tags.includes(specificTag));
     }
 
     if (unwatchedUnits.length === 0) {
@@ -144,28 +148,89 @@ export function useGamificationEngine(eras: Era[]) {
       maxMinutes = 300;
     }
 
+    // Calculate urgency
+    const releaseDate = new Date('2026-05-22T00:00:00Z');
+    const daysLeft = Math.max(1, Math.ceil((releaseDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+    const totalUnwatchedMinutes = unwatchedUnits.reduce((acc, u) => acc + u.duration, 0);
+    const minutesPerDayNeeded = totalUnwatchedMinutes / daysLeft;
+    const isUrgent = minutesPerDayNeeded > 60;
+
+    // 1. Score all unwatched units to find the BEST starting point (seed)
+    const scoredUnits = unwatchedUnits.map((unit, index) => {
+      let score = 0;
+      
+      // Base chronological preference (slight, to keep order naturally)
+      score += (unwatchedUnits.length - index) * 0.1;
+      
+      // Narrative value
+      if (unit.essential) score += 20;
+      if (unit.essential && isUrgent) score += 30;
+      
+      // Thematic / Route preference
+      if (specificTag && unit.tags.includes(specificTag)) score += 100;
+      
+      // Achievement proximity
+      unit.tags.forEach(tag => {
+        const relatedAchievement = ACHIEVEMENTS.find(a => a.unlockRule.tag === tag && !unlockedAchievements.includes(a.id));
+        if (relatedAchievement) {
+          const progress = calculateProgress(relatedAchievement.unlockRule);
+          const closeness = progress / relatedAchievement.unlockRule.threshold; // 0 to 1
+          score += closeness * 25;
+        }
+      });
+      
+      return { ...unit, score, originalIndex: index };
+    });
+
+    // Sort to find the best seed
+    scoredUnits.sort((a, b) => b.score - a.score);
+    const seedUnit = scoredUnits[0];
+
+    // 2. Build the mission around the seed
     const selectedUnits: typeof unwatchedUnits = [];
     let currentDuration = 0;
-
-    // Try to fill the mission with sequential items
-    for (const unit of unwatchedUnits) {
+    
+    // Look at unwatchedUnits starting from the seed's original index
+    for (let i = seedUnit.originalIndex; i < unwatchedUnits.length; i++) {
+      const unit = unwatchedUnits[i];
+      
+      // In thematic mode, strictly enforce tag matching if possible
+      if (missionPreferences.mode === 'thematic' || specificTag) {
+        const targetTag = specificTag || seedUnit.tags[0];
+        if (!unit.tags.includes(targetTag)) continue;
+      }
+      
       if (currentDuration === 0) {
         selectedUnits.push(unit);
         currentDuration += unit.duration;
       } else {
-        if (currentDuration + unit.duration <= maxMinutes + 15) { // Allow slight overflow
+        if (currentDuration + unit.duration <= maxMinutes + 15) {
+          selectedUnits.push(unit);
+          currentDuration += unit.duration;
+        } else if (currentDuration < minMinutes && unit.duration <= 45) {
           selectedUnits.push(unit);
           currentDuration += unit.duration;
         } else {
-          // If we haven't reached minMinutes and the next item isn't a huge movie, add it
-          if (currentDuration < minMinutes && unit.duration <= 45) {
-            selectedUnits.push(unit);
-            currentDuration += unit.duration;
-          } else {
-            break; // Stop adding if it exceeds too much
-          }
+          break;
         }
       }
+    }
+
+    // Fallback: If we couldn't fill minMinutes, fill with chronological items
+    if (currentDuration < minMinutes && !specificTag && missionPreferences.mode !== 'thematic') {
+       for (const unit of unwatchedUnits) {
+         if (!selectedUnits.find(u => u.id === unit.id)) {
+            if (currentDuration + unit.duration <= maxMinutes + 15) {
+              selectedUnits.push(unit);
+              currentDuration += unit.duration;
+            } else if (currentDuration < minMinutes && unit.duration <= 45) {
+              selectedUnits.push(unit);
+              currentDuration += unit.duration;
+            } else {
+              if (currentDuration >= minMinutes) break;
+            }
+         }
+       }
     }
 
     if (selectedUnits.length === 0) return;
@@ -178,16 +243,15 @@ export function useGamificationEngine(eras: Era[]) {
     const hasEssential = selectedUnits.some(u => u.essential);
     const allSameTag = selectedUnits.length > 1 && selectedUnits.every(u => u.tags[0] === selectedUnits[0].tags[0]);
     
-    // Calculate urgency
-    const releaseDate = new Date('2026-05-22T00:00:00Z');
-    const daysLeft = Math.max(1, Math.ceil((releaseDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-    const totalUnwatchedMinutes = unwatchedUnits.reduce((acc, u) => acc + u.duration, 0);
-    const minutesPerDayNeeded = totalUnwatchedMinutes / daysLeft;
-
-    if (minutesPerDayNeeded > 60 && currentDuration < 60) {
+    if (specificTag || missionPreferences.mode === 'thematic') {
+      const targetTag = specificTag || seedUnit.tags[0];
+      const relatedAchievement = ACHIEVEMENTS.find(a => a.unlockRule.tag === targetTag);
+      title = `Misión Temática: ${relatedAchievement ? relatedAchievement.title : 'Ruta Específica'}`;
+      description = `Concéntrate en esta ruta narrativa. Tienes ${selectedUnits.length} episodios relacionados para ver hoy.`;
+    } else if (isUrgent && currentDuration < 60) {
       title = `¡Vas con retraso! (${currentDuration} min)`;
       description = `Necesitas ver ~${Math.round(minutesPerDayNeeded)} min/día para llegar al estreno. Hoy toca avanzar con ${selectedUnits.length > 1 ? selectedUnits.length + ' episodios' : selectedUnits[0].title}.`;
-    } else if (hasEssential) {
+    } else if (hasEssential && seedUnit.essential) {
       title = `Bloque Esencial: ${currentDuration} min`;
       description = `Hoy toca contenido clave para entender la película. Concéntrate en ${selectedUnits.length > 1 ? 'estos episodios' : selectedUnits[0].title}.`;
     } else if (allSameTag) {
@@ -201,7 +265,7 @@ export function useGamificationEngine(eras: Era[]) {
     }
 
     // Find a relevant achievement to mention in reward
-    const primaryTag = selectedUnits[0].tags[0];
+    const primaryTag = specificTag || seedUnit.tags[0];
     if (primaryTag) {
       const relatedAchievement = ACHIEVEMENTS.find(a => a.unlockRule.tag === primaryTag && !unlockedAchievements.includes(a.id));
       if (relatedAchievement) {

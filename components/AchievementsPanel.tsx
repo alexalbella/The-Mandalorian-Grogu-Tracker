@@ -18,13 +18,15 @@ const iconMap: Record<string, React.FC<any>> = {
 
 export default function AchievementsPanel({ 
   eras, 
-  calculateProgress 
+  calculateProgress,
+  generateMission
 }: { 
   eras: Era[], 
-  calculateProgress: (rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => number 
+  calculateProgress: (rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => number,
+  generateMission: (lengthPref?: any, forceRegenerate?: boolean, specificTag?: string) => void
 }) {
   const { unlockedAchievements } = useGamificationStore();
-  const { watchedItems } = useProgressStore();
+  const { watchedItems, skippedItems } = useProgressStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
@@ -196,12 +198,26 @@ export default function AchievementsPanel({
                           </span>
                         )}
                       </div>
-                      <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3">
                         <div 
                           className={`h-full rounded-full transition-all duration-1000 ${isUnlocked ? 'bg-emerald-500' : 'bg-zinc-700'}`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>
+                      
+                      {!isUnlocked && nextLocked && nextLocked.unlockRule.type === 'tagProgress' && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            generateMission(undefined, true, nextLocked.unlockRule.tag);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="w-full mt-2 py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Target className="w-3.5 h-3.5" />
+                          Misión para este logro
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
