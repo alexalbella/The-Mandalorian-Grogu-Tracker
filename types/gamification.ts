@@ -19,7 +19,7 @@ export type Achievement = {
 };
 
 export type MissionMode = 'auto' | 'manual';
-export type MissionLength = 'short' | 'medium' | 'long';
+export type MissionLength = 'short' | 'medium' | 'long' | 'marathon';
 
 export type Mission = {
   id: string;

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useGamificationStore } from '@/store/gamification';
+import { useProgressStore } from '@/store/progress';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era } from '@/data/starwars-list';
 import { motion, AnimatePresence } from 'motion/react';
-import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles } from 'lucide-react';
+import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info } from 'lucide-react';
 
 const iconMap: Record<string, React.FC<any>> = {
   Shield, ShieldHalf, ShieldAlert,
@@ -23,6 +24,7 @@ export default function AchievementsPanel({
   calculateProgress: (rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => number 
 }) {
   const { unlockedAchievements } = useGamificationStore();
+  const { watchedItems } = useProgressStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
@@ -47,6 +49,65 @@ export default function AchievementsPanel({
   const getNextLockedAchievement = (category: string) => {
     const categoryAchievements = ACHIEVEMENTS.filter(a => a.category === category);
     return categoryAchievements.find(a => !unlockedAchievements.includes(a.id));
+  };
+
+  const getActionableHint = (category: string, nextLocked: typeof ACHIEVEMENTS[0] | undefined) => {
+    if (!nextLocked) return "Ruta completada";
+    
+    const rule = nextLocked.unlockRule;
+    if (rule.type === 'tagProgress' && rule.tag) {
+      let totalItemsWithTag = 0;
+      let watchedItemsWithTag = 0;
+      
+      eras.forEach(era => {
+        era.items.forEach(item => {
+          if (item.subItems) {
+            item.subItems.forEach(sub => {
+              if (item.tags.includes(rule.tag!)) {
+                totalItemsWithTag++;
+                if (watchedItems.includes(sub.id)) watchedItemsWithTag++;
+              }
+            });
+          } else {
+            if (item.tags.includes(rule.tag!)) {
+              totalItemsWithTag++;
+              if (watchedItems.includes(item.id)) watchedItemsWithTag++;
+            }
+          }
+        });
+      });
+      
+      const targetCount = Math.ceil(totalItemsWithTag * (rule.threshold / 100));
+      const remaining = targetCount - watchedItemsWithTag;
+      
+      if (remaining > 0) {
+        const tierName = nextLocked.tier === 'silver' ? 'la plata' : nextLocked.tier === 'gold' ? 'el oro' : 'el bronce';
+        return `Faltan ${remaining} ep. para ${tierName}`;
+      }
+      return `Desbloquea ${nextLocked.tier}`;
+    } else if (rule.type === 'globalProgress') {
+      let totalItems = 0;
+      let watched = 0;
+      eras.forEach(era => {
+        era.items.forEach(item => {
+          if (item.subItems) {
+            totalItems += item.subItems.length;
+            item.subItems.forEach(sub => {
+              if (watchedItems.includes(sub.id)) watched++;
+            });
+          } else {
+            totalItems++;
+            if (watchedItems.includes(item.id)) watched++;
+          }
+        });
+      });
+      const targetCount = Math.ceil(totalItems * (rule.threshold / 100));
+      const remaining = targetCount - watched;
+      if (remaining > 0) {
+        return `Faltan ${remaining} ep. para terminar`;
+      }
+    }
+    return "";
   };
 
   return (
@@ -89,9 +150,10 @@ export default function AchievementsPanel({
 
                 const Icon = iconMap[displayAchievement.icon] || Award;
                 const isUnlocked = unlockedAchievements.includes(displayAchievement.id);
+                const hint = getActionableHint(category, nextLocked);
 
                 return (
-                  <div key={category} className={`p-4 rounded-xl border transition-all ${isUnlocked ? 'bg-zinc-800/50 border-zinc-700' : 'bg-zinc-950 border-zinc-900'}`}>
+                  <div key={category} className={`p-4 rounded-xl border transition-all flex flex-col ${isUnlocked ? 'bg-zinc-800/50 border-zinc-700' : 'bg-zinc-950 border-zinc-900'}`}>
                     <div className="flex items-start justify-between mb-3">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isUnlocked ? displayAchievement.accentClass : 'text-zinc-600 bg-zinc-900'}`}>
                         <Icon className="w-6 h-6" />
@@ -106,11 +168,24 @@ export default function AchievementsPanel({
                     <h4 className={`font-medium mb-1 ${isUnlocked ? 'text-zinc-200' : 'text-zinc-500'}`}>
                       {displayAchievement.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 mb-4 line-clamp-2 h-8">
+                    <p className="text-xs text-zinc-500 mb-4 line-clamp-2 h-8 flex-grow">
                       {displayAchievement.description}
                     </p>
                     
-                    <div className="space-y-1.5">
+                    {!isUnlocked && hint && (
+                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-amber-500/80 bg-amber-500/10 px-2 py-1 rounded-md mb-3 w-fit">
+                        <Info className="w-3 h-3" />
+                        {hint}
+                      </div>
+                    )}
+                    {isUnlocked && !nextLocked && (
+                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500/80 bg-emerald-500/10 px-2 py-1 rounded-md mb-3 w-fit">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Ruta completada
+                      </div>
+                    )}
+                    
+                    <div className="space-y-1.5 mt-auto">
                       <div className="flex justify-between text-xs font-mono">
                         <span className={isUnlocked ? 'text-emerald-400' : 'text-zinc-600'}>
                           {Math.round(progress)}%

@@ -139,6 +139,9 @@ export function useGamificationEngine(eras: Era[]) {
     } else if (lengthPref === 'long') {
       minMinutes = 60;
       maxMinutes = 120;
+    } else if (lengthPref === 'marathon') {
+      minMinutes = 180;
+      maxMinutes = 300;
     }
 
     const selectedUnits: typeof unwatchedUnits = [];
@@ -154,27 +157,47 @@ export function useGamificationEngine(eras: Era[]) {
           selectedUnits.push(unit);
           currentDuration += unit.duration;
         } else {
-          break; // Stop adding if it exceeds too much
+          // If we haven't reached minMinutes and the next item isn't a huge movie, add it
+          if (currentDuration < minMinutes && unit.duration <= 45) {
+            selectedUnits.push(unit);
+            currentDuration += unit.duration;
+          } else {
+            break; // Stop adding if it exceeds too much
+          }
         }
       }
     }
 
     if (selectedUnits.length === 0) return;
 
-    // Generate copy
+    // Generate smart copy
     let title = '';
     let description = '';
     let rewardText = '';
 
-    if (selectedUnits.length === 1) {
-      title = `Tu misión de hoy: ${currentDuration} min`;
-      description = `Mira ${selectedUnits[0].title} y sigue avanzando sin perder el ritmo.`;
-    } else if (selectedUnits.length === 2) {
-      title = `Tu misión de hoy: ${currentDuration} min`;
-      description = `Completa ${selectedUnits[0].title} + ${selectedUnits[1].title} para cerrar un bloque narrativo.`;
+    const hasEssential = selectedUnits.some(u => u.essential);
+    const allSameTag = selectedUnits.length > 1 && selectedUnits.every(u => u.tags[0] === selectedUnits[0].tags[0]);
+    
+    // Calculate urgency
+    const releaseDate = new Date('2026-05-22T00:00:00Z');
+    const daysLeft = Math.max(1, Math.ceil((releaseDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+    const totalUnwatchedMinutes = unwatchedUnits.reduce((acc, u) => acc + u.duration, 0);
+    const minutesPerDayNeeded = totalUnwatchedMinutes / daysLeft;
+
+    if (minutesPerDayNeeded > 60 && currentDuration < 60) {
+      title = `¡Vas con retraso! (${currentDuration} min)`;
+      description = `Necesitas ver ~${Math.round(minutesPerDayNeeded)} min/día para llegar al estreno. Hoy toca avanzar con ${selectedUnits.length > 1 ? selectedUnits.length + ' episodios' : selectedUnits[0].title}.`;
+    } else if (hasEssential) {
+      title = `Bloque Esencial: ${currentDuration} min`;
+      description = `Hoy toca contenido clave para entender la película. Concéntrate en ${selectedUnits.length > 1 ? 'estos episodios' : selectedUnits[0].title}.`;
+    } else if (allSameTag) {
+      title = `Cerrando trama: ${currentDuration} min`;
+      description = `Te conviene cerrar esta ruta narrativa antes de seguir. Tienes ${selectedUnits.length} episodios relacionados.`;
     } else {
-      title = `Misión extendida: ${currentDuration} min`;
-      description = `Hoy toca una sesión importante con ${selectedUnits.length} episodios.`;
+      title = `Tu misión de hoy: ${currentDuration} min`;
+      description = selectedUnits.length === 1 
+        ? `Mira ${selectedUnits[0].title} y sigue avanzando sin perder el ritmo.`
+        : `Completa ${selectedUnits[0].title} y ${selectedUnits.length - 1} más para cerrar este bloque.`;
     }
 
     // Find a relevant achievement to mention in reward
@@ -217,8 +240,12 @@ export function useGamificationEngine(eras: Era[]) {
     if (currentMission && !currentMission.completed) {
       markMultiple(currentMission.targetItems);
       completeMission();
+      // Auto-chain next mission after a short delay
+      setTimeout(() => {
+        generateMission(missionPreferences.length, true);
+      }, 2500);
     }
-  }, [currentMission, markMultiple, completeMission]);
+  }, [currentMission, markMultiple, completeMission, generateMission, missionPreferences.length]);
 
   return {
     calculateProgress,

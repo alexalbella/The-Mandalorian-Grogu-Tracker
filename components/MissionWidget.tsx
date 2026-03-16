@@ -1,6 +1,7 @@
+import { useState, useRef, useEffect } from 'react';
 import { useGamificationStore } from '@/store/gamification';
 import { Era } from '@/data/starwars-list';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Target, RefreshCw, CheckCircle2, Settings2 } from 'lucide-react';
 import { MissionLength } from '@/types/gamification';
 
@@ -14,6 +15,18 @@ export default function MissionWidget({
   handleCompleteMission: () => void
 }) {
   const { currentMission, missionPreferences, setMissionPreferences } = useGamificationStore();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setIsSettingsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (!currentMission) return null;
 
@@ -75,28 +88,40 @@ export default function MissionWidget({
                   <RefreshCw className="w-5 h-5" />
                 </button>
                 
-                <div className="relative group flex-1 sm:flex-none">
+                <div className="relative flex-1 sm:flex-none" ref={settingsRef}>
                   <button
-                    className="w-full p-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-xl transition-colors flex items-center justify-center"
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                    className={`w-full p-3 rounded-xl transition-colors flex items-center justify-center ${isSettingsOpen ? 'bg-zinc-700 text-zinc-200' : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200'}`}
                     title="Configuración de misión"
                   >
                     <Settings2 className="w-5 h-5" />
                   </button>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                    <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Duración</div>
-                    {(['short', 'medium', 'long'] as MissionLength[]).map(len => (
-                      <button
-                        key={len}
-                        onClick={() => {
-                          setMissionPreferences({ length: len });
-                          generateMission(len, true);
-                        }}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${missionPreferences.length === len ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+                  <AnimatePresence>
+                    {isSettingsOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl p-2 z-50 origin-top-right"
                       >
-                        {len === 'short' ? 'Corta (15-30m)' : len === 'medium' ? 'Media (30-60m)' : 'Larga (60-120m)'}
-                      </button>
-                    ))}
-                  </div>
+                        <div className="text-xs font-medium text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Duración</div>
+                        {(['short', 'medium', 'long', 'marathon'] as MissionLength[]).map(len => (
+                          <button
+                            key={len}
+                            onClick={() => {
+                              setMissionPreferences({ length: len });
+                              generateMission(len, true);
+                              setIsSettingsOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${missionPreferences.length === len ? 'bg-emerald-500/20 text-emerald-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'}`}
+                          >
+                            {len === 'short' ? 'Corta (15-30m)' : len === 'medium' ? 'Media (30-60m)' : len === 'long' ? 'Larga (60-120m)' : 'Maratón (180m+)'}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </>

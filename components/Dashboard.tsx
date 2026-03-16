@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Clock, Film, Tv, Info, PlayCircle, Star, Filter, EyeOff, Eye, Search, ChevronDown, ChevronUp, RotateCcw, CheckSquare, Square, Volume2, VolumeX } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Film, Tv, Info, PlayCircle, Star, Filter, EyeOff, Eye, Search, ChevronDown, ChevronUp, RotateCcw, CheckSquare, Square, Volume2, VolumeX, Download, Upload, Target, Flame } from 'lucide-react';
 import { Era, MediaItem } from '@/data/starwars-list';
 import { useProgressStore } from '@/store/progress';
+import { useUIStore } from '@/store/ui';
+import { useGamificationStore } from '@/store/gamification';
 import dynamic from 'next/dynamic';
 import confetti from 'canvas-confetti';
 import Image from 'next/image';
@@ -18,13 +20,20 @@ import AchievementsPanel from './AchievementsPanel';
 import { useGamificationEngine } from '@/hooks/useGamificationEngine';
 
 export default function Dashboard({ eras }: { eras: Era[] }) {
-  const { watchedItems, toggleItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
+  const { watchedItems, skippedItems, streak, toggleItem, skipItem, markMultiple, unmarkMultiple, resetProgress } = useProgressStore();
+  const { 
+    filterType, setFilterType, 
+    preset, setPreset, 
+    hideCompleted, setHideCompleted, 
+    searchQuery, setSearchQuery, 
+    isMuted, setIsMuted,
+    lastViewedId, setLastViewedId,
+    expandedEras, toggleEraExpanded
+  } = useUIStore();
+  
+  const { currentMission } = useGamificationStore();
+  
   const [isMounted, setIsMounted] = useState(false);
-  const [filterType, setFilterType] = useState<'all' | 'movie' | 'series'>('all');
-  const [preset, setPreset] = useState<Preset>('all');
-  const [hideCompleted, setHideCompleted] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isMuted, setIsMuted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Initialize Gamification Engine
@@ -33,6 +42,21 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
+    
+    // Scroll to last viewed item on mount
+    const savedLastViewedId = useUIStore.getState().lastViewedId;
+    if (savedLastViewedId) {
+      setTimeout(() => {
+        const element = document.getElementById(savedLastViewedId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
+          setTimeout(() => {
+            element.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
+          }, 2000);
+        }
+      }, 500); // Wait a bit for rendering
+    }
     
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -67,8 +91,9 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   }, [isMuted]);
 
   const handleToggleItem = useCallback((id: string) => {
-    const isCurrentlyWatched = watchedItems.includes(id);
+    const isCurrentlyWatched = watchedItems.includes(id) || skippedItems.includes(id);
     toggleItem(id);
+    setLastViewedId(id);
     
     if (!isCurrentlyWatched) {
       playSound();
@@ -76,7 +101,17 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         navigator.vibrate(50);
       }
     }
-  }, [watchedItems, toggleItem, playSound]);
+  }, [watchedItems, skippedItems, toggleItem, playSound, setLastViewedId]);
+
+  const handleSkipItem = useCallback((id: string) => {
+    const isCurrentlySkipped = skippedItems.includes(id);
+    skipItem(id);
+    setLastViewedId(id);
+    
+    if (!isCurrentlySkipped) {
+      playSound();
+    }
+  }, [skippedItems, skipItem, playSound, setLastViewedId]);
 
   // Memoized stats calculation
   const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes, nextItem } = useMemo(() => {
@@ -84,27 +119,30 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
     
     // Find next item
     let nextItem = null;
-    for (const item of allItems) {
-      if (item.subItems) {
-        const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id));
-        if (incompleteSub) {
-          nextItem = { item, subItem: incompleteSub };
-          break;
-        }
-      } else {
-        if (!watchedItems.includes(item.id)) {
-          nextItem = { item };
-          break;
+    for (const era of eras) {
+      for (const item of era.items) {
+        if (item.subItems) {
+          const incompleteSub = item.subItems.find(sub => !watchedItems.includes(sub.id) && !skippedItems.includes(sub.id));
+          if (incompleteSub) {
+            nextItem = { item, subItem: incompleteSub, eraId: era.id };
+            break;
+          }
+        } else {
+          if (!watchedItems.includes(item.id) && !skippedItems.includes(item.id)) {
+            nextItem = { item, eraId: era.id };
+            break;
+          }
         }
       }
+      if (nextItem) break;
     }
 
     const total = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
     const watched = allItems.reduce((acc, item) => {
       if (item.subItems) {
-        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id)).length;
+        return acc + item.subItems.filter(sub => watchedItems.includes(sub.id) || skippedItems.includes(sub.id)).length;
       }
-      return acc + (watchedItems.includes(item.id) ? 1 : 0);
+      return acc + (watchedItems.includes(item.id) || skippedItems.includes(item.id) ? 1 : 0);
     }, 0);
     const percent = total === 0 ? 0 : Math.round((watched / total) * 100);
     
@@ -163,7 +201,21 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
     return `${hours}h ${minutes}m`;
   };
 
-  if (!isMounted) return null; // Prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8 animate-pulse">
+        <div className="flex-1 space-y-12 min-w-0">
+          <div className="h-32 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"></div>
+          <div className="h-64 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"></div>
+          <div className="h-96 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"></div>
+        </div>
+        <aside className="w-full lg:w-80 shrink-0 space-y-6">
+          <div className="h-64 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"></div>
+          <div className="h-64 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"></div>
+        </aside>
+      </div>
+    );
+  }
 
   const filteredEras = eras.map(era => {
     const filteredItems = era.items.filter(item => {
@@ -178,7 +230,17 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         }
       }
       // Search filter
-      if (searchQuery && !item.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesTitle = item.title.toLowerCase().includes(query);
+        const matchesReason = item.reason.toLowerCase().includes(query);
+        const matchesTags = item.tags.some(tag => tag.toLowerCase().includes(query));
+        const matchesSubItems = item.subItems?.some(sub => sub.title.toLowerCase().includes(query)) || false;
+        
+        if (!matchesTitle && !matchesReason && !matchesTags && !matchesSubItems) {
+          return false;
+        }
+      }
       
       // Presets
       if (preset === 'essential' && !item.essential) return false;
@@ -263,36 +325,73 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
 
         {/* CTA "Continue Where You Left Off" */}
         {nextItem && (
-          <div className="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-6 flex items-center justify-between gap-4">
+          <div className="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p className="text-sm text-emerald-400 font-semibold mb-1">Continuar donde lo dejaste</p>
               <h3 className="text-xl font-bold text-zinc-100">
                 Siguiente parada: {nextItem.subItem ? nextItem.subItem.title : nextItem.item.title}
               </h3>
+              {!nextItem.item.essential && (
+                <p className="text-xs text-zinc-500 mt-1">Este episodio no es esencial para la trama principal.</p>
+              )}
             </div>
-            <button 
-              onClick={() => {
-                // Scroll to the item
-                const element = document.getElementById(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-              }}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors"
-            >
-              Continuar
-            </button>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {!nextItem.item.essential && (
+                <button
+                  onClick={() => {
+                    if (window.confirm('¿Quieres saltarte este episodio de relleno y marcarlo como visto sin sumar tiempo?')) {
+                      handleSkipItem(nextItem.subItem ? nextItem.subItem.id : nextItem.item.id);
+                    }
+                  }}
+                  className="flex-1 sm:flex-none px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-lg transition-colors text-sm"
+                >
+                  Saltar relleno
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  // Open era if closed
+                  if (!expandedEras[nextItem.eraId]) {
+                    toggleEraExpanded(nextItem.eraId);
+                  }
+                  
+                  // Wait for DOM to update then scroll and highlight
+                  setTimeout(() => {
+                    const elementId = nextItem.subItem ? nextItem.subItem.id : nextItem.item.id;
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      
+                      // Add temporary highlight
+                      element.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
+                      setTimeout(() => {
+                        element.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
+                      }, 2000);
+                    }
+                  }, 150);
+                }}
+                className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors text-sm"
+              >
+                Continuar
+              </button>
+            </div>
           </div>
         )}
 
       {/* Stats Dashboard */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard 
           title="Progreso Total" 
           value={`${progressPercent}%`} 
           subtitle={`${watchedCount} de ${totalItems} completados`}
           icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}
           progress={progressPercent}
+        />
+        <StatCard 
+          title="Racha Actual" 
+          value={`${streak} ${streak === 1 ? 'día' : 'días'}`} 
+          subtitle="Viendo Star Wars"
+          icon={<Flame className="w-5 h-5 text-orange-500" />}
         />
         <StatCard 
           title="Tiempo Invertido" 
@@ -460,7 +559,60 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
         )}
       </AnimatePresence>
 
-      <footer className="pt-12 pb-24 text-center border-t border-zinc-800 text-zinc-500 text-sm">
+      {/* Data Management */}
+      <section className="pt-12 pb-8 border-t border-zinc-800 flex flex-col items-center gap-4">
+        <h3 className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Gestión de Datos (Local-First)</h3>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => {
+              const progress = localStorage.getItem('mando-tracker-progress');
+              const gamification = localStorage.getItem('mando-gamification-storage');
+              const ui = localStorage.getItem('mando-ui-storage');
+              const backup = { progress, gamification, ui };
+              const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `mando-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+            }}
+            className="px-4 py-2 text-xs font-medium rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-900 transition-colors flex items-center gap-2"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Exportar Progreso
+          </button>
+          <label className="px-4 py-2 text-xs font-medium rounded-lg border border-zinc-800 text-zinc-400 hover:bg-zinc-900 transition-colors flex items-center gap-2 cursor-pointer">
+            <Upload className="w-3.5 h-3.5" />
+            Importar
+            <input 
+              type="file" 
+              accept=".json" 
+              className="hidden" 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    try {
+                      const content = ev.target?.result as string;
+                      const backup = JSON.parse(content);
+                      if (backup.progress) localStorage.setItem('mando-tracker-progress', backup.progress);
+                      if (backup.gamification) localStorage.setItem('mando-gamification-storage', backup.gamification);
+                      if (backup.ui) localStorage.setItem('mando-ui-storage', backup.ui);
+                      window.location.reload();
+                    } catch (err) {
+                      alert('Error al importar el archivo. Asegúrate de que es un backup válido.');
+                    }
+                  };
+                  reader.readAsText(file);
+                }
+              }} 
+            />
+          </label>
+        </div>
+      </section>
+
+      <footer className="pt-8 pb-24 text-center border-t border-zinc-800 text-zinc-500 text-sm">
         <p>Que la Fuerza te acompañe. Este es el camino.</p>
       </footer>
       </div>
@@ -500,6 +652,53 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
           </div>
         </div>
       </aside>
+
+      {/* Floating Action Button (Auto-pilot / Quick Resume) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {currentMission && !currentMission.completed ? (
+          <button
+            onClick={() => {
+              const mission = currentMission;
+              if (!mission) return;
+              
+              // Find the era of the first item to expand it if needed
+              const firstItemId = mission.targetItems[0];
+              const era = eras.find(e => e.items.some(i => i.id === firstItemId || i.subItems?.some(s => s.id === firstItemId)));
+              if (era) {
+                useUIStore.getState().setEraExpanded(era.id, true);
+              }
+              
+              setTimeout(() => {
+                const element = document.getElementById(firstItemId);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  element.classList.add('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950', 'transition-all', 'duration-500', 'rounded-xl');
+                  setTimeout(() => {
+                    element.classList.remove('ring-2', 'ring-emerald-500', 'ring-offset-4', 'ring-offset-zinc-950');
+                  }, 2000);
+                }
+              }, 150);
+            }}
+            className="flex items-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-lg shadow-emerald-900/20 font-medium transition-all hover:scale-105 active:scale-95"
+          >
+            <PlayCircle className="w-5 h-5" />
+            Continuar misión
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              generateMission('medium', true);
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 100);
+            }}
+            className="flex items-center gap-2 px-6 py-4 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-emerald-500/30 rounded-full shadow-lg shadow-black/50 font-medium transition-all hover:scale-105 active:scale-95"
+          >
+            <Target className="w-5 h-5" />
+            ¿Qué veo ahora?
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -540,7 +739,10 @@ function EraSection({
   markMultiple: (ids: string[]) => void,
   unmarkMultiple: (ids: string[]) => void
 }) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const { expandedEras, toggleEraExpanded } = useUIStore();
+  
+  // Default to true if not set
+  const isExpanded = expandedEras[era.id] !== false;
   
   const eraItemIds = era.items.flatMap(i => i.subItems ? i.subItems.map(s => s.id) : [i.id]);
   const eraTotalCount = eraItemIds.length;
@@ -593,7 +795,7 @@ function EraSection({
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono">
                   <span className={isCompleted ? "text-emerald-400 font-bold" : "text-zinc-300"}>
-                    {eraWatchedCount} / {era.items.length}
+                    {eraWatchedCount} / {eraTotalCount}
                   </span>
                   <span className="text-zinc-500">vistos</span>
                 </div>
@@ -608,7 +810,7 @@ function EraSection({
                 </button>
 
                 <button 
-                  onClick={() => setIsExpanded(!isExpanded)}
+                  onClick={() => toggleEraExpanded(era.id)}
                   className="p-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors md:hidden"
                   aria-expanded={isExpanded}
                   aria-label={isExpanded ? "Colapsar era" : "Expandir era"}
@@ -712,7 +914,17 @@ function MediaItemCard({
       'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
     };
     
-    return map[id] || `https://placehold.co/400x600/09090b/10b981?text=${encodeURIComponent(item.title)}`;
+    return map[id] || getFallbackImage(item.title);
+  };
+
+  const getFallbackImage = (title: string) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+      <rect width="400" height="600" fill="#09090b" />
+      <text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#10b981" text-anchor="middle" dominant-baseline="middle">
+        ${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+      </text>
+    </svg>`;
+    return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
   };
 
   const [imgSrc, setImgSrc] = useState(getImageUrl(item.id));
@@ -747,10 +959,10 @@ function MediaItemCard({
             sizes="(max-width: 640px) 96px, 128px"
             referrerPolicy="no-referrer"
             onError={() => {
-              // If image fails, fallback to placehold.co
-              setImgSrc(`https://placehold.co/400x600/09090b/10b981?text=${encodeURIComponent(item.title)}`);
+              // If image fails, fallback to local SVG
+              setImgSrc(getFallbackImage(item.title));
             }}
-            unoptimized={imgSrc.includes('placehold.co') || imgSrc.includes('tvmaze.com')}
+            unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
           />
           {isWatched && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
