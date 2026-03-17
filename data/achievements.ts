@@ -1,4 +1,4 @@
-import { Achievement } from '@/types/gamification';
+import { Achievement } from '@/types/achievements';
 
 export const ACHIEVEMENTS: Achievement[] = [
   // Mandalore

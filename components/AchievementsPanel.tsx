@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { useGamificationStore } from '@/store/gamification';
+import { useAchievementsStore } from '@/store/achievements';
 import { useProgressStore } from '@/store/progress';
+import { useUIStore } from '@/store/ui';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era } from '@/data/starwars-list';
 import { motion, AnimatePresence } from 'motion/react';
-import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info } from 'lucide-react';
+import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info, Filter } from 'lucide-react';
 
 const iconMap: Record<string, React.FC<any>> = {
   Shield, ShieldHalf, ShieldAlert,
@@ -18,15 +19,14 @@ const iconMap: Record<string, React.FC<any>> = {
 
 export default function AchievementsPanel({ 
   eras, 
-  calculateProgress,
-  generateMission
+  calculateProgress
 }: { 
   eras: Era[], 
-  calculateProgress: (rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => number,
-  generateMission: (lengthPref?: any, forceRegenerate?: boolean, specificTag?: string) => void
+  calculateProgress: (rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => number
 }) {
-  const { unlockedAchievements } = useGamificationStore();
+  const { unlockedAchievements } = useAchievementsStore();
   const { isCompleted } = useProgressStore();
+  const { setPreset } = useUIStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
@@ -123,7 +123,7 @@ export default function AchievementsPanel({
             <Award className="w-5 h-5" />
           </div>
           <div className="text-left">
-            <h3 className="text-lg font-bold text-zinc-100" style={{ fontFamily: 'var(--font-display)' }}>Logros</h3>
+            <h3 className="text-lg font-bold text-zinc-100" style={{ fontFamily: 'var(--font-display)' }}>Logros y Rutas</h3>
             <p className="text-sm text-zinc-500">{unlockedAchievements.length} / {ACHIEVEMENTS.length} desbloqueados</p>
           </div>
         </div>
@@ -209,13 +209,21 @@ export default function AchievementsPanel({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            generateMission(undefined, true, nextLocked.unlockRule.tag);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            // Map category to preset
+                            let targetPreset: any = 'all';
+                            if (category === 'mandalore') targetPreset = 'mandalore';
+                            if (category === 'thrawn' || category === 'new-republic') targetPreset = 'thrawn';
+                            if (category === 'hutt' || category === 'bounty-hunters') targetPreset = 'hutt';
+                            
+                            if (targetPreset !== 'all') {
+                              setPreset(targetPreset);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
                           }}
                           className="w-full mt-2 py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <Target className="w-3.5 h-3.5" />
-                          Misión para este logro
+                          <Filter className="w-3.5 h-3.5" />
+                          Ver solo esta ruta
                         </button>
                       )}
                     </div>

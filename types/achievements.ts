@@ -17,19 +17,3 @@ export type Achievement = {
     threshold: number; // 25, 50, 100
   };
 };
-
-export type MissionMode = 'auto' | 'manual' | 'thematic';
-export type MissionLength = 'short' | 'medium' | 'long' | 'marathon';
-
-export type Mission = {
-  id: string;
-  generatedAt: string;
-  mode: MissionMode;
-  preferredLength: MissionLength;
-  targetMinutes: number;
-  targetItems: string[]; // ids of subItems or items
-  title: string;
-  description: string;
-  rewardText: string;
-  completed: boolean;
-};

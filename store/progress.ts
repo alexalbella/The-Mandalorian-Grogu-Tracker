@@ -12,6 +12,7 @@ interface ProgressState {
   unmarkMultiple: (ids: string[]) => void;
   resetProgress: () => void;
   isCompleted: (id: string) => boolean;
+  isWatched: (id: string) => boolean;
   getCompletedItems: () => string[];
 }
 
@@ -73,6 +74,7 @@ export const useProgressStore = create<ProgressState>()(
       })),
       resetProgress: () => set({ watchedItems: [], skippedItems: [], streak: 0, lastWatchedDate: null }),
       isCompleted: (id) => get().watchedItems.includes(id) || get().skippedItems.includes(id),
+      isWatched: (id) => get().watchedItems.includes(id),
       getCompletedItems: () => [...get().watchedItems, ...get().skippedItems],
     }),
     {

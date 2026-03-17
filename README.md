@@ -22,13 +22,16 @@ Una aplicación web progresiva (PWA) diseñada meticulosamente para ayudar a los
     *   Oculta el contenido ya completado.
     *   Buscador en tiempo real.
     *   Presets temáticos: "Imprescindible", "Modo Rápido", "Solo Mandalore", "Nueva República / Thrawn", "Trama Hutt".
-*   **Motor de Gamificación:**
-    *   **Modo Misión:** Sugiere bloques de contenido diario basados en el tiempo disponible (15m, 30m, 1h, 2h).
-    *   **Sistema de Logros:** Desbloquea medallas temáticas (Mandalore, Imperio, Cazarrecompensas) a medida que avanzas.
+*   **Sistema de Logros y Rutas:**
+    *   Desbloquea medallas temáticas (Mandalore, Imperio, Cazarrecompensas) a medida que avanzas.
+    *   Usa los logros como guía para filtrar y descubrir nuevas rutas de visionado.
 *   **Gestión de Progreso Persistente:**
-    *   Marca episodios o películas individuales.
+    *   Marca episodios o películas individuales como vistos o saltados.
     *   Acciones rápidas por Era: Marca o desmarca toda una era con un clic.
     *   El progreso se guarda automáticamente y de forma segura en tu navegador (localStorage mediante Zustand).
+*   **Flujo de Reanudación Inteligente:**
+    *   Retoma tu visionado exactamente donde lo dejaste.
+    *   Prioriza el contenido esencial que te hayas saltado antes de avanzar cronológicamente.
 *   **Cuenta Atrás y Pace Tracker:**
     *   Muestra el tiempo exacto hasta el estreno.
     *   Calcula cuántos minutos necesitas ver al día para llegar al día del estreno con los deberes hechos.
@@ -59,8 +62,8 @@ Para ejecutar este proyecto en tu máquina local, sigue estos pasos:
 
 1. **Clona el repositorio:**
    ```bash
-   git clone https://github.com/alexalbella/mando-grogu-tracker.git
-   cd mando-grogu-tracker
+   git clone https://github.com/alexalbella/The-Mandalorian-Grogu-Tracker.git
+   cd The-Mandalorian-Grogu-Tracker
    ```
 
 2. **Instala las dependencias:**
@@ -83,8 +86,8 @@ Para ejecutar este proyecto en tu máquina local, sigue estos pasos:
 ├── app/                  # Rutas y layouts de Next.js (App Router)
 ├── components/           # Componentes UI reutilizables (Dashboard, Widgets, etc.)
 ├── data/                 # Datos estáticos (Lista de Star Wars, Logros)
-├── hooks/                # Custom React hooks (Motor de gamificación)
-├── store/                # Stores de Zustand (Progreso, Preferencias)
+├── hooks/                # Custom React hooks (Motor de logros y estadísticas)
+├── store/                # Stores de Zustand (Progreso, UI, Logros)
 ├── types/                # Definiciones de tipos TypeScript
 └── public/               # Assets estáticos y PWA manifest
 ```
