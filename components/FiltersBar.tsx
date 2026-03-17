@@ -2,7 +2,7 @@ import { Search, EyeOff, Eye, RotateCcw } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useProgressStore } from '@/store/progress';
 
-type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'essential-background' | 'movie-background';
+type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'bounty-hunters' | 'new-republic' | 'essential-background' | 'movie-background';
 
 export default function FiltersBar() {
   const { 
@@ -59,14 +59,6 @@ export default function FiltersBar() {
             <span className="hidden sm:inline">Ocultar Completados</span>
           </button>
         </div>
-
-        <button 
-          onClick={resetProgress}
-          className="px-4 py-2 text-xs font-medium rounded-lg border border-red-900/30 text-red-400 hover:bg-red-950/30 transition-colors flex items-center gap-2 shrink-0"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          Resetear
-        </button>
       </div>
 
       {/* Presets Row */}
@@ -77,10 +69,10 @@ export default function FiltersBar() {
           { id: 'essential', label: 'Imprescindible' },
           { id: 'fast', label: 'Modo Rápido' },
           { id: 'mandalore', label: 'Solo Mandalore' },
-          { id: 'thrawn', label: 'Nueva República / Thrawn' },
+          { id: 'thrawn', label: 'Solo Thrawn' },
+          { id: 'new-republic', label: 'Solo Nueva República' },
           { id: 'hutt', label: 'Trama Hutt' },
-          { id: 'essential-background', label: 'Entendido (no completista)' },
-          { id: 'movie-background', label: 'Solo trasfondo peli' }
+          { id: 'bounty-hunters', label: 'Solo Cazarrecompensas' }
         ].map((p) => (
           <button
             key={p.id}

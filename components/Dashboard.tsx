@@ -12,7 +12,7 @@ import Image from 'next/image';
 
 const CountdownWidget = dynamic(() => import('./CountdownWidget'), { ssr: false });
 
-type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'essential-background' | 'movie-background';
+type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'bounty-hunters' | 'new-republic' | 'essential-background' | 'movie-background';
 
 // ... (sin import)
 import ResumeFlow from './ResumeFlow';
@@ -116,7 +116,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
 
   // Stats are now handled by useDashboardStats hook
   const stats = useDashboardStats(eras);
-  const { totalItems, watchedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = stats;
+  const { totalItems, watchedCount, completedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = stats;
   
   // Next item logic
   const nextItem = useMemo(() => {
@@ -247,8 +247,10 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       if (preset === 'essential' && !item.essential) return false;
       if (preset === 'fast' && item.type === 'series' && !item.essential) return false; // Fast mode: All movies + essential series
       if (preset === 'mandalore' && !item.tags.includes('mandalore')) return false;
-      if (preset === 'thrawn' && !item.tags.includes('thrawn') && !item.tags.includes('new-republic')) return false;
-      if (preset === 'hutt' && !item.tags.includes('hutt') && !item.tags.includes('bounty-hunters')) return false;
+      if (preset === 'thrawn' && !item.tags.includes('thrawn')) return false;
+      if (preset === 'new-republic' && !item.tags.includes('new-republic')) return false;
+      if (preset === 'hutt' && !item.tags.includes('hutt')) return false;
+      if (preset === 'bounty-hunters' && !item.tags.includes('bounty-hunters')) return false;
       if (preset === 'essential-background' && !item.essential) return false;
       if (preset === 'movie-background' && item.type !== 'movie') return false;
 
@@ -262,7 +264,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       {/* Main Content */}
       <div className="flex-1 space-y-12 min-w-0">
         {/* Header Section - Sticky */}
-        <header className={`sticky top-0 lg:top-4 z-50 border-b lg:border border-zinc-800 bg-[#050505]/90 backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 lg:mx-0 lg:px-6 lg:rounded-2xl transition-all duration-300 ${isScrolled ? 'pt-3 pb-3' : 'pt-4 pb-4 md:pt-6 md:pb-6'}`}>
+        <header className={`sticky top-0 lg:top-4 z-50 border-b lg:border border-zinc-800 bg-[#050505]/90 starfield backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 lg:mx-0 lg:px-6 lg:rounded-2xl transition-all duration-300 ${isScrolled ? 'pt-3 pb-3' : 'pt-4 pb-4 md:pt-6 md:pb-6'}`}>
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-20 pointer-events-none">
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/30 blur-[120px] rounded-full" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/20 blur-[120px] rounded-full" />
@@ -311,12 +313,12 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
                   <span className={isScrolled ? 'hidden md:inline' : 'inline'}>Progreso</span>
                   <span className="text-emerald-400 font-bold">{progressPercent}%</span>
                 </div>
-                <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden border border-zinc-800 relative shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+                <div className="h-2.5 w-full bg-zinc-900/50 rounded-full overflow-hidden border border-zinc-800 relative shadow-inner">
                   <div 
-                    className="absolute top-0 left-0 h-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_10px_#fff,0_0_20px_#fff]"
+                    className="absolute top-0 left-0 h-full bg-zinc-950 transition-all duration-1000 ease-out border border-emerald-300 shadow-[0_0_10px_#34d399,0_0_20px_#34d399,inset_0_0_5px_#34d399]"
                     style={{ width: `${progressPercent}%` }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/20 to-white/40 mix-blend-overlay" />
                   </div>
                 </div>
               </div>
@@ -335,9 +337,14 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       {/* Stats Dashboard */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard 
-          title="Progreso Total" 
+          title="Progreso del Plan" 
           value={`${progressPercent}%`} 
-          subtitle={`${watchedCount} de ${totalItems} completados`}
+          subtitle={
+            <div className="flex flex-col gap-1">
+              <span>{completedCount} de {totalItems} completados</span>
+              <span className="text-emerald-500/80">{watchedCount} vistos de verdad</span>
+            </div>
+          }
           icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}
           progress={progressPercent}
         />
@@ -435,7 +442,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
       {/* Data Management */}
       <section className="pt-12 pb-8 border-t border-zinc-800 flex flex-col items-center gap-4">
         <h3 className="text-zinc-500 text-xs font-medium uppercase tracking-widest">Gestión de Datos (Local-First)</h3>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
           <button 
             onClick={() => {
               const progress = localStorage.getItem('mando-grogu-progress') || localStorage.getItem('mando-tracker-progress');
@@ -482,6 +489,18 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
               }} 
             />
           </label>
+          <button 
+            onClick={() => {
+              if (window.confirm('¿Estás seguro de que quieres borrar todo tu progreso? Esta acción no se puede deshacer.')) {
+                useProgressStore.getState().resetProgress();
+                window.location.reload();
+              }
+            }}
+            className="px-4 py-2 text-xs font-medium rounded-lg border border-red-900/30 text-red-400 hover:bg-red-950/30 transition-colors flex items-center gap-2"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Resetear Todo
+          </button>
         </div>
       </section>
 
@@ -492,7 +511,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
 
       {/* Sidebar - Vertical Progress */}
       <aside className="hidden lg:flex flex-col items-center w-24 shrink-0 pt-8">
-        <div className="sticky top-24 flex flex-col items-center gap-6 h-[calc(100vh-8rem)]">
+        <div className="sticky top-24 flex flex-col items-center gap-6 h-[calc(100vh-8rem)] starfield rounded-2xl p-4 border border-zinc-800/30">
           <div className="text-center space-y-1">
             <div className="text-xs font-mono text-zinc-500 uppercase tracking-widest">Progreso</div>
             <div className="text-2xl font-bold text-emerald-400">{progressPercent}%</div>
@@ -501,12 +520,12 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
           {/* Vertical Darksaber */}
           <div className="flex-1 w-4 flex flex-col justify-end items-center relative">
             {/* Blade container */}
-            <div className="w-full flex-1 bg-zinc-900 rounded-t-full overflow-hidden border border-zinc-800 border-b-0 relative shadow-[0_0_15px_rgba(0,0,0,0.8)] flex flex-col justify-end">
+            <div className="w-full flex-1 bg-zinc-900/50 rounded-t-full overflow-hidden border border-zinc-800 border-b-0 relative shadow-inner flex flex-col justify-end">
               <div 
-                className="w-full bg-zinc-100 transition-all duration-1000 ease-out shadow-[0_0_15px_#fff,0_0_30px_#fff]"
+                className="w-full bg-zinc-950 transition-all duration-1000 ease-out border-x border-t border-emerald-300 rounded-t-full shadow-[0_0_15px_#34d399,0_0_30px_#34d399,inset_0_0_10px_#34d399]"
                 style={{ height: `${progressPercent}%` }}
               >
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-800 via-zinc-400 to-white opacity-50 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-emerald-400/20 to-white/40 mix-blend-overlay" />
               </div>
             </div>
             
@@ -529,7 +548,7 @@ export default function Dashboard({ eras }: { eras: Era[] }) {
   );
 }
 
-function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: string, subtitle: string, icon: React.ReactNode, progress?: number }) {
+function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: string, subtitle: React.ReactNode, icon: React.ReactNode, progress?: number }) {
   return (
     <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-2xl p-6 relative overflow-hidden">
       {progress !== undefined && (

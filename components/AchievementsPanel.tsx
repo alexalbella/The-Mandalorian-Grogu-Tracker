@@ -83,8 +83,8 @@ export default function AchievementsPanel({
       const remaining = targetCount - watchedItemsWithTag;
       
       if (remaining > 0) {
-        const tierName = nextLocked.tier === 'silver' ? 'la plata' : nextLocked.tier === 'gold' ? 'el oro' : 'el bronce';
-        return `Faltan ${remaining} ep. para ${tierName}`;
+        const tierName = nextLocked.tier === 'silver' ? 'plata' : nextLocked.tier === 'gold' ? 'oro' : 'bronce';
+        return `Te faltan ${remaining} ep. para ${tierName}`;
       }
       return `Desbloquea ${nextLocked.tier}`;
     } else if (rule.type === 'globalProgress') {
@@ -106,7 +106,7 @@ export default function AchievementsPanel({
       const targetCount = Math.ceil(totalItems * (rule.threshold / 100));
       const remaining = targetCount - watched;
       if (remaining > 0) {
-        return `Faltan ${remaining} ep. para terminar`;
+        return `Te faltan ${remaining} ep. para terminar`;
       }
     }
     return "";
@@ -123,8 +123,8 @@ export default function AchievementsPanel({
             <Award className="w-5 h-5" />
           </div>
           <div className="text-left">
-            <h3 className="text-lg font-bold text-zinc-100" style={{ fontFamily: 'var(--font-display)' }}>Logros y Rutas</h3>
-            <p className="text-sm text-zinc-500">{unlockedAchievements.length} / {ACHIEVEMENTS.length} desbloqueados</p>
+            <h3 className="text-lg font-bold text-zinc-100" style={{ fontFamily: 'var(--font-display)' }}>Rutas narrativas</h3>
+            <p className="text-sm text-zinc-500">{categories.length} rutas · {ACHIEVEMENTS.length} hitos</p>
           </div>
         </div>
         <div className="text-zinc-500">
@@ -153,21 +153,39 @@ export default function AchievementsPanel({
                 const Icon = iconMap[displayAchievement.icon] || Award;
                 const isUnlocked = unlockedAchievements.includes(displayAchievement.id);
                 const hint = getActionableHint(category, nextLocked);
+                
+                // Extract color from accentClass (e.g., "text-blue-400 bg-blue-500/10" -> "blue")
+                const colorMatch = displayAchievement.accentClass.match(/text-([a-z]+)-/);
+                const colorName = colorMatch ? colorMatch[1] : 'zinc';
+                
+                // Define dynamic classes based on the extracted color
+                const borderClass = isUnlocked ? `border-${colorName}-500/30` : `border-${colorName}-900/30 hover:border-${colorName}-700/50`;
+                const bgClass = isUnlocked ? `bg-${colorName}-950/20` : 'bg-zinc-950/50';
+                const progressBgClass = isUnlocked ? `bg-${colorName}-500` : `bg-${colorName}-800/50`;
+                const hintBgClass = `bg-${colorName}-500/10`;
+                const hintTextClass = `text-${colorName}-400/90`;
 
                 return (
-                  <div key={category} className={`p-4 rounded-xl border transition-all flex flex-col ${isUnlocked ? 'bg-zinc-800/50 border-zinc-700' : 'bg-zinc-950 border-zinc-900'}`}>
+                  <div key={category} className={`p-4 rounded-xl border transition-all flex flex-col ${bgClass} ${borderClass}`}>
                     <div className="flex items-start justify-between mb-3">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isUnlocked ? displayAchievement.accentClass : 'text-zinc-600 bg-zinc-900'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isUnlocked ? displayAchievement.accentClass : `text-${colorName}-600/50 bg-${colorName}-950/50`}`}>
                         <Icon className="w-6 h-6" />
                       </div>
                       {isUnlocked ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        <CheckCircle2 className={`w-5 h-5 text-${colorName}-500`} />
                       ) : (
                         <Lock className="w-4 h-4 text-zinc-700" />
                       )}
                     </div>
                     
-                    <h4 className={`font-medium mb-1 ${isUnlocked ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isUnlocked ? `text-${colorName}-400` : 'text-zinc-600'}`}>
+                        {category.replace('-', ' ')}
+                      </span>
+                      {isUnlocked && <span className={`text-[10px] px-1.5 py-0.5 rounded-sm bg-${colorName}-500/20 text-${colorName}-300 font-mono`}>{displayAchievement.tier}</span>}
+                    </div>
+
+                    <h4 className={`font-medium mb-1 ${isUnlocked ? 'text-zinc-200' : 'text-zinc-400'}`}>
                       {displayAchievement.title}
                     </h4>
                     <p className="text-xs text-zinc-500 mb-4 line-clamp-2 h-8 flex-grow">
@@ -175,21 +193,21 @@ export default function AchievementsPanel({
                     </p>
                     
                     {!isUnlocked && hint && (
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-amber-500/80 bg-amber-500/10 px-2 py-1 rounded-md mb-3 w-fit">
+                      <div className={`flex items-center gap-1.5 text-[10px] font-medium px-2 py-1 rounded-md mb-3 w-fit ${hintBgClass} ${hintTextClass}`}>
                         <Info className="w-3 h-3" />
                         {hint}
                       </div>
                     )}
                     {isUnlocked && !nextLocked && (
-                      <div className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500/80 bg-emerald-500/10 px-2 py-1 rounded-md mb-3 w-fit">
+                      <div className={`flex items-center gap-1.5 text-[10px] font-medium px-2 py-1 rounded-md mb-3 w-fit ${hintBgClass} ${hintTextClass}`}>
                         <CheckCircle2 className="w-3 h-3" />
-                        Ruta completada
+                        Ruta dominada
                       </div>
                     )}
                     
                     <div className="space-y-1.5 mt-auto">
                       <div className="flex justify-between text-xs font-mono">
-                        <span className={isUnlocked ? 'text-emerald-400' : 'text-zinc-600'}>
+                        <span className={isUnlocked ? `text-${colorName}-400` : 'text-zinc-600'}>
                           {Math.round(progress)}%
                         </span>
                         {nextLocked && !isUnlocked && (
@@ -200,7 +218,7 @@ export default function AchievementsPanel({
                       </div>
                       <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3">
                         <div 
-                          className={`h-full rounded-full transition-all duration-1000 ${isUnlocked ? 'bg-emerald-500' : 'bg-zinc-700'}`}
+                          className={`h-full rounded-full transition-all duration-1000 ${progressBgClass}`}
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -212,15 +230,17 @@ export default function AchievementsPanel({
                             // Map category to preset
                             let targetPreset: any = 'all';
                             if (category === 'mandalore') targetPreset = 'mandalore';
-                            if (category === 'thrawn' || category === 'new-republic') targetPreset = 'thrawn';
-                            if (category === 'hutt' || category === 'bounty-hunters') targetPreset = 'hutt';
+                            if (category === 'thrawn') targetPreset = 'thrawn';
+                            if (category === 'new-republic') targetPreset = 'new-republic';
+                            if (category === 'hutt') targetPreset = 'hutt';
+                            if (category === 'bounty-hunters') targetPreset = 'bounty-hunters';
                             
                             if (targetPreset !== 'all') {
                               setPreset(targetPreset);
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }
                           }}
-                          className="w-full mt-2 py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                          className={`w-full mt-2 py-1.5 px-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-zinc-800 hover:border-${colorName}-900/50`}
                         >
                           <Filter className="w-3.5 h-3.5" />
                           Ver solo esta ruta
