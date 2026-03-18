@@ -47,7 +47,7 @@ export default function MediaItemCard({
       'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t4-15-18': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t4-20-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t5-1': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t5-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t6-5': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'tcw-t7-9-12': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
       'bb-t1-15-16': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
@@ -86,10 +86,10 @@ export default function MediaItemCard({
   return (
     <div 
       id={item.id}
-      className={`group relative p-4 rounded-xl border transition-all cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#09090b] ${
+      className={`group relative p-4 rounded-xl border transition-all cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-glow-success focus-within:ring-offset-2 focus-within:ring-offset-surface-1 ${
         isWatched 
-          ? 'bg-emerald-950/10 border-emerald-900/30 hover:border-emerald-800/50' 
-          : 'bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 hover:border-white/20'
+          ? 'bg-glow-success/10 border-glow-success/30 hover:border-glow-success/50' 
+          : 'bg-surface-2/50 backdrop-blur-md border-surface-4 hover:bg-surface-3 hover:border-surface-4/80'
       }`}
       onClick={handleToggle}
     >
@@ -104,7 +104,7 @@ export default function MediaItemCard({
       
       <div className="flex flex-row gap-4">
         {/* Thumbnail */}
-        <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-zinc-900">
+        <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3">
           <Image 
             src={imgSrc} 
             alt={`Poster for ${item.title}`}
@@ -120,7 +120,7 @@ export default function MediaItemCard({
           />
           {isWatched && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <CheckCircle2 className="w-10 h-10 text-emerald-500 drop-shadow-lg" />
+              <CheckCircle2 className="w-10 h-10 text-glow-success drop-shadow-lg" />
             </div>
           )}
         </div>
@@ -138,27 +138,27 @@ export default function MediaItemCard({
                   transition={{ duration: 0.3 }}
                 >
                   {isWatched ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    <CheckCircle2 className="w-5 h-5 text-glow-success" />
                   ) : isPartiallyWatched ? (
-                    <div className="w-5 h-5 rounded-full border-2 border-emerald-500 flex items-center justify-center">
-                      <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
+                    <div className="w-5 h-5 rounded-full border-2 border-glow-success flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 bg-glow-success rounded-full" />
                     </div>
                   ) : (
-                    <Circle className="w-5 h-5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                    <Circle className="w-5 h-5 text-text-muted group-hover:text-text-body transition-colors" />
                   )}
                 </motion.div>
               </div>
-              <h4 className={`font-medium text-lg transition-colors ${isWatched ? 'text-zinc-400 line-through decoration-zinc-600' : 'text-zinc-100'}`}>
+              <h4 className={`font-medium text-lg transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}>
                 {item.title}
               </h4>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               {item.essential && (
-                <span className="inline-flex items-center px-2 py-1 rounded-md bg-orange-500/10 text-orange-400 text-[10px] font-bold uppercase tracking-wider border border-orange-500/20">
+                <span className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20">
                   Esencial
                 </span>
               )}
-              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 bg-black/40 px-2 py-1 rounded-md border border-white/5">
+              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-black/40 px-2 py-1 rounded-md border border-white/5">
                 {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
                 {item.duration}m
               </span>
@@ -166,8 +166,8 @@ export default function MediaItemCard({
           </div>
           
           <div className="text-sm">
-            <div className={`leading-relaxed transition-colors ${isWatched ? 'text-zinc-600' : 'text-zinc-400'}`}>
-              <span className="inline-flex items-center gap-1 font-medium text-zinc-500 mr-2">
+            <div className={`leading-relaxed transition-colors ${isWatched ? 'text-surface-4' : 'text-text-body'}`}>
+              <span className="inline-flex items-center gap-1 font-medium text-text-muted mr-2">
                 <Info className="w-3.5 h-3.5" /> Contexto:
               </span>
               {item.reason}
@@ -183,7 +183,7 @@ export default function MediaItemCard({
                     key={sub.id}
                     id={sub.id}
                     className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${
-                      isSubWatched ? 'bg-emerald-950/20 hover:bg-emerald-950/40' : 'bg-white/5 hover:bg-white/10'
+                      isSubWatched ? 'bg-glow-success/20 hover:bg-glow-success/40' : 'bg-white/5 hover:bg-white/10'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -192,15 +192,15 @@ export default function MediaItemCard({
                   >
                     <div className="flex items-center gap-3">
                       {isSubWatched ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        <CheckCircle2 className="w-4 h-4 text-glow-success" />
                       ) : (
-                        <Circle className="w-4 h-4 text-zinc-500" />
+                        <Circle className="w-4 h-4 text-text-muted" />
                       )}
-                      <span className={`text-sm ${isSubWatched ? 'text-zinc-500 line-through' : 'text-zinc-300'}`}>
+                      <span className={`text-sm ${isSubWatched ? 'text-text-muted line-through' : 'text-text-body'}`}>
                         {sub.title}
                       </span>
                     </div>
-                    <span className="text-xs font-mono text-zinc-500">{sub.duration}m</span>
+                    <span className="text-xs font-mono text-text-muted">{sub.duration}m</span>
                   </div>
                 );
               })}

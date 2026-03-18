@@ -1,4 +1,4 @@
-import Dashboard from '@/components/Dashboard';
+import AppShell from '@/components/shell/AppShell';
 import { eras } from '@/data/starwars-list';
 
 export const metadata = {
@@ -8,8 +8,8 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#09090b]">
-      <Dashboard eras={eras} />
+    <main className="min-h-screen bg-surface-1">
+      <AppShell eras={eras} />
     </main>
   );
 }

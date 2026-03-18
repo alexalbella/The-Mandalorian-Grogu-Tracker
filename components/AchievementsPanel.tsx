@@ -5,7 +5,7 @@ import { useUIStore } from '@/store/ui';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era } from '@/data/starwars-list';
 import { motion, AnimatePresence } from 'motion/react';
-import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info, Filter } from 'lucide-react';
+import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info, Filter, Map } from 'lucide-react';
 
 const iconMap: Record<string, React.FC<any>> = {
   Shield, ShieldHalf, ShieldAlert,
@@ -15,6 +15,58 @@ const iconMap: Record<string, React.FC<any>> = {
   Badge, Plane, Rocket,
   BookOpen, BrainCircuit, Swords,
   Sparkles
+};
+
+const routeStyles: Record<string, { bg: string, border: string, glow: string, text: string, progress: string }> = {
+  'mandalore': {
+    bg: 'bg-route-mandalore/10',
+    border: 'border-route-mandalore/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-mandalore)_15%,transparent)]',
+    text: 'text-route-mandalore',
+    progress: 'bg-route-mandalore'
+  },
+  'hutt': {
+    bg: 'bg-route-hutt/10',
+    border: 'border-route-hutt/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-hutt)_15%,transparent)]',
+    text: 'text-route-hutt',
+    progress: 'bg-route-hutt'
+  },
+  'bounty-hunters': {
+    bg: 'bg-route-bounty/10',
+    border: 'border-route-bounty/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-bounty)_15%,transparent)]',
+    text: 'text-route-bounty',
+    progress: 'bg-route-bounty'
+  },
+  'empire': {
+    bg: 'bg-route-empire/10',
+    border: 'border-route-empire/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-empire)_15%,transparent)]',
+    text: 'text-route-empire',
+    progress: 'bg-route-empire'
+  },
+  'new-republic': {
+    bg: 'bg-route-republic/10',
+    border: 'border-route-republic/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-republic)_15%,transparent)]',
+    text: 'text-route-republic',
+    progress: 'bg-route-republic'
+  },
+  'thrawn': {
+    bg: 'bg-route-thrawn/10',
+    border: 'border-route-thrawn/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-thrawn)_15%,transparent)]',
+    text: 'text-route-thrawn',
+    progress: 'bg-route-thrawn'
+  },
+  'meta': {
+    bg: 'bg-route-meta/10',
+    border: 'border-route-meta/30',
+    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-meta)_15%,transparent)]',
+    text: 'text-route-meta',
+    progress: 'bg-route-meta'
+  }
 };
 
 export default function AchievementsPanel({ 
@@ -84,7 +136,7 @@ export default function AchievementsPanel({
       
       if (remaining > 0) {
         const tierName = nextLocked.tier === 'silver' ? 'plata' : nextLocked.tier === 'gold' ? 'oro' : 'bronce';
-        return `Te faltan ${remaining} ep. para ${tierName}`;
+        return `Faltan ${remaining} para ${tierName}`;
       }
       return `Desbloquea ${nextLocked.tier}`;
     } else if (rule.type === 'globalProgress') {
@@ -106,28 +158,28 @@ export default function AchievementsPanel({
       const targetCount = Math.ceil(totalItems * (rule.threshold / 100));
       const remaining = targetCount - watched;
       if (remaining > 0) {
-        return `Te faltan ${remaining} ep. para terminar`;
+        return `Faltan ${remaining} para terminar`;
       }
     }
     return "";
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden mb-8 transition-all duration-300">
+    <div className="bg-surface-1 border border-surface-4/80 rounded-2xl overflow-hidden mb-8 transition-all duration-300 shadow-xl">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors"
+        className="w-full p-6 flex items-center justify-between hover:bg-surface-2/30 transition-colors group"
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400">
-            <Award className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-xl bg-surface-2 border border-surface-4 flex items-center justify-center text-text-muted group-hover:text-glow-success group-hover:border-glow-success/50 transition-colors shadow-inner">
+            <Map className="w-6 h-6" />
           </div>
           <div className="text-left">
-            <h3 className="text-lg font-bold text-zinc-100" style={{ fontFamily: 'var(--font-display)' }}>Rutas narrativas</h3>
-            <p className="text-sm text-zinc-500">{categories.length} rutas · {ACHIEVEMENTS.length} hitos</p>
+            <h3 className="text-xl font-bold text-text-heading tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Atlas de Rutas</h3>
+            <p className="text-sm text-text-muted font-mono mt-0.5">{categories.length} rutas · {ACHIEVEMENTS.length} hitos narrativos</p>
           </div>
         </div>
-        <div className="text-zinc-500">
+        <div className="text-text-muted group-hover:text-text-body transition-colors bg-surface-2/50 p-2 rounded-full border border-surface-4/50">
           {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </div>
       </button>
@@ -138,96 +190,109 @@ export default function AchievementsPanel({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="border-t border-zinc-800"
+            className="border-t border-surface-4/80 bg-surface-1/30"
           >
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {categories.map(category => {
                 const progress = getCategoryProgress(category);
                 const highestUnlocked = getHighestUnlockedTier(category);
                 const nextLocked = getNextLockedAchievement(category);
                 
-                // Determine which achievement to show for the category
                 const displayAchievement = highestUnlocked || nextLocked || ACHIEVEMENTS.find(a => a.category === category);
                 if (!displayAchievement) return null;
 
                 const Icon = iconMap[displayAchievement.icon] || Award;
                 const isUnlocked = unlockedAchievements.includes(displayAchievement.id);
+                const isFullyUnlocked = !nextLocked;
                 const hint = getActionableHint(category, nextLocked);
                 
-                // Extract color from accentClass (e.g., "text-blue-400 bg-blue-500/10" -> "blue")
-                const colorMatch = displayAchievement.accentClass.match(/text-([a-z]+)-/);
-                const colorName = colorMatch ? colorMatch[1] : 'zinc';
+                const style = routeStyles[category] || routeStyles['mandalore'];
                 
-                // Define dynamic classes based on the extracted color
-                const borderClass = isUnlocked ? `border-${colorName}-500/30` : `border-${colorName}-900/30 hover:border-${colorName}-700/50`;
-                const bgClass = isUnlocked ? `bg-${colorName}-950/20` : 'bg-zinc-950/50';
-                const progressBgClass = isUnlocked ? `bg-${colorName}-500` : `bg-${colorName}-800/50`;
-                const hintBgClass = `bg-${colorName}-500/10`;
-                const hintTextClass = `text-${colorName}-400/90`;
+                const isActive = progress > 0;
+                const tileBg = isActive ? style.bg : 'bg-surface-2/30';
+                const tileBorder = isActive ? style.border : 'border-surface-4/50';
+                const tileGlow = isActive ? style.glow : '';
+                const textColor = isActive ? style.text : 'text-text-muted';
 
                 return (
-                  <div key={category} className={`p-4 rounded-xl border transition-all flex flex-col ${bgClass} ${borderClass}`}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isUnlocked ? displayAchievement.accentClass : `text-${colorName}-600/50 bg-${colorName}-950/50`}`}>
+                  <div 
+                    key={category} 
+                    className={`relative p-5 rounded-2xl border transition-all duration-500 flex flex-col overflow-hidden ${tileBg} ${tileBorder} ${tileGlow}`}
+                  >
+                    {/* Background Map Pattern */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                    
+                    <div className="relative z-10 flex items-start justify-between mb-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center border shadow-inner ${isActive ? `bg-surface-1/50 ${style.border} ${textColor}` : 'bg-surface-2 border-surface-4 text-text-muted'}`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      {isUnlocked ? (
-                        <CheckCircle2 className={`w-5 h-5 text-${colorName}-500`} />
-                      ) : (
-                        <Lock className="w-4 h-4 text-zinc-700" />
-                      )}
+                      <div className="flex flex-col items-end gap-1">
+                        {isFullyUnlocked ? (
+                          <div className={`flex items-center gap-1 px-2 py-1 rounded-md bg-surface-1/50 border ${style.border} ${textColor} text-[10px] font-bold uppercase tracking-wider`}>
+                            <Crown className="w-3 h-3" />
+                            Completada
+                          </div>
+                        ) : (
+                          <div className="flex gap-1">
+                            {['bronze', 'silver', 'gold'].map((tier, i) => {
+                              const tierAchievement = ACHIEVEMENTS.find(a => a.category === category && a.tier === tier);
+                              const isTierUnlocked = tierAchievement && unlockedAchievements.includes(tierAchievement.id);
+                              return (
+                                <div 
+                                  key={tier} 
+                                  className={`w-2 h-2 rounded-full ${isTierUnlocked ? style.progress : 'bg-surface-4'}`}
+                                  title={tierAchievement?.title}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="mb-1 flex items-center gap-2">
-                      <span className={`text-[10px] uppercase tracking-wider font-bold ${isUnlocked ? `text-${colorName}-400` : 'text-zinc-600'}`}>
+                    <div className="relative z-10 mb-1 flex items-center gap-2">
+                      <span className={`text-xs uppercase tracking-widest font-bold ${textColor}`}>
                         {category.replace('-', ' ')}
                       </span>
-                      {isUnlocked && <span className={`text-[10px] px-1.5 py-0.5 rounded-sm bg-${colorName}-500/20 text-${colorName}-300 font-mono`}>{displayAchievement.tier}</span>}
                     </div>
 
-                    <h4 className={`font-medium mb-1 ${isUnlocked ? 'text-zinc-200' : 'text-zinc-400'}`}>
+                    <h4 className={`relative z-10 font-bold mb-2 text-lg leading-tight ${isActive ? 'text-text-heading' : 'text-text-muted'}`} style={{ fontFamily: 'var(--font-display)' }}>
                       {displayAchievement.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 mb-4 line-clamp-2 h-8 flex-grow">
+                    
+                    <p className="relative z-10 text-xs text-text-muted mb-5 line-clamp-2 flex-grow leading-relaxed">
                       {displayAchievement.description}
                     </p>
                     
-                    {!isUnlocked && hint && (
-                      <div className={`flex items-center gap-1.5 text-[10px] font-medium px-2 py-1 rounded-md mb-3 w-fit ${hintBgClass} ${hintTextClass}`}>
-                        <Info className="w-3 h-3" />
-                        {hint}
-                      </div>
-                    )}
-                    {isUnlocked && !nextLocked && (
-                      <div className={`flex items-center gap-1.5 text-[10px] font-medium px-2 py-1 rounded-md mb-3 w-fit ${hintBgClass} ${hintTextClass}`}>
-                        <CheckCircle2 className="w-3 h-3" />
-                        Ruta dominada
-                      </div>
-                    )}
-                    
-                    <div className="space-y-1.5 mt-auto">
-                      <div className="flex justify-between text-xs font-mono">
-                        <span className={isUnlocked ? `text-${colorName}-400` : 'text-zinc-600'}>
-                          {Math.round(progress)}%
-                        </span>
-                        {nextLocked && !isUnlocked && (
-                          <span className="text-zinc-600">
-                            Meta: {nextLocked.unlockRule.threshold}%
+                    <div className="relative z-10 space-y-3 mt-auto">
+                      <div className="flex justify-between items-end">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-text-muted uppercase tracking-wider font-mono mb-0.5">Progreso</span>
+                          <span className={`text-lg font-bold font-mono leading-none ${textColor}`}>
+                            {Math.round(progress)}%
+                          </span>
+                        </div>
+                        {!isFullyUnlocked && hint && (
+                          <span className="text-[10px] text-text-muted font-medium bg-surface-1/50 px-2 py-1 rounded-md border border-surface-4/50">
+                            {hint}
                           </span>
                         )}
                       </div>
-                      <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3">
+                      
+                      {/* Circular/Arc Progress alternative (using a styled bar for now to fit the tile) */}
+                      <div className="w-full h-2 bg-surface-1 rounded-full overflow-hidden border border-surface-4/50 shadow-inner">
                         <div 
-                          className={`h-full rounded-full transition-all duration-1000 ${progressBgClass}`}
+                          className={`h-full rounded-full transition-all duration-1000 relative overflow-hidden ${isActive ? style.progress : 'bg-surface-4'}`}
                           style={{ width: `${progress}%` }}
-                        />
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-[200%] animate-[shimmer_2s_infinite]" />
+                        </div>
                       </div>
                       
-                      {!isUnlocked && nextLocked && nextLocked.unlockRule.type === 'tagProgress' && (
+                      {!isFullyUnlocked && nextLocked && nextLocked.unlockRule.type === 'tagProgress' && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Map category to preset
                             let targetPreset: any = 'all';
                             if (category === 'mandalore') targetPreset = 'mandalore';
                             if (category === 'thrawn') targetPreset = 'thrawn';
@@ -240,10 +305,10 @@ export default function AchievementsPanel({
                               window.scrollTo({ top: 0, behavior: 'smooth' });
                             }
                           }}
-                          className={`w-full mt-2 py-1.5 px-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-300 text-xs font-medium rounded-lg transition-colors flex items-center justify-center gap-1.5 border border-zinc-800 hover:border-${colorName}-900/50`}
+                          className={`w-full mt-2 py-2 px-3 bg-surface-1/50 hover:bg-surface-2 text-text-muted hover:${textColor} text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2 border border-surface-4/50 hover:${style.border} group/btn`}
                         >
-                          <Filter className="w-3.5 h-3.5" />
-                          Ver solo esta ruta
+                          <Filter className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                          Explorar ruta
                         </button>
                       )}
                     </div>

@@ -35,20 +35,20 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
 
   if (!isMounted) {
     return (
-      <div className={`bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center gap-6 shrink-0 animate-pulse transition-all duration-300 ${isScrolled ? 'p-3 min-w-[200px] min-h-[60px]' : 'p-5 min-w-[280px] min-h-[90px]'}`} />
+      <div className={`bg-surface-2 border border-surface-4 rounded-2xl flex items-center gap-6 shrink-0 animate-pulse transition-all duration-300 ${isScrolled ? 'p-3 min-w-[200px] min-h-[60px]' : 'p-5 min-w-[280px] min-h-[90px]'}`} />
     );
   }
 
   if (isReleased) {
     return (
-      <div className={`bg-emerald-950/30 border border-emerald-900/50 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
+      <div className={`bg-glow-success/10 border border-glow-success/30 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
         <div className={`flex items-center ${isScrolled ? 'gap-4' : 'gap-6'}`}>
-          <div className={`bg-emerald-900/50 rounded-xl border border-emerald-800/50 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
-            <PlayCircle className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-emerald-400`} />
+          <div className={`bg-glow-success/20 rounded-xl border border-glow-success/30 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
+            <PlayCircle className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-glow-success`} />
           </div>
           <div>
-            <p className={`text-emerald-500 uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>¡El momento ha llegado!</p>
-            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-emerald-50`}>Ya en cines</div>
+            <p className={`text-glow-success uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>¡El momento ha llegado!</p>
+            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-surface-1`}>Ya en cines</div>
           </div>
         </div>
         {!isScrolled && (
@@ -56,7 +56,7 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
             href="https://www.youtube.com/results?search_query=the+mandalorian+and+grogu+trailer" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors text-center"
+            className="w-full py-2 bg-glow-success hover:bg-glow-success/80 text-surface-1 text-sm font-medium rounded-lg transition-colors text-center"
           >
             Ver Tráiler Oficial
           </a>
@@ -68,27 +68,27 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
   const pace = timeLeft.days > 0 ? Math.ceil(remainingMinutes / timeLeft.days) : remainingMinutes;
 
   return (
-    <div className={`bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
+    <div className={`bg-surface-2 border border-surface-4 rounded-2xl flex flex-col shrink-0 transition-all duration-300 ${isScrolled ? 'p-3 gap-2' : 'p-5 gap-4'}`}>
       <div className={`flex items-center ${isScrolled ? 'gap-4' : 'gap-6'}`}>
-        <div className={`bg-zinc-950 rounded-xl border border-zinc-800/50 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
-          <Calendar className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-zinc-400`} />
+        <div className={`bg-surface-3 rounded-xl border border-surface-4/50 flex items-center justify-center ${isScrolled ? 'p-2' : 'p-3'}`}>
+          <Calendar className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-text-muted`} />
         </div>
         <div>
-          <p className={`text-zinc-500 uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en Cines</p>
+          <p className={`text-text-muted uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en Cines</p>
           <div className="flex items-baseline gap-2">
-            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-emerald-400`}>{timeLeft.days}</span>
-            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-zinc-400`}>días</span>
-            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-zinc-300 ml-2`}>{timeLeft.hours}</span>
-            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-zinc-400`}>hrs</span>
+            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-glow-success`}>{timeLeft.days}</span>
+            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-text-muted`}>días</span>
+            <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-text-body ml-2`}>{timeLeft.hours}</span>
+            <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-text-muted`}>hrs</span>
           </div>
         </div>
       </div>
       
       {!isScrolled && remainingMinutes > 0 && (
-        <div className="pt-3 border-t border-zinc-800/50 flex items-start gap-3">
-          <Flame className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-zinc-400 leading-relaxed max-w-[220px]">
-            Pace Tracker: Necesitas ver <strong className="text-zinc-200">{pace} min/día</strong> para llegar al día del estreno.
+        <div className="pt-3 border-t border-surface-4/50 flex items-start gap-3">
+          <Flame className="w-4 h-4 text-glow-warning shrink-0 mt-0.5" />
+          <p className="text-xs text-text-muted leading-relaxed max-w-[220px]">
+            Pace Tracker: Necesitas ver <strong className="text-text-body">{pace} min/día</strong> para llegar al día del estreno.
           </p>
         </div>
       )}

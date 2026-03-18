@@ -61,37 +61,37 @@ export default function EraSection({
         <div className="md:w-1/3 shrink-0 relative z-10">
           <div className="sticky top-8 space-y-4 bg-[#09090b] py-2">
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shadow-lg ${isEraCompleted ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-emerald-500/20' : 'bg-zinc-900 border-zinc-700 text-zinc-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shadow-lg ${isEraCompleted ? 'bg-glow-success/20 border-glow-success/50 text-glow-success shadow-glow-success/20' : 'bg-surface-2 border-surface-4 text-text-muted'}`}>
                 {era.eraNumber}
               </div>
-              <h2 className={`text-2xl font-bold tracking-tight transition-colors ${isEraCompleted ? 'text-emerald-50' : 'text-zinc-100'}`} style={{ fontFamily: 'var(--font-display)' }}>
+              <h2 className={`text-2xl font-bold tracking-tight transition-colors ${isEraCompleted ? 'text-glow-success' : 'text-text-heading'}`} style={{ fontFamily: 'var(--font-display)' }}>
                 ERA {era.eraNumber}
               </h2>
             </div>
             <div className="pl-11">
-              <h3 className="text-lg font-medium text-zinc-300 mb-2">{era.eraLabel}</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed mb-4">{era.description}</p>
+              <h3 className="text-lg font-medium text-text-body mb-2">{era.eraLabel}</h3>
+              <p className="text-sm text-text-muted leading-relaxed mb-4">{era.description}</p>
               
               <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono">
-                  <span className={isCompleted(era.id) ? "text-emerald-400 font-bold" : "text-zinc-300"}>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-2 border border-surface-4 text-xs font-mono">
+                  <span className={isCompleted(era.id) ? "text-glow-success font-bold" : "text-text-body"}>
                     {eraWatchedCount} / {eraTotalCount}
                   </span>
-                  <span className="text-zinc-500">vistos</span>
+                  <span className="text-text-muted">vistos</span>
                 </div>
                 
                 <button 
                   onClick={handleToggleAll}
-                  className="p-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
+                  className="p-1.5 rounded-lg border border-surface-4 text-text-muted hover:text-text-body hover:bg-surface-2 transition-colors"
                   title={isEraCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
                   aria-label={isEraCompleted ? "Desmarcar toda la era" : "Marcar toda la era"}
                 >
-                  {isEraCompleted ? <CheckSquare className="w-4 h-4 text-emerald-500" /> : isPartiallyCompleted ? <Square className="w-4 h-4 text-emerald-500/50" fill="currentColor" /> : <Square className="w-4 h-4" />}
+                  {isEraCompleted ? <CheckSquare className="w-4 h-4 text-glow-success" /> : isPartiallyCompleted ? <Square className="w-4 h-4 text-glow-success/50" fill="currentColor" /> : <Square className="w-4 h-4" />}
                 </button>
 
                 <button 
                   onClick={() => toggleEraExpanded(era.id)}
-                  className="p-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors md:hidden"
+                  className="p-1.5 rounded-lg border border-surface-4 text-text-muted hover:text-text-body hover:bg-surface-2 transition-colors md:hidden"
                   aria-expanded={isExpanded}
                   aria-label={isExpanded ? "Colapsar era" : "Expandir era"}
                 >

@@ -117,8 +117,8 @@ export const eras: Era[] = [
         ]
       },
       {
-        id: "tcw-t5-1",
-        title: "The Clone Wars - T5, Ep 1",
+        id: "tcw-t5-14",
+        title: "The Clone Wars - T5, Ep 14",
         type: "series",
         duration: 22,
         reason: "Eminence. Embo se enfrenta a mandalorianos y se entrelaza con el Sindicato de la Sombra y Darth Maul, mostrando su capacidad de supervivencia ante amenazas mayores.",

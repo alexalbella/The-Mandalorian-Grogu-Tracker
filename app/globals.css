@@ -1,5 +1,43 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+
+  /* Surface Tokens */
+  --color-surface-1: #050505;
+  --color-surface-2: #0a0a0c;
+  --color-surface-3: #18181b; /* zinc-900 */
+  --color-surface-4: #27272a; /* zinc-800 */
+
+  /* Text Tokens */
+  --color-text-heading: #f4f4f5; /* zinc-100 */
+  --color-text-body: #a1a1aa; /* zinc-400 */
+  --color-text-muted: #71717a; /* zinc-500 */
+
+  /* Glow Tokens */
+  --color-glow-success: #34d399; /* emerald-400 */
+  --color-glow-warning: #fbbf24; /* amber-400 */
+  --color-glow-danger: #f87171; /* red-400 */
+  --color-glow-info: #60a5fa; /* blue-400 */
+
+  /* Route Tokens */
+  --color-route-mandalore: #a1a1aa; /* zinc-400 */
+  --color-route-hutt: #f59e0b; /* amber-500 */
+  --color-route-bounty: #dc2626; /* red-600 */
+  --color-route-empire: #64748b; /* slate-500 */
+  --color-route-republic: #3b82f6; /* blue-500 */
+  --color-route-thrawn: #6366f1; /* indigo-500 */
+  --color-route-meta: #10b981; /* emerald-500 */
+
+  --animate-shimmer: shimmer 2s infinite;
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(50%); }
+  }
+}
+
 body {
   background-color: #050505;
   background-image: radial-gradient(circle at 50% 0%, #111111 0%, #050505 100%);
