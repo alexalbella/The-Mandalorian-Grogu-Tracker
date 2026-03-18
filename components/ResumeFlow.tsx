@@ -2,6 +2,8 @@ import { Era, MediaItem, eras } from '@/data/starwars-list';
 import { motion } from 'motion/react';
 import { CheckCircle2, AlertTriangle, ArrowRight, PlayCircle } from 'lucide-react';
 
+import { useUIStore } from '@/store/ui';
+
 export default function ResumeFlow({ 
   nextItem, 
   handleSkipItem, 
@@ -13,15 +15,16 @@ export default function ResumeFlow({
   toggleEraExpanded: (eraId: string) => void, 
   expandedEras: Record<string, boolean> 
 }) {
-  if (!nextItem) return null;
-
   const isSkippedEssential = nextItem.isSkippedEssential;
   const currentEra = eras.find(e => e.id === nextItem.eraId);
+  const setSelectedCard = useUIStore(state => state.setSelectedCard);
 
   return (
     <motion.div 
+      layout
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
       className={`relative p-6 rounded-2xl border ${isSkippedEssential ? 'bg-glow-warning/10 border-glow-warning/30' : 'bg-surface-2/80 border-surface-4/80'} mb-8 backdrop-blur-sm overflow-hidden`}
     >
       {!isSkippedEssential && (
@@ -71,9 +74,9 @@ export default function ResumeFlow({
                 const element = document.getElementById(elementId);
                 if (element) {
                   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  element.classList.add('ring-2', isSkippedEssential ? 'ring-glow-warning' : 'ring-glow-success', 'ring-offset-4', 'ring-offset-surface-1', 'transition-all', 'duration-500', 'rounded-xl');
+                  setSelectedCard(elementId);
                   setTimeout(() => {
-                    element.classList.remove('ring-2', isSkippedEssential ? 'ring-glow-warning' : 'ring-glow-success', 'ring-offset-4', 'ring-offset-surface-1');
+                    setSelectedCard(null);
                   }, 2000);
                 }
               }, 150);

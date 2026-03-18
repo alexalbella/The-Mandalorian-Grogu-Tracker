@@ -123,12 +123,16 @@ export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
 
   return (
     <>
-      <ResumeFlow 
-        nextItem={nextItem} 
-        handleSkipItem={handleSkipItem} 
-        toggleEraExpanded={toggleEraExpanded} 
-        expandedEras={expandedEras} 
-      />
+      <AnimatePresence mode="popLayout">
+        {nextItem && (
+          <ResumeFlow 
+            nextItem={nextItem} 
+            handleSkipItem={handleSkipItem} 
+            toggleEraExpanded={toggleEraExpanded} 
+            expandedEras={expandedEras} 
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {progressPercent === 100 && (

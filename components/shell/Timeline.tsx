@@ -9,7 +9,7 @@ import EraSection from '../EraSection';
 
 export default function Timeline({ eras }: { eras: Era[] }) {
   const { watchedItems, skippedItems, toggleItem, markMultiple, unmarkMultiple, isCompleted } = useProgressStore();
-  const { filterType, preset, hideCompleted, searchQuery, setLastViewedId, isMuted } = useUIStore();
+  const { filterType, preset, hideCompleted, searchQuery, setLastViewedId, isMuted, reducedMotion } = useUIStore();
 
   const playSound = useCallback(() => {
     if (isMuted) return;
@@ -96,7 +96,9 @@ export default function Timeline({ eras }: { eras: Era[] }) {
       <AnimatePresence mode="popLayout">
         {filteredEras.length === 0 ? (
           <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
             className="text-center py-20 text-text-muted"
           >
             No hay elementos que coincidan con los filtros actuales.

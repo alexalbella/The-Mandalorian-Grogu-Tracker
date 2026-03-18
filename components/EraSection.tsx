@@ -19,7 +19,7 @@ export default function EraSection({
   markMultiple: (ids: string[]) => void,
   unmarkMultiple: (ids: string[]) => void
 }) {
-  const { expandedEras, toggleEraExpanded } = useUIStore();
+  const { expandedEras, toggleEraExpanded, reducedMotion, focusMode } = useUIStore();
   
   // Default to true if not set
   const isExpanded = expandedEras[era.id] !== false;
@@ -29,6 +29,8 @@ export default function EraSection({
   const eraWatchedCount = eraItemIds.filter(id => isCompleted(id)).length;
   const isEraCompleted = eraWatchedCount === eraTotalCount && eraTotalCount > 0;
   const isPartiallyCompleted = eraWatchedCount > 0 && !isEraCompleted;
+
+  const isDimmed = focusMode && isEraCompleted;
 
   const handleToggleAll = () => {
     if (isEraCompleted) {
@@ -40,11 +42,11 @@ export default function EraSection({
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+      animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+      exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
       viewport={{ once: true, margin: "-100px" }}
-      className="relative pt-12 md:pt-16"
+      className={`relative pt-12 md:pt-16 transition-all duration-500 ${isDimmed ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}`}
     >
       {index > 0 && (
         <div className="absolute top-0 left-0 w-full flex items-center justify-center">
@@ -106,9 +108,9 @@ export default function EraSection({
         <AnimatePresence initial={false}>
           {isExpanded && (
             <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={reducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }}
+              animate={reducedMotion ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
+              exit={reducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
               className="md:w-2/3 space-y-3 md:pl-8 overflow-hidden"
             >
               <AnimatePresence mode="popLayout">

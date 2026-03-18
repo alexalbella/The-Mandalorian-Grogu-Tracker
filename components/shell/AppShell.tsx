@@ -9,9 +9,13 @@ import { StatsPanel, DataManagementPanel } from './DataPanel';
 import RouteAtlas from './RouteAtlas';
 import Timeline from './Timeline';
 import ProgressRail from './ProgressRail';
+import UndoRedoWidget from './UndoRedoWidget';
+
+import { motion } from 'motion/react';
 
 export default function AppShell({ eras }: { eras: Era[] }) {
   const [isMounted, setIsMounted] = useState(false);
+  const reducedMotion = useUIStore(state => state.reducedMotion);
 
   useEffect(() => {
     setIsMounted(true);
@@ -23,9 +27,9 @@ export default function AppShell({ eras }: { eras: Era[] }) {
         const element = document.getElementById(savedLastViewedId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-2', 'ring-glow-success', 'ring-offset-4', 'ring-offset-surface-1', 'transition-all', 'duration-500', 'rounded-xl');
+          useUIStore.getState().setSelectedCard(savedLastViewedId);
           setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-glow-success', 'ring-offset-4', 'ring-offset-surface-1');
+            useUIStore.getState().setSelectedCard(null);
           }, 2000);
         }
       }, 500);
@@ -48,28 +52,61 @@ export default function AppShell({ eras }: { eras: Era[] }) {
     );
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: reducedMotion ? 0 : 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: reducedMotion ? 0 : 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
       {/* Main Content */}
-      <div className="flex-1 space-y-12 min-w-0">
-        <HeaderHUD eras={eras} />
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="flex-1 space-y-12 min-w-0"
+      >
+        <motion.div variants={itemVariants}>
+          <HeaderHUD eras={eras} />
+        </motion.div>
         
-        <QuickLookDrawer eras={eras} />
+        <motion.div variants={itemVariants}>
+          <QuickLookDrawer eras={eras} />
+        </motion.div>
         
-        <StatsPanel eras={eras} />
+        <motion.div variants={itemVariants}>
+          <StatsPanel eras={eras} />
+        </motion.div>
         
-        <RouteAtlas eras={eras} />
+        <motion.div variants={itemVariants}>
+          <RouteAtlas eras={eras} />
+        </motion.div>
         
-        <Timeline eras={eras} />
+        <motion.div variants={itemVariants}>
+          <Timeline eras={eras} />
+        </motion.div>
         
-        <DataManagementPanel />
+        <motion.div variants={itemVariants}>
+          <DataManagementPanel />
+        </motion.div>
         
-        <footer className="pt-8 pb-24 text-center border-t border-surface-4 text-text-muted text-sm">
+        <motion.footer variants={itemVariants} className="pt-8 pb-24 text-center border-t border-surface-4 text-text-muted text-sm">
           <p>Que la Fuerza te acompañe. Este es el camino.</p>
-        </footer>
-      </div>
+        </motion.footer>
+      </motion.div>
 
       <ProgressRail eras={eras} />
+      <UndoRedoWidget />
     </div>
   );
 }

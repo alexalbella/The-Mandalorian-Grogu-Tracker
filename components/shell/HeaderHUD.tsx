@@ -1,19 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Star, Volume2, VolumeX } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Volume2, VolumeX, Settings, LayoutGrid, LayoutList, Zap, ZapOff, Eye, EyeOff } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
 import dynamic from 'next/dynamic';
 import DarksaberProgress from './DarksaberProgress';
+import { AnimatePresence, motion } from 'motion/react';
 
 const CountdownWidget = dynamic(() => import('../CountdownWidget'), { ssr: false });
 
 export default function HeaderHUD({ eras }: { eras: Era[] }) {
-  const { isMuted, setIsMuted } = useUIStore();
+  const { isMuted, setIsMuted, compactMode, setCompactMode, reducedMotion, setReducedMotion, focusMode, setFocusMode } = useUIStore();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { progressPercent, remainingMinutes } = useDashboardStats(eras);
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   // Dynamic glow based on progress
   const glowOpacity = Math.max(0.1, Math.min(0.4, progressPercent / 100));
@@ -24,6 +27,16 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setShowSettings(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -47,6 +60,56 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
             >
               {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
+            <div className="relative" ref={settingsRef}>
+              <button 
+                onClick={() => setShowSettings(!showSettings)}
+                className={`p-1.5 rounded-full border transition-colors ${showSettings ? 'bg-surface-4 border-surface-4 text-text-heading' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
+                title="Ajustes de interfaz"
+              >
+                <Settings className="w-3.5 h-3.5" />
+              </button>
+              <AnimatePresence>
+                {showSettings && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full mt-2 left-0 w-48 bg-surface-2 border border-surface-4 rounded-xl shadow-xl overflow-hidden z-50"
+                  >
+                    <div className="p-2 space-y-1">
+                      <button
+                        onClick={() => setCompactMode(!compactMode)}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
+                      >
+                        <span className="flex items-center gap-2">
+                          {compactMode ? <LayoutList className="w-4 h-4 text-glow-success" /> : <LayoutGrid className="w-4 h-4 text-text-muted" />}
+                          Modo compacto
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => setReducedMotion(!reducedMotion)}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
+                      >
+                        <span className="flex items-center gap-2">
+                          {reducedMotion ? <ZapOff className="w-4 h-4 text-glow-success" /> : <Zap className="w-4 h-4 text-text-muted" />}
+                          Reducir animaciones
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => setFocusMode(!focusMode)}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
+                      >
+                        <span className="flex items-center gap-2">
+                          {focusMode ? <EyeOff className="w-4 h-4 text-glow-success" /> : <Eye className="w-4 h-4 text-text-muted" />}
+                          Modo enfoque
+                        </span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
@@ -55,13 +118,56 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
               <span className="text-glow-success">& Grogu</span> {isScrolled ? '' : 'Tracker'}
             </h1>
             {isScrolled && (
-              <button 
-                onClick={() => setIsMuted(!isMuted)}
-                className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
-                title={isMuted ? "Activar sonido" : "Silenciar sonido"}
-              >
-                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              </button>
+              <>
+                <button 
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
+                  title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                >
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
+                <div className="relative" ref={settingsRef}>
+                  <button 
+                    onClick={() => setShowSettings(!showSettings)}
+                    className={`p-1.5 rounded-full border transition-colors ${showSettings ? 'bg-surface-4 border-surface-4 text-text-heading' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
+                    title="Ajustes de interfaz"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                  </button>
+                  <AnimatePresence>
+                    {showSettings && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full mt-2 left-0 w-48 bg-surface-2 border border-surface-4 rounded-xl shadow-xl overflow-hidden z-50"
+                      >
+                        <div className="p-2 space-y-1">
+                          <button
+                            onClick={() => setCompactMode(!compactMode)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
+                          >
+                            <span className="flex items-center gap-2">
+                              {compactMode ? <LayoutList className="w-4 h-4 text-glow-success" /> : <LayoutGrid className="w-4 h-4 text-text-muted" />}
+                              Modo compacto
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => setReducedMotion(!reducedMotion)}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
+                          >
+                            <span className="flex items-center gap-2">
+                              {reducedMotion ? <ZapOff className="w-4 h-4 text-glow-success" /> : <Zap className="w-4 h-4 text-text-muted" />}
+                              Reducir animaciones
+                            </span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
             )}
           </div>
         </div>

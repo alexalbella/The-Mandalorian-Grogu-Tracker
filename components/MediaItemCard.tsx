@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, Circle, Film, Tv, Info } from 'lucide-react';
 import { MediaItem } from '@/data/starwars-list';
 import Image from 'next/image';
+import { useUIStore } from '@/store/ui';
 
 export default function MediaItemCard({ 
   item, 
@@ -17,6 +18,16 @@ export default function MediaItemCard({
   markMultiple: (ids: string[]) => void;
   unmarkMultiple: (ids: string[]) => void;
 }) {
+  const selectedCard = useUIStore(state => state.selectedCard);
+  const selectedRoute = useUIStore(state => state.selectedRoute);
+  const addRecentlyTouched = useUIStore(state => state.addRecentlyTouched);
+  const compactMode = useUIStore(state => state.compactMode);
+  const reducedMotion = useUIStore(state => state.reducedMotion);
+  const focusMode = useUIStore(state => state.focusMode);
+  
+  const isSelected = selectedCard === item.id;
+  const isRouteSelected = selectedRoute ? item.tags.includes(selectedRoute) : false;
+
   const isWatched = item.subItems 
     ? item.subItems.every(sub => isCompleted(sub.id)) && item.subItems.length > 0
     : isCompleted(item.id);
@@ -25,7 +36,10 @@ export default function MediaItemCard({
     ? item.subItems.some(sub => isCompleted(sub.id)) && !isWatched
     : false;
 
+  const isDimmed = focusMode && isWatched;
+
   const handleToggle = () => {
+    addRecentlyTouched(item.id);
     if (item.subItems) {
       if (isWatched) {
         unmarkMultiple(item.subItems.map(s => s.id));
@@ -84,13 +98,19 @@ export default function MediaItemCard({
   const [imgSrc, setImgSrc] = useState(getImageUrl(item.id));
 
   return (
-    <div 
+    <motion.div 
       id={item.id}
-      className={`group relative p-4 rounded-xl border transition-all cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-glow-success focus-within:ring-offset-2 focus-within:ring-offset-surface-1 ${
+      layout={!reducedMotion}
+      animate={reducedMotion ? {} : {
+        scale: isSelected ? 1.02 : 1,
+        boxShadow: isSelected ? '0 0 0 2px var(--color-glow-success), 0 0 20px var(--color-glow-success)' : '0 0 0 0px transparent',
+      }}
+      transition={{ duration: 0.3 }}
+      className={`group relative ${compactMode ? 'p-2' : 'p-4'} rounded-xl border transition-colors cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-glow-success focus-within:ring-offset-2 focus-within:ring-offset-surface-1 ${
         isWatched 
           ? 'bg-glow-success/10 border-glow-success/30 hover:border-glow-success/50' 
           : 'bg-surface-2/50 backdrop-blur-md border-surface-4 hover:bg-surface-3 hover:border-surface-4/80'
-      }`}
+      } ${isRouteSelected ? 'ring-2 ring-offset-2 ring-offset-surface-1 ring-white/30' : ''} ${isDimmed ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}`}
       onClick={handleToggle}
     >
       <input 
@@ -102,36 +122,38 @@ export default function MediaItemCard({
         onClick={(e) => e.stopPropagation()}
       />
       
-      <div className="flex flex-row gap-4">
+      <div className={`flex flex-row ${compactMode ? 'gap-2 items-center' : 'gap-4'}`}>
         {/* Thumbnail */}
-        <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3">
-          <Image 
-            src={imgSrc} 
-            alt={`Poster for ${item.title}`}
-            fill
-            className={`${item.subItems && item.subItems.length > 0 ? 'object-contain' : 'object-cover'} transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
-            sizes="(max-width: 640px) 96px, 128px"
-            referrerPolicy="no-referrer"
-            onError={() => {
-              // If image fails, fallback to local SVG
-              setImgSrc(getFallbackImage(item.title));
-            }}
-            unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
-          />
-          {isWatched && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <CheckCircle2 className="w-10 h-10 text-glow-success drop-shadow-lg" />
-            </div>
-          )}
-        </div>
+        {!compactMode && (
+          <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3">
+            <Image 
+              src={imgSrc} 
+              alt={`Poster for ${item.title}`}
+              fill
+              className={`${item.subItems && item.subItems.length > 0 ? 'object-contain' : 'object-cover'} transition-all duration-500 ${isWatched ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
+              sizes="(max-width: 640px) 96px, 128px"
+              referrerPolicy="no-referrer"
+              onError={() => {
+                // If image fails, fallback to local SVG
+                setImgSrc(getFallbackImage(item.title));
+              }}
+              unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+            />
+            {isWatched && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <CheckCircle2 className="w-10 h-10 text-glow-success drop-shadow-lg" />
+              </div>
+            )}
+          </div>
+        )}
 
-        <div className="space-y-3 flex-1 flex flex-col justify-center">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+        <div className={`space-y-3 flex-1 flex flex-col ${compactMode ? 'justify-center' : 'justify-center'}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-start justify-between gap-2 ${compactMode ? 'items-center' : ''}`}>
             <div className="flex items-start gap-3">
-              <div className="shrink-0 mt-1 hidden sm:block">
+              <div className={`shrink-0 ${compactMode ? 'mt-0.5' : 'mt-1'} hidden sm:block`}>
                 <motion.div
                   initial={false}
-                  animate={{ 
+                  animate={reducedMotion ? {} : { 
                     scale: isWatched ? [1, 1.2, 1] : 1,
                     rotate: isWatched ? [0, 10, 0] : 0 
                   }}
@@ -148,11 +170,22 @@ export default function MediaItemCard({
                   )}
                 </motion.div>
               </div>
-              <h4 className={`font-medium text-lg transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}>
+              <h4 className={`font-medium ${compactMode ? 'text-base' : 'text-lg'} transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}>
                 {item.title}
               </h4>
             </div>
             <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  useUIStore.getState().setSelectedCard(item.id);
+                  useUIStore.getState().setQuickLookOpen(true);
+                }}
+                className="p-1.5 rounded-md hover:bg-surface-3 text-text-muted hover:text-text-body transition-colors"
+                title="Ver detalles"
+              >
+                <Info className="w-4 h-4" />
+              </button>
               {item.essential && (
                 <span className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20">
                   Esencial
@@ -165,17 +198,19 @@ export default function MediaItemCard({
             </div>
           </div>
           
-          <div className="text-sm">
-            <div className={`leading-relaxed transition-colors ${isWatched ? 'text-surface-4' : 'text-text-body'}`}>
-              <span className="inline-flex items-center gap-1 font-medium text-text-muted mr-2">
-                <Info className="w-3.5 h-3.5" /> Contexto:
-              </span>
-              {item.reason}
+          {!compactMode && (
+            <div className="text-sm">
+              <div className={`leading-relaxed transition-colors ${isWatched ? 'text-surface-4' : 'text-text-body'}`}>
+                <span className="inline-flex items-center gap-1 font-medium text-text-muted mr-2">
+                  <Info className="w-3.5 h-3.5" /> Contexto:
+                </span>
+                {item.reason}
+              </div>
             </div>
-          </div>
+          )}
 
           {item.subItems && item.subItems.length > 0 && (
-            <div className="mt-4 space-y-2 border-t border-white/5 pt-4" onClick={(e) => e.stopPropagation()}>
+            <div className={`mt-4 space-y-2 border-t border-white/5 ${compactMode ? 'pt-2' : 'pt-4'}`} onClick={(e) => e.stopPropagation()}>
               {item.subItems.map(sub => {
                 const isSubWatched = isCompleted(sub.id);
                 return (
@@ -188,6 +223,7 @@ export default function MediaItemCard({
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleItem(sub.id);
+                      addRecentlyTouched(sub.id);
                     }}
                   >
                     <div className="flex items-center gap-3">
@@ -208,6 +244,6 @@ export default function MediaItemCard({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

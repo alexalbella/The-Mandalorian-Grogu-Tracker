@@ -78,7 +78,7 @@ export default function AchievementsPanel({
 }) {
   const { unlockedAchievements } = useAchievementsStore();
   const { isCompleted } = useProgressStore();
-  const { setPreset } = useUIStore();
+  const { setPreset, selectedRoute, setSelectedRoute } = useUIStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
@@ -209,6 +209,7 @@ export default function AchievementsPanel({
                 const style = routeStyles[category] || routeStyles['mandalore'];
                 
                 const isActive = progress > 0;
+                const isSelected = selectedRoute === category;
                 const tileBg = isActive ? style.bg : 'bg-surface-2/30';
                 const tileBorder = isActive ? style.border : 'border-surface-4/50';
                 const tileGlow = isActive ? style.glow : '';
@@ -217,7 +218,8 @@ export default function AchievementsPanel({
                 return (
                   <div 
                     key={category} 
-                    className={`relative p-5 rounded-2xl border transition-all duration-500 flex flex-col overflow-hidden ${tileBg} ${tileBorder} ${tileGlow}`}
+                    onClick={() => setSelectedRoute(isSelected ? null : category)}
+                    className={`relative p-5 rounded-2xl border transition-all duration-500 flex flex-col overflow-hidden cursor-pointer hover:scale-[1.02] ${tileBg} ${tileBorder} ${tileGlow} ${isSelected ? 'ring-2 ring-offset-2 ring-offset-surface-1 ring-white/50' : ''}`}
                   >
                     {/* Background Map Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />

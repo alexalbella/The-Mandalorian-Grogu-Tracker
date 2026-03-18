@@ -6,6 +6,11 @@ interface ProgressState {
   skippedItems: string[];
   streak: number;
   lastWatchedDate: string | null;
+  
+  // History for undo/redo
+  history: { watchedItems: string[], skippedItems: string[] }[];
+  historyIndex: number;
+  
   toggleItem: (id: string) => void;
   skipItem: (id: string) => void;
   markMultiple: (ids: string[]) => void;
@@ -14,6 +19,9 @@ interface ProgressState {
   isCompleted: (id: string) => boolean;
   isWatched: (id: string) => boolean;
   getCompletedItems: () => string[];
+  
+  undo: () => void;
+  redo: () => void;
 }
 
 const updateStreak = (state: ProgressState) => {
@@ -30,6 +38,19 @@ const updateStreak = (state: ProgressState) => {
   return { streak: 1, lastWatchedDate: today };
 };
 
+const saveHistory = (state: ProgressState, newWatched: string[], newSkipped: string[]) => {
+  const newHistoryEntry = { watchedItems: newWatched, skippedItems: newSkipped };
+  const newHistory = [
+    ...state.history.slice(0, state.historyIndex + 1),
+    newHistoryEntry
+  ].slice(-20); // Keep last 20 states
+  
+  return {
+    history: newHistory,
+    historyIndex: newHistory.length - 1
+  };
+};
+
 export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
@@ -37,16 +58,22 @@ export const useProgressStore = create<ProgressState>()(
       skippedItems: [],
       streak: 0,
       lastWatchedDate: null,
+      history: [{ watchedItems: [], skippedItems: [] }],
+      historyIndex: 0,
+      
       toggleItem: (id) => set((state) => {
         const isAdding = !state.watchedItems.includes(id);
         const newItems = isAdding
           ? [...state.watchedItems, id]
           : state.watchedItems.filter(i => i !== id);
           
+        const newSkipped = state.skippedItems.filter(i => i !== id);
+          
         return {
           watchedItems: newItems,
-          skippedItems: state.skippedItems.filter(i => i !== id), // Remove from skipped if watched
-          ...(isAdding ? updateStreak(state) : {})
+          skippedItems: newSkipped,
+          ...updateStreak(state),
+          ...saveHistory(state, newItems, newSkipped)
         };
       }),
       skipItem: (id) => set((state) => {
@@ -55,27 +82,70 @@ export const useProgressStore = create<ProgressState>()(
           ? [...state.skippedItems, id]
           : state.skippedItems.filter(i => i !== id);
           
+        const newWatched = state.watchedItems.filter(i => i !== id);
+          
         return {
           skippedItems: newSkipped,
-          watchedItems: state.watchedItems.filter(i => i !== id), // Remove from watched if skipped
+          watchedItems: newWatched,
+          ...saveHistory(state, newWatched, newSkipped)
         };
       }),
       markMultiple: (ids) => set((state) => {
-        const newItems = new Set([...state.watchedItems, ...ids]);
+        const newItems = Array.from(new Set([...state.watchedItems, ...ids]));
+        const newSkipped = state.skippedItems.filter(i => !ids.includes(i));
+        
         return { 
-          watchedItems: Array.from(newItems),
-          skippedItems: state.skippedItems.filter(i => !ids.includes(i)),
-          ...updateStreak(state)
+          watchedItems: newItems,
+          skippedItems: newSkipped,
+          ...updateStreak(state),
+          ...saveHistory(state, newItems, newSkipped)
         };
       }),
-      unmarkMultiple: (ids) => set((state) => ({
-        watchedItems: state.watchedItems.filter(i => !ids.includes(i)),
-        skippedItems: state.skippedItems.filter(i => !ids.includes(i))
+      unmarkMultiple: (ids) => set((state) => {
+        const newWatched = state.watchedItems.filter(i => !ids.includes(i));
+        const newSkipped = state.skippedItems.filter(i => !ids.includes(i));
+        
+        return {
+          watchedItems: newWatched,
+          skippedItems: newSkipped,
+          ...saveHistory(state, newWatched, newSkipped)
+        };
+      }),
+      resetProgress: () => set((state) => ({ 
+        watchedItems: [], 
+        skippedItems: [], 
+        streak: 0, 
+        lastWatchedDate: null,
+        ...saveHistory(state, [], [])
       })),
-      resetProgress: () => set({ watchedItems: [], skippedItems: [], streak: 0, lastWatchedDate: null }),
       isCompleted: (id) => get().watchedItems.includes(id) || get().skippedItems.includes(id),
       isWatched: (id) => get().watchedItems.includes(id),
       getCompletedItems: () => [...get().watchedItems, ...get().skippedItems],
+      
+      undo: () => set((state) => {
+        if (state.historyIndex > 0) {
+          const newIndex = state.historyIndex - 1;
+          const previousState = state.history[newIndex];
+          return {
+            watchedItems: previousState.watchedItems,
+            skippedItems: previousState.skippedItems,
+            historyIndex: newIndex
+          };
+        }
+        return state;
+      }),
+      redo: () => set((state) => {
+        if (state.historyIndex < state.history.length - 1) {
+          const newIndex = state.historyIndex + 1;
+          const nextState = state.history[newIndex];
+          return {
+            watchedItems: nextState.watchedItems,
+            skippedItems: nextState.skippedItems,
+            historyIndex: newIndex
+          };
+        }
+        return state;
+      }),
     }),
     {
       name: 'mando-grogu-progress',
