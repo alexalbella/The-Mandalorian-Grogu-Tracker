@@ -55,3 +55,26 @@ body {
   background-repeat: repeat;
   background-size: 200px 200px;
 }
+
+
+.shell-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.shell-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent 30%, transparent 70%, rgba(16,185,129,0.08));
+  pointer-events: none;
+}
+
+.shell-panel::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,0.03);
+  pointer-events: none;
+}
