@@ -19,13 +19,15 @@ export default function MediaItemCard({
   isCompleted, 
   toggleItem,
   markMultiple,
-  unmarkMultiple
+  unmarkMultiple,
+  disableLayoutId = false
 }: { 
   item: MediaItem; 
   isCompleted: (id: string) => boolean; 
   toggleItem: (id: string) => void;
   markMultiple: (ids: string[]) => void;
   unmarkMultiple: (ids: string[]) => void;
+  disableLayoutId?: boolean;
 }) {
   const selectedCard = useUIStore(state => state.selectedCard);
   const selectedRoute = useUIStore(state => state.selectedRoute);
@@ -109,7 +111,7 @@ export default function MediaItemCard({
   return (
     <motion.div 
       id={item.id}
-      layoutId={reducedMotion ? undefined : item.id}
+      layoutId={reducedMotion || disableLayoutId ? undefined : item.id}
       layout={!reducedMotion}
       animate={reducedMotion ? {} : {
         scale: isSelected ? 1.02 : 1,
@@ -136,7 +138,7 @@ export default function MediaItemCard({
         {/* Thumbnail */}
         {!compactMode && (
           <motion.div 
-            layoutId={reducedMotion ? undefined : `poster-${item.id}`}
+            layoutId={reducedMotion || disableLayoutId ? undefined : `poster-${item.id}`}
             className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3"
           >
             <Image 
@@ -184,7 +186,7 @@ export default function MediaItemCard({
                 </motion.div>
               </div>
               <motion.h4 
-                layoutId={reducedMotion ? undefined : `title-${item.id}`}
+                layoutId={reducedMotion || disableLayoutId ? undefined : `title-${item.id}`}
                 className={`font-medium ${compactMode ? 'text-base' : 'text-lg'} transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}
               >
                 {item.title}
@@ -204,7 +206,7 @@ export default function MediaItemCard({
               </button>
               {item.essential && (
                 <motion.span 
-                  layoutId={reducedMotion ? undefined : `essential-${item.id}`}
+                  layoutId={reducedMotion || disableLayoutId ? undefined : `essential-${item.id}`}
                   className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20"
                 >
                   Esencial
@@ -230,7 +232,7 @@ export default function MediaItemCard({
                   {item.tags.map(tag => (
                     <motion.span 
                       key={tag}
-                      layoutId={reducedMotion ? undefined : `tag-${item.id}-${tag}`}
+                      layoutId={reducedMotion || disableLayoutId ? undefined : `tag-${item.id}-${tag}`}
                       className="px-2 py-1 bg-surface-3 rounded-md text-xs text-text-muted border border-surface-4 flex items-center gap-1.5"
                     >
                       <div className="w-1 h-1 rounded-full bg-glow-success" />

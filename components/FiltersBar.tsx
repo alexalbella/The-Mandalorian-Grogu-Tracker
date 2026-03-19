@@ -2,14 +2,15 @@ import { Search, EyeOff, Eye, RotateCcw } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useProgressStore } from '@/store/progress';
 
-type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'bounty-hunters' | 'new-republic' | 'essential-background' | 'movie-background';
+type Preset = 'all' | 'essential' | 'fast' | 'essential-background' | 'movie-background';
 
 export default function FiltersBar() {
   const { 
     filterType, setFilterType, 
     preset, setPreset, 
     hideCompleted, setHideCompleted, 
-    searchQuery, setSearchQuery 
+    searchQuery, setSearchQuery,
+    selectedRoute
   } = useUIStore();
   
   const { resetProgress } = useProgressStore();
@@ -62,31 +63,30 @@ export default function FiltersBar() {
       </div>
 
       {/* Presets Row */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-medium text-text-muted uppercase tracking-wider mr-2">Presets:</span>
-        {[
-          { id: 'all', label: 'Lista Completa' },
-          { id: 'essential', label: 'Imprescindible' },
-          { id: 'fast', label: 'Modo Rápido' },
-          { id: 'mandalore', label: 'Solo Mandalore' },
-          { id: 'thrawn', label: 'Solo Thrawn' },
-          { id: 'new-republic', label: 'Solo Nueva República' },
-          { id: 'hutt', label: 'Trama Hutt' },
-          { id: 'bounty-hunters', label: 'Solo Cazarrecompensas' }
-        ].map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setPreset(p.id as Preset)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
-              preset === p.id 
-                ? 'bg-glow-success/20 border-glow-success/50 text-glow-success' 
-                : 'bg-surface-2 border-surface-4 text-text-muted hover:border-surface-3 hover:text-text-body'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
+      {!selectedRoute && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-text-muted uppercase tracking-wider mr-2">Presets:</span>
+          {[
+            { id: 'all', label: 'Lista Completa' },
+            { id: 'essential', label: 'Imprescindible' },
+            { id: 'fast', label: 'Modo Rápido' },
+            { id: 'essential-background', label: 'Fondo Esencial' },
+            { id: 'movie-background', label: 'Solo Películas' }
+          ].map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPreset(p.id as Preset)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
+                preset === p.id 
+                  ? 'bg-glow-success/20 border-glow-success/50 text-glow-success' 
+                  : 'bg-surface-2 border-surface-4 text-text-muted hover:border-surface-3 hover:text-text-body'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

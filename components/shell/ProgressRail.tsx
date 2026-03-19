@@ -3,7 +3,7 @@
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
 import DarksaberProgress from './DarksaberProgress';
-import { motion, useScroll, useSpring } from 'motion/react';
+import { motion, useScroll, useSpring, useTransform } from 'motion/react';
 
 export default function ProgressRail({ eras }: { eras: Era[] }) {
   const { progressPercent, watchedCount, totalItems } = useDashboardStats(eras);
@@ -14,8 +14,15 @@ export default function ProgressRail({ eras }: { eras: Era[] }) {
     restDelta: 0.001
   });
 
+  const springProgress = useSpring(progressPercent, {
+    stiffness: 50,
+    damping: 15,
+    mass: 1
+  });
+
   // Dynamic glow based on progress
-  const glowOpacity = Math.max(0.05, Math.min(0.2, progressPercent / 100));
+  const glowOpacity = useTransform(springProgress, (v) => Math.max(0.05, Math.min(0.3, v / 100)));
+  const glowScale = useTransform(springProgress, (v) => 0.8 + (v / 100) * 0.4);
 
   return (
     <aside className="hidden lg:flex flex-col items-center w-24 shrink-0 pt-8 relative">
@@ -28,9 +35,12 @@ export default function ProgressRail({ eras }: { eras: Era[] }) {
       </div>
 
       <div className="sticky top-24 flex flex-col items-center gap-6 h-[calc(100vh-8rem)] starfield rounded-2xl p-4 border border-surface-4/30 relative overflow-hidden ml-4">
-        <div className="absolute inset-0 pointer-events-none transition-opacity duration-1000" style={{ opacity: glowOpacity }}>
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-glow-success blur-[50px]" />
-        </div>
+        <motion.div 
+          className="absolute inset-0 pointer-events-none" 
+          style={{ opacity: glowOpacity, scale: glowScale }}
+        >
+          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[150%] h-[80%] bg-glow-success blur-[60px] rounded-full" />
+        </motion.div>
         
         <div className="text-center space-y-1 relative z-10">
           <div className="text-xs font-mono text-text-muted uppercase tracking-widest">Progreso</div>
@@ -40,7 +50,7 @@ export default function ProgressRail({ eras }: { eras: Era[] }) {
         {/* Vertical Darksaber */}
         <DarksaberProgress progress={progressPercent} orientation="vertical" className="flex-1" />
         
-        <div className="text-xs font-mono text-text-muted">
+        <div className="text-xs font-mono text-text-muted relative z-10">
           {watchedCount}/{totalItems}
         </div>
       </div>

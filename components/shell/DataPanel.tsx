@@ -3,6 +3,7 @@
 import { CheckCircle2, Clock, Flame, PlayCircle, Download, Upload, RotateCcw } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useProgressStore } from '@/store/progress';
+import { useUIStore } from '@/store/ui';
 import { Era } from '@/data/starwars-list';
 
 function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: string, subtitle: React.ReactNode, icon: React.ReactNode, progress?: number }) {
@@ -29,6 +30,8 @@ function StatCard({ title, value, subtitle, icon, progress }: { title: string, v
 export function StatsPanel({ eras }: { eras: Era[] }) {
   const { totalItems, watchedCount, completedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = useDashboardStats(eras);
   const { streak } = useProgressStore();
+  const selectedRoute = useUIStore(state => state.selectedRoute);
+  const focusMode = useUIStore(state => state.focusMode);
 
   const formatTime = (mins: number) => {
     const hours = Math.floor(mins / 60);
@@ -36,10 +39,12 @@ export function StatsPanel({ eras }: { eras: Era[] }) {
     return `${hours}h ${minutes}m`;
   };
 
+  const routeName = selectedRoute ? selectedRoute.replace('-', ' ') : 'Plan';
+
   return (
-    <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <section className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-2 ring-glow-success/30 rounded-2xl shadow-[0_0_30px_rgba(20,255,140,0.1)]' : ''}`}>
       <StatCard 
-        title="Progreso del Plan" 
+        title={`Progreso: ${routeName}`}
         value={`${progressPercent}%`} 
         subtitle={
           <div className="flex flex-col gap-1">

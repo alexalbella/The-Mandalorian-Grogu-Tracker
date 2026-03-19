@@ -11,7 +11,7 @@ import confetti from 'canvas-confetti';
 
 export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
   const { isCompleted, skippedItems, skipItem } = useProgressStore();
-  const { expandedEras, toggleEraExpanded, setLastViewedId, isMuted } = useUIStore();
+  const { expandedEras, toggleEraExpanded, setLastViewedId, isMuted, selectedRoute } = useUIStore();
   const { progressPercent, totalItems } = useDashboardStats(eras);
 
   const playSound = useCallback(() => {
@@ -53,8 +53,13 @@ export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
     
     for (const era of eras) {
       for (const item of era.items) {
+        if (selectedRoute && !item.tags?.includes(selectedRoute as any)) continue;
+
         if (item.subItems) {
-          const skippedEssentialSub = item.subItems.find(sub => skippedItems.includes(sub.id) && item.essential);
+          const skippedEssentialSub = item.subItems.find(sub => 
+            skippedItems.includes(sub.id) && 
+            item.essential
+          );
           if (skippedEssentialSub) {
             nextItem = { item, subItem: skippedEssentialSub, eraId: era.id, isSkippedEssential: true };
             break;
@@ -72,6 +77,8 @@ export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
     if (!nextItem) {
       for (const era of eras) {
         for (const item of era.items) {
+          if (selectedRoute && !item.tags?.includes(selectedRoute as any)) continue;
+
           if (item.subItems) {
             const incompleteSub = item.subItems.find(sub => !isCompleted(sub.id));
             if (incompleteSub) {
@@ -90,7 +97,7 @@ export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
     }
     
     return nextItem;
-  }, [eras, isCompleted, skippedItems]);
+  }, [eras, isCompleted, skippedItems, selectedRoute]);
 
   useEffect(() => {
     if (progressPercent === 100 && totalItems > 0) {

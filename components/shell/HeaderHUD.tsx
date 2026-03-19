@@ -7,7 +7,7 @@ import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
 import dynamic from 'next/dynamic';
 import DarksaberProgress from './DarksaberProgress';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useSpring, useTransform } from 'motion/react';
 
 const CountdownWidget = dynamic(() => import('../CountdownWidget'), { ssr: false });
 
@@ -18,8 +18,15 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
   const { progressPercent, remainingMinutes } = useDashboardStats(eras);
   const settingsRef = useRef<HTMLDivElement>(null);
 
+  const springProgress = useSpring(progressPercent, {
+    stiffness: 50,
+    damping: 15,
+    mass: 1
+  });
+
   // Dynamic glow based on progress
-  const glowOpacity = Math.max(0.1, Math.min(0.4, progressPercent / 100));
+  const glowOpacity = useTransform(springProgress, (v) => Math.max(0.1, Math.min(0.4, v / 100)));
+  const glowScale = useTransform(springProgress, (v) => 0.8 + (v / 100) * 0.4);
 
   const [scrollY, setScrollY] = useState(0);
 
@@ -53,10 +60,13 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
         }} 
       />
 
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none transition-opacity duration-1000" style={{ opacity: glowOpacity }}>
+      <motion.div 
+        className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none" 
+        style={{ opacity: glowOpacity, scale: glowScale }}
+      >
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-glow-success blur-[120px] rounded-full" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-glow-success blur-[120px] rounded-full" />
-      </div>
+      </motion.div>
       
       <div className={`flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center justify-between relative z-10`}>
         <div className="flex-1 min-w-0">

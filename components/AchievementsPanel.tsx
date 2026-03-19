@@ -218,7 +218,11 @@ export default function AchievementsPanel({
                 return (
                   <div 
                     key={category} 
-                    onClick={() => setSelectedRoute(isSelected ? null : category)}
+                    onClick={() => {
+                      const newRoute = isSelected ? null : category;
+                      setSelectedRoute(newRoute);
+                      useUIStore.getState().setFocusMode(!!newRoute);
+                    }}
                     className={`relative p-5 rounded-2xl border transition-all duration-500 flex flex-col overflow-hidden cursor-pointer hover:scale-[1.02] ${tileBg} ${tileBorder} ${tileGlow} ${isSelected ? 'ring-2 ring-offset-2 ring-offset-surface-1 ring-white/50' : ''}`}
                   >
                     {/* Background Map Pattern */}
@@ -295,17 +299,15 @@ export default function AchievementsPanel({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            let targetPreset: any = 'all';
-                            if (category === 'mandalore') targetPreset = 'mandalore';
-                            if (category === 'thrawn') targetPreset = 'thrawn';
-                            if (category === 'new-republic') targetPreset = 'new-republic';
-                            if (category === 'hutt') targetPreset = 'hutt';
-                            if (category === 'bounty-hunters') targetPreset = 'bounty-hunters';
-                            
-                            if (targetPreset !== 'all') {
-                              setPreset(targetPreset);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }
+                            setSelectedRoute(category);
+                            useUIStore.getState().setFocusMode(true);
+                            setIsExpanded(false);
+                            setTimeout(() => {
+                              const timelineEl = document.getElementById('timeline-section');
+                              if (timelineEl) {
+                                timelineEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
                           }}
                           className={`w-full mt-2 py-2 px-3 bg-surface-1/50 hover:bg-surface-2 text-text-muted hover:${textColor} text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2 border border-surface-4/50 hover:${style.border} group/btn`}
                         >

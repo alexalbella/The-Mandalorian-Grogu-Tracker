@@ -1,12 +1,19 @@
 import { useMemo } from 'react';
 import { Era } from '@/data/starwars-list';
 import { useProgressStore } from '@/store/progress';
+import { useUIStore } from '@/store/ui';
 
 export const useDashboardStats = (eras: Era[]) => {
   const { isCompleted, watchedItems } = useProgressStore();
+  const selectedRoute = useUIStore(state => state.selectedRoute);
 
   return useMemo(() => {
-    const allItems = eras.flatMap(era => era.items);
+    let allItems = eras.flatMap(era => era.items);
+    
+    if (selectedRoute) {
+      allItems = allItems.filter(item => item.tags.includes(selectedRoute));
+    }
+
     const totalItems = allItems.reduce((acc, item) => acc + (item.subItems ? item.subItems.length : 1), 0);
     
     const completedCount = allItems.reduce((acc, item) => {
@@ -51,5 +58,5 @@ export const useDashboardStats = (eras: Era[]) => {
       completedMinutes,
       remainingMinutes: totalMinutes - completedMinutes
     };
-  }, [eras, isCompleted, watchedItems]);
+  }, [eras, isCompleted, watchedItems, selectedRoute]);
 };

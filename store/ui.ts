@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Preset = 'all' | 'essential' | 'fast' | 'mandalore' | 'thrawn' | 'hutt' | 'bounty-hunters' | 'new-republic' | 'essential-background' | 'movie-background';
+export type Preset = 'all' | 'essential' | 'fast' | 'essential-background' | 'movie-background';
 
 interface UIState {
   filterType: 'all' | 'movie' | 'series';
@@ -59,7 +59,7 @@ export const useUIStore = create<UIState>()(
       recentlyTouched: [],
       
       setFilterType: (type) => set({ filterType: type }),
-      setPreset: (preset) => set({ preset }),
+      setPreset: (preset) => set({ preset, selectedRoute: null }),
       setHideCompleted: (hide) => set({ hideCompleted: hide }),
       setSearchQuery: (query) => set({ searchQuery: query }),
       setIsMuted: (muted) => set({ isMuted: muted }),
@@ -71,7 +71,7 @@ export const useUIStore = create<UIState>()(
       })),
       setLastViewedId: (id) => set({ lastViewedId: id }),
       
-      setSelectedRoute: (route) => set({ selectedRoute: route }),
+      setSelectedRoute: (route) => set({ selectedRoute: route, preset: 'all' }),
       setSelectedCard: (id) => set({ selectedCard: id }),
       setQuickLookOpen: (open) => set({ quickLookOpen: open }),
       setReducedMotion: (reduced) => set({ reducedMotion: reduced }),
