@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Star, Volume2, VolumeX, Settings, LayoutGrid, LayoutList, Zap, ZapOff, Eye, EyeOff } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Volume2, VolumeX, LayoutGrid, LayoutList, Zap, ZapOff, Eye } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
@@ -11,12 +11,61 @@ import { AnimatePresence, motion, useSpring, useTransform } from 'motion/react';
 
 const CountdownWidget = dynamic(() => import('../CountdownWidget'), { ssr: false });
 
+function ViewModeSelector({ idPrefix = '' }: { idPrefix?: string }) {
+  const { compactMode, setCompactMode, focusMode, setFocusMode } = useUIStore();
+  
+  const currentMode = focusMode ? 'focus' : compactMode ? 'compact' : 'normal';
+
+  const setMode = (mode: 'normal' | 'compact' | 'focus') => {
+    if (mode === 'normal') {
+      setCompactMode(false);
+      setFocusMode(false);
+    } else if (mode === 'compact') {
+      setCompactMode(true);
+      setFocusMode(false);
+    } else if (mode === 'focus') {
+      setCompactMode(false);
+      setFocusMode(true);
+    }
+  };
+
+  const modes = [
+    { id: 'normal', label: 'Normal', icon: LayoutGrid },
+    { id: 'compact', label: 'Compacto', icon: LayoutList },
+    { id: 'focus', label: 'Focus', icon: Eye },
+  ];
+
+  return (
+    <div className="flex bg-surface-3/80 backdrop-blur-md border border-surface-4 rounded-full p-1 relative shadow-inner">
+      {modes.map((mode) => {
+        const isActive = currentMode === mode.id;
+        const Icon = mode.icon;
+        return (
+          <button
+            key={mode.id}
+            onClick={() => setMode(mode.id as any)}
+            className={`relative flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-colors z-10 ${isActive ? 'text-black font-bold' : 'text-text-muted hover:text-text-body'}`}
+          >
+            {isActive && (
+              <motion.div
+                layoutId={`activeMode-${idPrefix}`}
+                className="absolute inset-0 bg-glow-success rounded-full -z-10 shadow-[0_0_10px_var(--color-glow-success)]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <Icon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{mode.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function HeaderHUD({ eras }: { eras: Era[] }) {
-  const { isMuted, setIsMuted, compactMode, setCompactMode, reducedMotion, setReducedMotion, focusMode, setFocusMode } = useUIStore();
+  const { isMuted, setIsMuted, reducedMotion, setReducedMotion } = useUIStore();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const { progressPercent, remainingMinutes } = useDashboardStats(eras);
-  const settingsRef = useRef<HTMLDivElement>(null);
 
   const springProgress = useSpring(progressPercent, {
     stiffness: 50,
@@ -37,16 +86,6 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setShowSettings(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -79,67 +118,29 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
                 exit={{ opacity: 0, y: 10 }}
                 className="space-y-4"
               >
-                <div className="flex items-center gap-3">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-3 border border-surface-4 text-xs font-mono text-text-body uppercase tracking-wider">
-                    <Star className="w-3 h-3 text-glow-success" />
-                    Watch Planner
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-widest text-text-muted font-bold">HUD Mode</span>
+                    <ViewModeSelector idPrefix="full" />
                   </div>
-                  <button 
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
-                    title={isMuted ? "Activar sonido" : "Silenciar sonido"}
-                  >
-                    {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                  </button>
-                  <div className="relative" ref={settingsRef}>
+                  
+                  <div className="w-px h-6 bg-surface-4 hidden sm:block" />
+                  
+                  <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => setShowSettings(!showSettings)}
-                      className={`p-1.5 rounded-full border transition-colors ${showSettings ? 'bg-surface-4 border-surface-4 text-text-heading' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
-                      title="Ajustes de interfaz"
+                      onClick={() => setReducedMotion(!reducedMotion)}
+                      className={`p-1.5 rounded-full border transition-colors ${reducedMotion ? 'bg-glow-success/20 border-glow-success text-glow-success' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
+                      title={reducedMotion ? "Animaciones reducidas" : "Animaciones completas"}
                     >
-                      <Settings className="w-3.5 h-3.5" />
+                      {reducedMotion ? <ZapOff className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
                     </button>
-                    <AnimatePresence>
-                      {showSettings && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full mt-2 left-0 w-48 bg-surface-2 border border-surface-4 rounded-xl shadow-xl overflow-hidden z-50"
-                        >
-                          <div className="p-2 space-y-1">
-                            <button
-                              onClick={() => setCompactMode(!compactMode)}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
-                            >
-                              <span className="flex items-center gap-2">
-                                {compactMode ? <LayoutList className="w-4 h-4 text-glow-success" /> : <LayoutGrid className="w-4 h-4 text-text-muted" />}
-                                Modo compacto
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => setReducedMotion(!reducedMotion)}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
-                            >
-                              <span className="flex items-center gap-2">
-                                {reducedMotion ? <ZapOff className="w-4 h-4 text-glow-success" /> : <Zap className="w-4 h-4 text-text-muted" />}
-                                Reducir animaciones
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => setFocusMode(!focusMode)}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-surface-3 transition-colors text-sm text-text-heading"
-                            >
-                              <span className="flex items-center gap-2">
-                                {focusMode ? <Eye className="w-4 h-4 text-glow-success" /> : <EyeOff className="w-4 h-4 text-text-muted" />}
-                                Modo enfoque
-                              </span>
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <button 
+                      onClick={() => setIsMuted(!isMuted)}
+                      className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
+                      title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
                 <motion.h1 
@@ -170,21 +171,25 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
                   <div className="w-2 h-2 rounded-full bg-glow-success animate-pulse" />
                   <span className="text-xs font-mono text-text-body">{progressPercent}% completado</span>
                 </div>
-                <button 
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
-                  title={isMuted ? "Activar sonido" : "Silenciar sonido"}
-                >
-                  {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                </button>
-                <div className="relative" ref={settingsRef}>
-                  <button 
-                    onClick={() => setShowSettings(!showSettings)}
-                    className={`p-1.5 rounded-full border transition-colors ${showSettings ? 'bg-surface-4 border-surface-4 text-text-heading' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
-                    title="Ajustes de interfaz"
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                  </button>
+                
+                <div className="hidden md:flex items-center gap-3 ml-4">
+                  <ViewModeSelector idPrefix="scrolled" />
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={() => setReducedMotion(!reducedMotion)}
+                      className={`p-1.5 rounded-full border transition-colors ${reducedMotion ? 'bg-glow-success/20 border-glow-success text-glow-success' : 'bg-surface-3 border-surface-4 text-text-body hover:text-text-heading'}`}
+                      title={reducedMotion ? "Animaciones reducidas" : "Animaciones completas"}
+                    >
+                      {reducedMotion ? <ZapOff className="w-3.5 h-3.5" /> : <Zap className="w-3.5 h-3.5" />}
+                    </button>
+                    <button 
+                      onClick={() => setIsMuted(!isMuted)}
+                      className="p-1.5 rounded-full bg-surface-3 border border-surface-4 text-text-body hover:text-text-heading transition-colors"
+                      title={isMuted ? "Activar sonido" : "Silenciar sonido"}
+                    >
+                      {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             )}

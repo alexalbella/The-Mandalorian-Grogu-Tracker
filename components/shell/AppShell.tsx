@@ -10,6 +10,7 @@ import RouteAtlas from './RouteAtlas';
 import Timeline from './Timeline';
 import ProgressRail from './ProgressRail';
 import UndoRedoWidget from './UndoRedoWidget';
+import AchievementToasts from '../AchievementToast';
 
 import { motion } from 'motion/react';
 
@@ -108,6 +109,7 @@ export default function AppShell({ eras }: { eras: Era[] }) {
 
       <ProgressRail eras={eras} />
       <UndoRedoWidget />
+      <AchievementToasts />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useProgressStore } from '@/store/progress';
 import { useAchievementsStore } from '@/store/achievements';
+import { useUIStore } from '@/store/ui';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era, MediaItem } from '@/data/starwars-list';
 import confetti from 'canvas-confetti';
@@ -60,6 +61,9 @@ export function useAchievementsEngine(eras: Era[]) {
 
     if (newlyUnlocked.length > 0) {
       // Trigger toast or notification here (we can use a custom toast or just confetti for now)
+      newlyUnlocked.forEach(id => {
+        useUIStore.getState().addToast(id);
+      });
       // If it's the meta achievement, do special confetti
       if (newlyUnlocked.includes('meta-gold')) {
         confetti({
