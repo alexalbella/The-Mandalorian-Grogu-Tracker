@@ -111,6 +111,10 @@ export default function EraSection({
               initial={reducedMotion ? { opacity: 1 } : { height: 0, opacity: 0 }}
               animate={reducedMotion ? { opacity: 1 } : { height: 'auto', opacity: 1 }}
               exit={reducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+              transition={{
+                staggerChildren: reducedMotion ? 0 : 0.06,
+                delayChildren: 0.1
+              }}
               className="md:w-2/3 space-y-3 md:pl-8 overflow-hidden"
             >
               <AnimatePresence mode="popLayout">

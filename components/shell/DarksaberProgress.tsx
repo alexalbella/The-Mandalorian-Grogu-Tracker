@@ -41,7 +41,11 @@ export default function DarksaberProgress({
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
     progressValue.set(progress);
   }, [progress, progressValue]);
 

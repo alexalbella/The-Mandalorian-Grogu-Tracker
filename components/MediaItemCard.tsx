@@ -5,6 +5,15 @@ import { MediaItem } from '@/data/starwars-list';
 import Image from 'next/image';
 import { useUIStore } from '@/store/ui';
 
+const routeNames: Record<string, string> = {
+  'mandalore': 'Mandalore',
+  'thrawn': 'Thrawn',
+  'new-republic': 'Nueva República',
+  'hutt': 'Hutt',
+  'bounty-hunters': 'Cazarrecompensas',
+  'empire': 'Imperio'
+};
+
 export default function MediaItemCard({ 
   item, 
   isCompleted, 
@@ -100,6 +109,7 @@ export default function MediaItemCard({
   return (
     <motion.div 
       id={item.id}
+      layoutId={reducedMotion ? undefined : item.id}
       layout={!reducedMotion}
       animate={reducedMotion ? {} : {
         scale: isSelected ? 1.02 : 1,
@@ -125,7 +135,10 @@ export default function MediaItemCard({
       <div className={`flex flex-row ${compactMode ? 'gap-2 items-center' : 'gap-4'}`}>
         {/* Thumbnail */}
         {!compactMode && (
-          <div className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3">
+          <motion.div 
+            layoutId={reducedMotion ? undefined : `poster-${item.id}`}
+            className="relative w-24 sm:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 border border-white/5 bg-surface-3"
+          >
             <Image 
               src={imgSrc} 
               alt={`Poster for ${item.title}`}
@@ -144,7 +157,7 @@ export default function MediaItemCard({
                 <CheckCircle2 className="w-10 h-10 text-glow-success drop-shadow-lg" />
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         <div className={`space-y-3 flex-1 flex flex-col ${compactMode ? 'justify-center' : 'justify-center'}`}>
@@ -170,9 +183,12 @@ export default function MediaItemCard({
                   )}
                 </motion.div>
               </div>
-              <h4 className={`font-medium ${compactMode ? 'text-base' : 'text-lg'} transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}>
+              <motion.h4 
+                layoutId={reducedMotion ? undefined : `title-${item.id}`}
+                className={`font-medium ${compactMode ? 'text-base' : 'text-lg'} transition-colors ${isWatched ? 'text-text-muted line-through decoration-surface-4' : 'text-text-heading'}`}
+              >
                 {item.title}
-              </h4>
+              </motion.h4>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <button
@@ -187,9 +203,12 @@ export default function MediaItemCard({
                 <Info className="w-4 h-4" />
               </button>
               {item.essential && (
-                <span className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20">
+                <motion.span 
+                  layoutId={reducedMotion ? undefined : `essential-${item.id}`}
+                  className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20"
+                >
                   Esencial
-                </span>
+                </motion.span>
               )}
               <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-black/40 px-2 py-1 rounded-md border border-white/5">
                 {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
@@ -206,6 +225,20 @@ export default function MediaItemCard({
                 </span>
                 {item.reason}
               </div>
+              {item.tags && item.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {item.tags.map(tag => (
+                    <motion.span 
+                      key={tag}
+                      layoutId={reducedMotion ? undefined : `tag-${item.id}-${tag}`}
+                      className="px-2 py-1 bg-surface-3 rounded-md text-xs text-text-muted border border-surface-4 flex items-center gap-1.5"
+                    >
+                      <div className="w-1 h-1 rounded-full bg-glow-success" />
+                      {routeNames[tag] || tag}
+                    </motion.span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

@@ -1,74 +1,101 @@
 'use client';
 
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Film, Tv, CheckCircle2, Circle } from 'lucide-react';
+import { X, Film, Tv, CheckCircle2, Circle, Play, RotateCcw, CheckCircle, Info } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useProgressStore } from '@/store/progress';
 import { Era } from '@/data/starwars-list';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
+const routeNames: Record<string, string> = {
+  'mandalore': 'Mandalore',
+  'thrawn': 'Thrawn',
+  'new-republic': 'Nueva República',
+  'hutt': 'Hutt',
+  'bounty-hunters': 'Cazarrecompensas',
+  'empire': 'Imperio'
+};
+
+const getEditorialSummary = (id: string, title: string) => {
+  const summaries: Record<string, string> = {
+    'ep1': 'El inicio de la saga Skywalker. Descubre los orígenes de Anakin Skywalker y el resurgimiento de los Sith en una galaxia al borde de la crisis.',
+    'ep2': 'La galaxia se divide. El inicio de las Guerras Clon marca un punto de no retorno para la República y la Orden Jedi.',
+    'ep3': 'La caída de los Jedi y el nacimiento del Imperio Galáctico. El destino de Anakin Skywalker se sella en fuego y traición.',
+    'ep4': 'Una nueva esperanza surge. Un joven granjero, una princesa rebelde y un contrabandista se unen para desafiar al Imperio.',
+    'ep5': 'El Imperio contraataca. La Rebelión sufre un duro golpe mientras oscuros secretos del pasado salen a la luz.',
+    'ep6': 'El retorno del Jedi. La batalla final por la libertad de la galaxia y la redención de Anakin Skywalker.',
+    'mando-t1': 'Un cazarrecompensas solitario encuentra un propósito inesperado al proteger a un misterioso niño buscado por los remanentes del Imperio.',
+    'mando-t2': 'La búsqueda de un Jedi. El Mandaloriano y Grogu viajan por la galaxia enfrentando viejos enemigos y forjando nuevas alianzas.',
+    'mando-t3': 'La redención de Mandalore. Din Djarin busca expiar sus pecados mientras su pueblo lucha por recuperar su mundo natal.',
+    'ahsoka-t1': 'Una antigua Jedi busca a un amigo perdido y a un enemigo formidable, mientras una nueva amenaza se cierne sobre la frágil Nueva República.',
+    'bobafett-1-4': 'El legendario cazarrecompensas reclama el trono de Jabba el Hutt, enfrentando los desafíos de gobernar el inframundo de Tatooine.',
+    'andor-t1': 'El despertar de una rebelión. Sigue el viaje de Cassian Andor desde un cínico ladrón hasta un héroe de la causa rebelde.',
+    'obi-wan': 'Años después de la caída de la República, un exiliado Obi-Wan Kenobi debe enfrentar sus mayores fracasos para proteger una nueva esperanza.',
+  };
+  return summaries[id] || `Una entrega fundamental en la saga de Star Wars. ${title} expande el universo y profundiza en las historias de los personajes que dan forma a la galaxia.`;
+};
+
 export default function QuickLookModal({ eras }: { eras: Era[] }) {
   const { quickLookOpen, setQuickLookOpen, selectedCard, setSelectedCard, reducedMotion } = useUIStore();
   const { isCompleted, toggleItem, markMultiple, unmarkMultiple } = useProgressStore();
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
 
   const item = eras.flatMap(e => e.items).find(i => i.id === selectedCard);
 
-  useEffect(() => {
-    if (item) {
-      const getImageUrl = (id: string) => {
-        const map: Record<string, string> = {
-          'ep1': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
-          'tcw-movie': 'https://image.tmdb.org/t/p/w500/iJQfixW818LUdSXlCDL3JZm0S0g.jpg',
-          'tcw-t2-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t4-15-18': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t4-20-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t5-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t6-5': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'tcw-t7-9-12': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-          'bb-t1-15-16': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
-          'bb-t3-1-3-14-15': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
-          'rebels-t1-1-2': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-          'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-          'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-          'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-          'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
-          'ep5': 'https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg',
-          'ep6': 'https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg',
-          'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-          'mando-t2': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-          'bobafett-1-4': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
-          'bobafett-5-7': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
-          'mando-t3': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-          'ahsoka-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
-          'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
-        };
-        
-        const getFallbackImage = (title: string) => {
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
-            <rect width="400" height="600" fill="#09090b" />
-            <text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#10b981" text-anchor="middle" dominant-baseline="middle">
-              ${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
-            </text>
-          </svg>`;
-          return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
-        };
+  const getImageUrl = (id: string, title: string) => {
+    const map: Record<string, string> = {
+      'ep1': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
+      'tcw-movie': 'https://image.tmdb.org/t/p/w500/iJQfixW818LUdSXlCDL3JZm0S0g.jpg',
+      'tcw-t2-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t4-15-18': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t4-20-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t5-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t6-5': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t7-9-12': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'bb-t1-15-16': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
+      'bb-t3-1-3-14-15': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
+      'rebels-t1-1-2': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
+      'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
+      'ep5': 'https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg',
+      'ep6': 'https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg',
+      'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'mando-t2': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'bobafett-1-4': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
+      'bobafett-5-7': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
+      'mando-t3': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
+      'ahsoka-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
+      'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
+    };
+    
+    const getFallbackImage = (title: string) => {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+        <rect width="400" height="600" fill="#09090b" />
+        <text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#10b981" text-anchor="middle" dominant-baseline="middle">
+          ${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+        </text>
+      </svg>`;
+      return `data:image/svg+xml;base64,${typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(svg))) : ''}`;
+    };
 
-        return map[id] || getFallbackImage(item.title);
-      };
+    return map[id] || getFallbackImage(title);
+  };
 
-      setImgSrc(getImageUrl(item.id));
-    }
-  }, [item]);
+  const imgSrc = item ? getImageUrl(item.id, item.title) : null;
 
   if (!item) return null;
 
   const isWatched = item.subItems 
     ? item.subItems.every(sub => isCompleted(sub.id)) && item.subItems.length > 0
     : isCompleted(item.id);
+
+  const isPartiallyWatched = item.subItems
+    ? item.subItems.some(sub => isCompleted(sub.id)) && !isWatched
+    : false;
 
   const handleToggle = () => {
     if (item.subItems) {
@@ -82,6 +109,16 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
     }
   };
 
+  const getCtaContent = () => {
+    if (isWatched) return { icon: RotateCcw, text: 'Recuperar (Marcar no visto)', style: 'bg-surface-3 text-text-body hover:bg-surface-4' };
+    if (isPartiallyWatched) return { icon: Play, text: 'Continuar bloque', style: 'bg-glow-warning text-surface-1 hover:bg-glow-warning/90' };
+    if (item.subItems) return { icon: CheckCircle, text: 'Completar bloque', style: 'bg-glow-success text-surface-1 hover:bg-glow-success/90' };
+    return { icon: Play, text: 'Empezar', style: 'bg-glow-success text-surface-1 hover:bg-glow-success/90' };
+  };
+
+  const cta = getCtaContent();
+  const CtaIcon = cta.icon;
+
   return (
     <AnimatePresence>
       {quickLookOpen && (
@@ -94,15 +131,30 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
               setQuickLookOpen(false);
               setSelectedCard(null);
             }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
           />
+          
           <motion.div
             layoutId={reducedMotion ? undefined : item.id}
             initial={reducedMotion ? { opacity: 0, scale: 0.95 } : {}}
             animate={reducedMotion ? { opacity: 1, scale: 1 } : {}}
             exit={reducedMotion ? { opacity: 0, scale: 0.95 } : {}}
-            className="relative w-full max-w-2xl bg-surface-2 border border-surface-4 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col sm:flex-row"
+            className="relative w-full max-w-4xl max-h-[90vh] bg-surface-1 border border-surface-4 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col"
           >
+            {/* Blurred Backdrop */}
+            {imgSrc && (
+              <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+                <Image
+                  src={imgSrc}
+                  alt="Backdrop"
+                  fill
+                  className="object-cover blur-3xl scale-110"
+                  unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/80 to-transparent" />
+              </div>
+            )}
+
             <button
               onClick={() => {
                 setQuickLookOpen(false);
@@ -113,76 +165,140 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Image */}
-            <div className="relative w-full sm:w-1/3 aspect-[2/3] sm:aspect-auto shrink-0 bg-surface-3">
-              {imgSrc && (
-                <Image
-                  src={imgSrc}
-                  alt={item.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                  unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
-                />
-              )}
-              {isWatched && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                  <CheckCircle2 className="w-12 h-12 text-glow-success drop-shadow-lg" />
+            <div className="flex flex-col md:flex-row overflow-y-auto z-10">
+              {/* Hero Poster */}
+              <div className="relative w-full md:w-2/5 p-6 md:p-8 flex flex-col items-center justify-start shrink-0">
+                <motion.div 
+                  layoutId={reducedMotion ? undefined : `poster-${item.id}`}
+                  className="relative w-full max-w-[240px] aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-white/10"
+                >
+                  {imgSrc && (
+                    <Image
+                      src={imgSrc}
+                      alt={item.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+                    />
+                  )}
+                  {isWatched && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                      <CheckCircle2 className="w-16 h-16 text-glow-success drop-shadow-lg" />
+                    </div>
+                  )}
+                </motion.div>
+
+                <button
+                  onClick={handleToggle}
+                  className={`w-full max-w-[240px] mt-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shadow-lg ${cta.style}`}
+                >
+                  <CtaIcon className="w-5 h-5" />
+                  {cta.text}
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 md:p-8 md:pl-0 flex-1 flex flex-col">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-surface-3/80 backdrop-blur-md px-2 py-1 rounded-md border border-surface-4">
+                    {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
+                    {item.duration}m
+                  </span>
+                  {item.essential && (
+                    <motion.span 
+                      layoutId={reducedMotion ? undefined : `essential-${item.id}`}
+                      className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20"
+                    >
+                      Esencial
+                    </motion.span>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Content */}
-            <div className="p-6 sm:p-8 flex-1 flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-surface-3 px-2 py-1 rounded-md border border-surface-4">
-                  {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
-                  {item.duration}m
-                </span>
-                {item.essential && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20">
-                    Esencial
-                  </span>
-                )}
+                <motion.h2 
+                  layoutId={reducedMotion ? undefined : `title-${item.id}`}
+                  className="text-3xl sm:text-4xl font-bold text-text-heading mb-6 leading-tight" 
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  {item.title}
+                </motion.h2>
+
+                <div className="space-y-6">
+                  {/* Editorial Summary */}
+                  <div>
+                    <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-2">Sinopsis</h3>
+                    <p className="text-text-body leading-relaxed text-sm sm:text-base">
+                      {getEditorialSummary(item.id, item.title)}
+                    </p>
+                  </div>
+
+                  {/* Why it matters */}
+                  <div className="bg-surface-2/50 border border-surface-4 rounded-xl p-4">
+                    <h3 className="text-sm font-bold text-text-heading flex items-center gap-2 mb-2">
+                      <Info className="w-4 h-4 text-glow-success" />
+                      Por qué importa
+                    </h3>
+                    <p className="text-sm text-text-body leading-relaxed">
+                      {item.reason}
+                    </p>
+                  </div>
+
+                  {/* Affected Routes */}
+                  {item.tags && item.tags.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Rutas Afectadas</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {item.tags.map(tag => (
+                          <motion.span 
+                            key={tag} 
+                            layoutId={reducedMotion ? undefined : `tag-${item.id}-${tag}`}
+                            className="px-3 py-1.5 bg-surface-3/50 backdrop-blur-sm rounded-lg text-xs font-medium text-text-heading border border-surface-4 flex items-center gap-2"
+                          >
+                            <div className="w-1.5 h-1.5 rounded-full bg-glow-success" />
+                            {routeNames[tag] || tag}
+                          </motion.span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sub-episodes Timeline */}
+                  {item.subItems && item.subItems.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Episodios</h3>
+                      <div className="space-y-2">
+                        {item.subItems.map((sub, index) => {
+                          const isSubWatched = isCompleted(sub.id);
+                          return (
+                            <div 
+                              key={sub.id}
+                              className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer ${
+                                isSubWatched 
+                                  ? 'bg-glow-success/10 border-glow-success/20 hover:bg-glow-success/20' 
+                                  : 'bg-surface-2/50 border-surface-4 hover:bg-surface-3'
+                              }`}
+                              onClick={() => toggleItem(sub.id)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="text-xs font-mono text-text-muted w-4">{index + 1}</div>
+                                {isSubWatched ? (
+                                  <CheckCircle2 className="w-5 h-5 text-glow-success shrink-0" />
+                                ) : (
+                                  <Circle className="w-5 h-5 text-text-muted shrink-0" />
+                                )}
+                                <span className={`text-sm font-medium ${isSubWatched ? 'text-text-muted line-through' : 'text-text-body'}`}>
+                                  {sub.title}
+                                </span>
+                              </div>
+                              <span className="text-xs font-mono text-text-muted">{sub.duration}m</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <h2 className="text-2xl sm:text-3xl font-bold text-text-heading mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                {item.title}
-              </h2>
-
-              <div className="text-sm text-text-body leading-relaxed mb-6 flex-1">
-                <p className="font-medium text-text-muted mb-2">Contexto:</p>
-                <p>{item.reason}</p>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {item.tags.map(tag => (
-                  <span key={tag} className="px-2 py-1 bg-surface-3 rounded-md text-xs text-text-muted border border-surface-4">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <button
-                onClick={handleToggle}
-                className={`w-full py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
-                  isWatched 
-                    ? 'bg-surface-3 text-text-body hover:bg-surface-4' 
-                    : 'bg-glow-success text-surface-1 hover:bg-glow-success/90'
-                }`}
-              >
-                {isWatched ? (
-                  <>
-                    <CheckCircle2 className="w-5 h-5" />
-                    Marcar como no visto
-                  </>
-                ) : (
-                  <>
-                    <Circle className="w-5 h-5" />
-                    Marcar como visto
-                  </>
-                )}
-              </button>
             </div>
           </motion.div>
         </div>

@@ -18,6 +18,7 @@ export default function AppShell({ eras }: { eras: Era[] }) {
   const reducedMotion = useUIStore(state => state.reducedMotion);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
     
     // Scroll to last viewed item on mount
