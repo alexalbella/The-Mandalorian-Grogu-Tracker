@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Dashboard checklist interactivo para controlar el visionado hasta The Mandalorian & Grogu",
   "author": "Alex Albella",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "https://github.com/alexalbella/mando-grogu-tracker.git"
