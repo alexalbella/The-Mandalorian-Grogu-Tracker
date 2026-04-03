@@ -44,7 +44,7 @@ function ViewModeSelector({ idPrefix = '' }: { idPrefix?: string }) {
         return (
           <button
             key={mode.id}
-            onClick={() => setMode(mode.id as any)}
+            onClick={() => setMode(mode.id as 'normal' | 'compact' | 'focus')}
             className={`relative flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-colors z-10 ${isActive ? 'text-black font-bold' : 'text-text-muted hover:text-text-body'}`}
           >
             {isActive && (
