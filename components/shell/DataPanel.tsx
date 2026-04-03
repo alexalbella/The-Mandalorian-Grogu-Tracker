@@ -126,22 +126,52 @@ export function DataManagementPanel() {
             className="hidden" 
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  try {
-                    const content = ev.target?.result as string;
-                    const backup = JSON.parse(content);
-                    if (backup.progress) localStorage.setItem('mando-grogu-progress', backup.progress);
-                    if (backup.achievements) localStorage.setItem('mando-grogu-achievements', backup.achievements);
-                    if (backup.ui) localStorage.setItem('mando-grogu-ui', backup.ui);
-                    window.location.reload();
-                  } catch (err) {
-                    alert('Error al importar el archivo. Asegúrate de que es un backup válido.');
-                  }
-                };
-                reader.readAsText(file);
+              if (!file) return;
+
+              const MAX_SIZE = 1024 * 1024; // 1 MB
+              if (file.size > MAX_SIZE) {
+                alert('El archivo es demasiado grande. El máximo es 1 MB.');
+                return;
               }
+
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                try {
+                  const content = ev.target?.result as string;
+                  const backup = JSON.parse(content);
+
+                  if (typeof backup !== 'object' || backup === null || Array.isArray(backup)) {
+                    throw new Error('Formato inválido');
+                  }
+
+                  const validKeys = ['progress', 'achievements', 'ui'];
+                  const hasValidKey = validKeys.some(key => key in backup);
+                  if (!hasValidKey) {
+                    throw new Error('El archivo no contiene datos de backup válidos');
+                  }
+
+                  const hasUnknownKeys = Object.keys(backup).some(key => !validKeys.includes(key));
+                  if (hasUnknownKeys) {
+                    throw new Error('El archivo contiene claves no reconocidas');
+                  }
+
+                  for (const key of validKeys) {
+                    if (key in backup && typeof backup[key] !== 'string') {
+                      throw new Error(`El campo "${key}" no tiene un formato válido`);
+                    }
+                  }
+
+                  if (backup.progress) localStorage.setItem('mando-grogu-progress', backup.progress);
+                  if (backup.achievements) localStorage.setItem('mando-grogu-achievements', backup.achievements);
+                  if (backup.ui) localStorage.setItem('mando-grogu-ui', backup.ui);
+                  window.location.reload();
+                } catch (err) {
+                  alert(err instanceof Error && err.message !== 'Formato inválido'
+                    ? err.message
+                    : 'Error al importar el archivo. Asegúrate de que es un backup válido.');
+                }
+              };
+              reader.readAsText(file);
             }} 
           />
         </label>
