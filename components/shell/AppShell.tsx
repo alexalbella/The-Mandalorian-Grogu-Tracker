@@ -5,6 +5,7 @@ import { useUIStore } from '@/store/ui';
 import { SeriesConfig } from '@/types/series';
 import HeaderHUD from './HeaderHUD';
 import QuickLookDrawer from './QuickLookDrawer';
+import QuickLookModal from './QuickLookModal';
 import { StatsPanel, DataManagementPanel } from './DataPanel';
 import RouteAtlas from './RouteAtlas';
 import Timeline from './Timeline';
@@ -111,6 +112,7 @@ export default function AppShell({ config }: { config: SeriesConfig }) {
       <ProgressRail eras={eras} />
       <UndoRedoWidget />
       <AchievementToasts />
+      <QuickLookModal eras={eras} />
     </div>
   );
 }

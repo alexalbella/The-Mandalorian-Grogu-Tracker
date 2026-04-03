@@ -7,6 +7,7 @@ import { useProgressStore } from '@/store/progress';
 import { Era } from '@/data/starwars-list';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { getImageUrl } from '@/lib/imageMap';
 
 const routeNames: Record<string, string> = {
   'mandalore': 'Mandalore',
@@ -41,49 +42,6 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
   const { isCompleted, toggleItem, markMultiple, unmarkMultiple } = useProgressStore();
 
   const item = eras.flatMap(e => e.items).find(i => i.id === selectedCard);
-
-  const getImageUrl = (id: string, title: string) => {
-    const map: Record<string, string> = {
-      'ep1': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
-      'tcw-movie': 'https://image.tmdb.org/t/p/w500/iJQfixW818LUdSXlCDL3JZm0S0g.jpg',
-      'tcw-t2-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t3-4': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t4-15-18': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t4-20-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t5-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t6-5': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'tcw-t7-9-12': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
-      'bb-t1-15-16': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
-      'bb-t3-1-3-14-15': 'https://static.tvmaze.com/uploads/images/original_untouched/505/1264860.jpg',
-      'rebels-t1-1-2': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'rebels-t2-17': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'rebels-t3-15': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'rebels-t3-t4': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg',
-      'ep4': 'https://image.tmdb.org/t/p/w500/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg',
-      'ep5': 'https://image.tmdb.org/t/p/w500/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg',
-      'ep6': 'https://image.tmdb.org/t/p/w500/jQYlydvHm3kUix1f8prMucrplhm.jpg',
-      'mando-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-      'mando-t2': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-      'bobafett-1-4': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
-      'bobafett-5-7': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
-      'mando-t3': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
-      'ahsoka-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
-      'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
-    };
-    
-    const getFallbackImage = (title: string) => {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
-        <rect width="400" height="600" fill="#09090b" />
-        <text x="50%" y="50%" font-family="sans-serif" font-size="24" fill="#10b981" text-anchor="middle" dominant-baseline="middle">
-          ${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
-        </text>
-      </svg>`;
-      return `data:image/svg+xml;base64,${typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(svg))) : ''}`;
-    };
-
-    return map[id] || getFallbackImage(title);
-  };
 
   const imgSrc = item ? getImageUrl(item.id, item.title) : null;
 
@@ -149,7 +107,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                   alt="Backdrop"
                   fill
                   className="object-cover blur-3xl scale-110"
-                  unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+                  unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com') || imgSrc.includes('tmdb.org')}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/80 to-transparent" />
               </div>
@@ -179,7 +137,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 40vw"
-                      unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+                      unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com') || imgSrc.includes('tmdb.org')}
                     />
                   )}
                   {isWatched && (
