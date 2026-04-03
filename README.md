@@ -7,7 +7,7 @@
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
   [![Zustand](https://img.shields.io/badge/State-Zustand-brown?style=flat-square)](https://zustand-demo.pmnd.rs/)
   [![Framer Motion](https://img.shields.io/badge/Animation-Framer_Motion-f08?style=flat-square)](https://www.framer.com/motion/)
-  [![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg?style=flat-square)](LICENSE)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 </div>
 
 <br />
@@ -104,7 +104,7 @@ La forma más sencilla de desplegar esta aplicación es usando [Vercel](https://
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia GNU GPLv3. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
 ---
 <div align="center">

@@ -2,14 +2,15 @@
 
 import { useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Era } from '@/data/starwars-list';
+import { SeriesConfig } from '@/types/series';
 import { useProgressStore } from '@/store/progress';
 import { useUIStore } from '@/store/ui';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import ResumeFlow from '../ResumeFlow';
 import confetti from 'canvas-confetti';
 
-export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
+export default function QuickLookDrawer({ config }: { config: SeriesConfig }) {
+  const eras = config.eras;
   const { isCompleted, skippedItems, skipItem } = useProgressStore();
   const { expandedEras, toggleEraExpanded, setLastViewedId, isMuted, selectedRoute } = useUIStore();
   const { progressPercent, totalItems } = useDashboardStats(eras);
@@ -158,23 +159,25 @@ export default function QuickLookDrawer({ eras }: { eras: Era[] }) {
                   ¡Estás listo para el estreno!
                 </h2>
                 <p className="text-text-muted max-w-2xl mx-auto text-lg">
-                  Has completado todo el material esencial. Ahora solo queda esperar a que The Mandalorian & Grogu llegue a los cines.
+                  Has completado todo el material esencial. Ahora solo queda esperar a que {config.title} llegue a las pantallas.
                 </p>
               </div>
 
-              <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-surface-4 shadow-2xl relative z-10">
-                <iframe 
-                  width="100%" 
-                  height="100%" 
-                  src="https://www.youtube.com/embed/IHWlvwu8t1w" 
-                  title="The Mandalorian & Grogu Trailer" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                  referrerPolicy="strict-origin-when-cross-origin" 
-                  allowFullScreen
-                  className="w-full h-full"
-                ></iframe>
-              </div>
+              {config.theme === 'mando' && (
+                <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-surface-4 shadow-2xl relative z-10">
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/IHWlvwu8t1w" 
+                    title="The Mandalorian & Grogu Trailer" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerPolicy="strict-origin-when-cross-origin" 
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
+                </div>
+              )}
             </div>
           </motion.section>
         )}

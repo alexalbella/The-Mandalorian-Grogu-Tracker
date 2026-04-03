@@ -1,15 +1,14 @@
-import AppShell from '@/components/shell/AppShell';
-import { eras } from '@/data/starwars-list';
+import SeriesManager from '@/components/SeriesManager';
 
 export const metadata = {
-  title: 'The Mandalorian & Grogu Tracker',
-  description: 'La guía cronológica definitiva para prepararte antes del estreno en cines.',
+  title: 'Star Wars Trackers',
+  description: 'Guías cronológicas definitivas para prepararte antes de los estrenos.',
 };
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-surface-1">
-      <AppShell eras={eras} />
+      <SeriesManager />
     </main>
   );
 }

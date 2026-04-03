@@ -8,6 +8,7 @@ import { Era } from '@/data/starwars-list';
 import dynamic from 'next/dynamic';
 import DarksaberProgress from './DarksaberProgress';
 import { AnimatePresence, motion, useSpring, useTransform } from 'motion/react';
+import StarfieldParallax from '../StarfieldParallax';
 
 const CountdownWidget = dynamic(() => import('../CountdownWidget'), { ssr: false });
 
@@ -62,10 +63,12 @@ function ViewModeSelector({ idPrefix = '' }: { idPrefix?: string }) {
   );
 }
 
-export default function HeaderHUD({ eras }: { eras: Era[] }) {
+import { SeriesConfig } from '@/types/series';
+
+export default function HeaderHUD({ config }: { config: SeriesConfig }) {
   const { isMuted, setIsMuted, reducedMotion, setReducedMotion } = useUIStore();
   const [isScrolled, setIsScrolled] = useState(false);
-  const { progressPercent, remainingMinutes } = useDashboardStats(eras);
+  const { progressPercent, remainingMinutes } = useDashboardStats(config.eras);
 
   const springProgress = useSpring(progressPercent, {
     stiffness: 50,
@@ -73,16 +76,14 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
     mass: 1
   });
 
+
   // Dynamic glow based on progress
   const glowOpacity = useTransform(springProgress, (v) => Math.max(0.1, Math.min(0.4, v / 100)));
   const glowScale = useTransform(springProgress, (v) => 0.8 + (v / 100) * 0.4);
 
-  const [scrollY, setScrollY] = useState(0);
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
-      setScrollY(window.scrollY);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -91,13 +92,9 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
   return (
     <header className={`sticky top-0 lg:top-4 z-50 border-b lg:border border-surface-4 bg-surface-1/90 backdrop-blur-xl shadow-2xl shadow-black/50 -mx-4 px-4 lg:mx-0 lg:px-6 lg:rounded-2xl transition-all duration-300 ${isScrolled ? 'pt-2 pb-2' : 'pt-4 pb-4 md:pt-6 md:pb-6'}`}>
       {/* Parallax Starfield */}
-      <div 
-        className="absolute inset-0 starfield opacity-20 pointer-events-none" 
-        style={{ 
-          backgroundPosition: `0 ${scrollY * 0.2}px`,
-          maskImage: 'linear-gradient(to bottom, black, transparent)'
-        }} 
-      />
+      <div className="absolute inset-0 opacity-40 pointer-events-none overflow-hidden rounded-2xl">
+        <StarfieldParallax />
+      </div>
 
       <motion.div 
         className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none" 
@@ -148,7 +145,7 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
                   className="text-4xl md:text-5xl font-black tracking-tighter text-text-heading" 
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
-                  The Mandalorian <span className="text-glow-success">& Grogu</span> Tracker
+                  {config.title} <span className="text-glow-success">{config.subtitle}</span>
                 </motion.h1>
               </motion.div>
             ) : (
@@ -164,7 +161,7 @@ export default function HeaderHUD({ eras }: { eras: Era[] }) {
                   className="text-xl font-black tracking-tighter text-text-heading" 
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
-                  The Mandalorian <span className="text-glow-success">& Grogu</span>
+                  {config.title} <span className="text-glow-success">{config.subtitle}</span>
                 </motion.h1>
                 <div className="h-4 w-px bg-surface-4" />
                 <div className="flex items-center gap-2">

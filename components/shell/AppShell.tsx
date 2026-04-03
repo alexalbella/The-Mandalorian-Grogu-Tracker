@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Era } from '@/data/starwars-list';
 import { useUIStore } from '@/store/ui';
+import { SeriesConfig } from '@/types/series';
 import HeaderHUD from './HeaderHUD';
 import QuickLookDrawer from './QuickLookDrawer';
 import { StatsPanel, DataManagementPanel } from './DataPanel';
@@ -14,9 +14,10 @@ import AchievementToasts from '../AchievementToast';
 
 import { motion } from 'motion/react';
 
-export default function AppShell({ eras }: { eras: Era[] }) {
+export default function AppShell({ config }: { config: SeriesConfig }) {
   const [isMounted, setIsMounted] = useState(false);
   const reducedMotion = useUIStore(state => state.reducedMotion);
+  const eras = config.eras;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -79,11 +80,11 @@ export default function AppShell({ eras }: { eras: Era[] }) {
         className="flex-1 space-y-12 min-w-0"
       >
         <motion.div variants={itemVariants}>
-          <HeaderHUD eras={eras} />
+          <HeaderHUD config={config} />
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <QuickLookDrawer eras={eras} />
+          <QuickLookDrawer config={config} />
         </motion.div>
         
         <motion.div variants={itemVariants}>
@@ -103,7 +104,7 @@ export default function AppShell({ eras }: { eras: Era[] }) {
         </motion.div>
         
         <motion.footer variants={itemVariants} className="pt-8 pb-24 text-center border-t border-surface-4 text-text-muted text-sm">
-          <p>Que la Fuerza te acompañe. Este es el camino.</p>
+          <p>{config.quote}</p>
         </motion.footer>
       </motion.div>
 
