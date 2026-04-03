@@ -1,12 +1,29 @@
 'use client';
 
+import { useEffect } from 'react';
+import { motion, useSpring, useTransform } from 'motion/react';
 import { CheckCircle2, Clock, Flame, PlayCircle, Download, Upload, RotateCcw } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useProgressStore } from '@/store/progress';
 import { useUIStore } from '@/store/ui';
 import { Era } from '@/data/starwars-list';
 
-function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: string, subtitle: React.ReactNode, icon: React.ReactNode, progress?: number }) {
+function AnimatedCounter({ value, format, suffix = '' }: { value: number, format?: (v: number) => string, suffix?: string }) {
+  const spring = useSpring(value, { bounce: 0, duration: 800 });
+  
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
+  const display = useTransform(spring, (current) => {
+    const rounded = Math.round(current);
+    return (format ? format(rounded) : rounded.toString()) + suffix;
+  });
+
+  return <motion.span>{display}</motion.span>;
+}
+
+function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: React.ReactNode, subtitle: React.ReactNode, icon: React.ReactNode, progress?: number }) {
   return (
     <div className="bg-surface-2/50 border border-surface-4/50 rounded-2xl p-6 relative overflow-hidden">
       {progress !== undefined && (
@@ -45,11 +62,11 @@ export function StatsPanel({ eras }: { eras: Era[] }) {
     <section className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-2 ring-glow-success/30 rounded-2xl shadow-[0_0_30px_rgba(20,255,140,0.1)]' : ''}`}>
       <StatCard 
         title={`Progreso: ${routeName}`}
-        value={`${progressPercent}%`} 
+        value={<AnimatedCounter value={progressPercent} suffix="%" />} 
         subtitle={
           <div className="flex flex-col gap-1">
-            <span>{completedCount} de {totalItems} completados</span>
-            <span className="text-glow-success/80">{watchedCount} vistos de verdad</span>
+            <span><AnimatedCounter value={completedCount} /> de {totalItems} completados</span>
+            <span className="text-glow-success/80"><AnimatedCounter value={watchedCount} /> vistos de verdad</span>
           </div>
         }
         icon={<CheckCircle2 className="w-5 h-5 text-glow-success" />}
@@ -57,19 +74,19 @@ export function StatsPanel({ eras }: { eras: Era[] }) {
       />
       <StatCard 
         title="Racha Actual" 
-        value={`${streak} ${streak === 1 ? 'día' : 'días'}`} 
+        value={<AnimatedCounter value={streak} suffix={streak === 1 ? ' día' : ' días'} />} 
         subtitle="Viendo Star Wars"
         icon={<Flame className="w-5 h-5 text-glow-warning" />}
       />
       <StatCard 
         title="Tiempo Invertido" 
-        value={formatTime(watchedMinutes)} 
+        value={<AnimatedCounter value={watchedMinutes} format={formatTime} />} 
         subtitle="Horas de visionado"
         icon={<PlayCircle className="w-5 h-5 text-glow-info" />}
       />
       <StatCard 
         title="Tiempo Restante" 
-        value={formatTime(remainingMinutes)} 
+        value={<AnimatedCounter value={remainingMinutes} format={formatTime} />} 
         subtitle={`De un total de ${formatTime(totalMinutes)}`}
         icon={<Clock className="w-5 h-5 text-glow-warning" />}
       />

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'motion/react';
 import { CheckCircle2, Circle, Film, Tv, Info } from 'lucide-react';
 import { MediaItem } from '@/data/starwars-list';
 import Image from 'next/image';
@@ -64,14 +64,54 @@ export default function MediaItemCard({
 
   const [imgSrc, setImgSrc] = useState(getImageUrl(item.id, item.title));
 
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
+  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
+
+  const background = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,0.1) 0%, transparent 50%)`;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reducedMotion || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
     <motion.div 
       id={item.id}
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       layoutId={reducedMotion || disableLayoutId ? undefined : item.id}
       layout={!reducedMotion}
       animate={reducedMotion ? {} : {
         scale: isSelected ? 1.02 : 1,
         boxShadow: isSelected ? '0 0 0 2px var(--color-glow-success), 0 0 20px var(--color-glow-success)' : '0 0 0 0px transparent',
+      }}
+      style={reducedMotion ? {} : {
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
       }}
       transition={{ duration: 0.3 }}
       className={`group relative ${compactMode ? 'p-2' : 'p-4'} rounded-xl border transition-colors cursor-pointer overflow-hidden block focus-within:ring-2 focus-within:ring-glow-success focus-within:ring-offset-2 focus-within:ring-offset-surface-1 ${
@@ -81,6 +121,12 @@ export default function MediaItemCard({
       } ${isRouteSelected ? 'ring-2 ring-offset-2 ring-offset-surface-1 ring-white/30' : ''} ${isDimmed ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}`}
       onClick={handleToggle}
     >
+      {!reducedMotion && (
+        <motion.div
+          style={{ background }}
+          className="absolute inset-0 pointer-events-none z-50 mix-blend-overlay"
+        />
+      )}
       <input 
         type="checkbox" 
         className="sr-only" 
@@ -90,7 +136,7 @@ export default function MediaItemCard({
         onClick={(e) => e.stopPropagation()}
       />
       
-      <div className={`flex flex-row ${compactMode ? 'gap-2 items-center' : 'gap-4'}`}>
+      <div className={`flex flex-row ${compactMode ? 'gap-2 items-center' : 'gap-4'}`} style={reducedMotion ? {} : { transform: 'translateZ(20px)' }}>
         {/* Thumbnail */}
         {!compactMode && (
           <motion.div 
