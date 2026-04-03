@@ -84,15 +84,15 @@ export function DataManagementPanel() {
       <div className="flex flex-wrap justify-center gap-4">
         <button 
           onClick={() => {
-            const progress = localStorage.getItem('mando-grogu-progress') || localStorage.getItem('mando-tracker-progress');
-            const achievements = localStorage.getItem('mando-grogu-achievements') || localStorage.getItem('mando-gamification-storage');
-            const ui = localStorage.getItem('mando-grogu-ui') || localStorage.getItem('mando-ui-storage');
+            const progress = localStorage.getItem('mando-grogu-progress');
+            const achievements = localStorage.getItem('mando-grogu-achievements');
+            const ui = localStorage.getItem('mando-grogu-ui');
             const backup = { progress, achievements, ui };
             const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `mando-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `starwars-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
           }}
           className="px-4 py-2 text-xs font-medium rounded-lg border border-surface-4 text-text-body hover:bg-surface-3 transition-colors flex items-center gap-2"
@@ -116,7 +116,7 @@ export function DataManagementPanel() {
                     const content = ev.target?.result as string;
                     const backup = JSON.parse(content);
                     if (backup.progress) localStorage.setItem('mando-grogu-progress', backup.progress);
-                    if (backup.achievements || backup.gamification) localStorage.setItem('mando-grogu-achievements', backup.achievements || backup.gamification);
+                    if (backup.achievements) localStorage.setItem('mando-grogu-achievements', backup.achievements);
                     if (backup.ui) localStorage.setItem('mando-grogu-ui', backup.ui);
                     window.location.reload();
                   } catch (err) {

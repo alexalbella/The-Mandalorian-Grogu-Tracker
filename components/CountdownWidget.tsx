@@ -49,7 +49,7 @@ export default function CountdownWidget({ config, remainingMinutes, isScrolled =
           </div>
           <div>
             <p className={`text-glow-success uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>¡El momento ha llegado!</p>
-            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-surface-1`}>Ya en {config.releaseType === 'movie' ? 'cines' : 'emisión'}</div>
+            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-surface-1`}>Ya en {config.releaseType === 'movie' ? 'cines' : 'Disney+'}</div>
           </div>
         </div>
         {!isScrolled && config.theme === 'mando' && (
@@ -75,7 +75,7 @@ export default function CountdownWidget({ config, remainingMinutes, isScrolled =
           <Calendar className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-text-muted`} />
         </div>
         <div>
-          <p className={`text-text-muted uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en {config.releaseType === 'movie' ? 'Cines' : 'Pantallas'}</p>
+          <p className={`text-text-muted uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en {config.releaseType === 'movie' ? 'Cines' : 'Disney+'}</p>
           <div className="flex items-baseline gap-2">
             <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-glow-success`}>{timeLeft.days}</span>
             <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-text-muted`}>días</span>

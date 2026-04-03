@@ -1,7 +1,33 @@
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'motion/react';
-import { Crown, Filter } from 'lucide-react';
+import { Crown, Filter, LucideIcon } from 'lucide-react';
 import { ACHIEVEMENTS } from '@/data/achievements';
+import { Achievement, AchievementCategory } from '@/types/achievements';
+import { Preset } from '@/store/ui';
+
+interface AchievementCardProps {
+  category: AchievementCategory;
+  progress: number;
+  highestUnlocked: Achievement | null;
+  nextLocked: Achievement | null;
+  displayAchievement: Achievement;
+  unlockedAchievements: string[];
+  isSelected: boolean;
+  setSelectedRoute: (route: string | null) => void;
+  setPreset: (preset: Preset) => void;
+  style: {
+    bg: string;
+    border: string;
+    glow: string;
+    progress: string;
+  };
+  isActive: boolean;
+  textColor: string;
+  hint: string | null;
+  isFullyUnlocked: boolean;
+  Icon: LucideIcon;
+  index: number;
+}
 
 export default function AchievementCard({
   category,
@@ -20,7 +46,7 @@ export default function AchievementCard({
   isFullyUnlocked,
   Icon,
   index
-}: any) {
+}: AchievementCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

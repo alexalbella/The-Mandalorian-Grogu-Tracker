@@ -38,9 +38,24 @@
   }
 }
 
+:root[data-theme="maul"] {
+  --color-surface-1: #0a0000;
+  --color-surface-2: #140000;
+  --color-surface-3: #290000;
+  --color-surface-4: #3d0000;
+  --color-glow-success: #ef4444;
+  --color-route-mandalore: #dc2626;
+  --color-route-hutt: #fbbf24;
+  --color-route-bounty: #991b1b;
+  --color-route-empire: #450a0a;
+  --color-route-republic: #b91c1c;
+  --color-route-thrawn: #7f1d1d;
+  --color-route-meta: #f87171;
+}
+
 body {
-  background-color: #050505;
-  background-image: radial-gradient(circle at 50% 0%, #111111 0%, #050505 100%);
+  background-color: var(--color-surface-1);
+  background-image: radial-gradient(circle at 50% 0%, var(--color-surface-2) 0%, var(--color-surface-1) 100%);
   background-attachment: fixed;
 }
 

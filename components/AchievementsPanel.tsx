@@ -5,11 +5,11 @@ import { useUIStore } from '@/store/ui';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era } from '@/data/starwars-list';
 import { motion, AnimatePresence } from 'motion/react';
-import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info, Filter, Map } from 'lucide-react';
+import { Award, ChevronDown, ChevronUp, Lock, CheckCircle2, Shield, ShieldHalf, ShieldAlert, CircleDollarSign, Coins, Crown, Crosshair, Target, Star, Eye, FileSearch, Database, Badge, Plane, Rocket, BookOpen, BrainCircuit, Swords, Sparkles, Info, Filter, Map, LucideIcon } from 'lucide-react';
 
 import AchievementCard from './AchievementCard';
 
-const iconMap: Record<string, React.FC<any>> = {
+const iconMap: Record<string, LucideIcon> = {
   Shield, ShieldHalf, ShieldAlert,
   CircleDollarSign, Coins, Crown,
   Crosshair, Target, Star,
@@ -84,7 +84,7 @@ export default function AchievementsPanel({
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Group achievements by category
-  const categories = ['mandalore', 'hutt', 'bounty-hunters', 'empire', 'new-republic', 'thrawn', 'meta'];
+  const categories: import('@/types/achievements').AchievementCategory[] = ['mandalore', 'hutt', 'bounty-hunters', 'empire', 'new-republic', 'thrawn', 'meta'];
   
   const getCategoryProgress = (category: string) => {
     const categoryAchievements = ACHIEVEMENTS.filter(a => a.category === category);
@@ -104,10 +104,10 @@ export default function AchievementsPanel({
 
   const getNextLockedAchievement = (category: string) => {
     const categoryAchievements = ACHIEVEMENTS.filter(a => a.category === category);
-    return categoryAchievements.find(a => !unlockedAchievements.includes(a.id));
+    return categoryAchievements.find(a => !unlockedAchievements.includes(a.id)) || null;
   };
 
-  const getActionableHint = (category: string, nextLocked: typeof ACHIEVEMENTS[0] | undefined) => {
+  const getActionableHint = (category: string, nextLocked: import('@/types/achievements').Achievement | null) => {
     if (!nextLocked) return "Ruta completada";
     
     const rule = nextLocked.unlockRule;

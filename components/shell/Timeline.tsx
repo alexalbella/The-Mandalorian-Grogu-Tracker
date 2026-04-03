@@ -142,42 +142,6 @@ export default function Timeline({ eras }: { eras: Era[] }) {
     }).filter(era => era.items.length > 0);
   }, [eras, filterType, hideCompleted, watchedItems, skippedItems, searchQuery, preset, selectedRoute]);
 
-  const recentlyTouchedItems = useMemo(() => {
-    if (recentlyTouched.length === 0) return [];
-    const allItems = eras.flatMap(e => e.items);
-    // Get the actual items that correspond to the recently touched IDs
-    // We only want to show items that are currently visible based on filters
-    const items = recentlyTouched
-      .map(id => allItems.find(i => i.id === id || i.subItems?.some(s => s.id === id)))
-      .filter((item, index, self) => item && self.indexOf(item) === index) as typeof allItems;
-    
-    // Filter them just like the main timeline
-    return items.filter(item => {
-      if (filterType !== 'all' && item.type !== filterType) return false;
-      if (hideCompleted) {
-        if (item.subItems) {
-          if (item.subItems.every(sub => watchedItems.includes(sub.id) || skippedItems.includes(sub.id)) && item.subItems.length > 0) return false;
-        } else {
-          if (watchedItems.includes(item.id) || skippedItems.includes(item.id)) return false;
-        }
-      }
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(query);
-        const matchesReason = item.reason.toLowerCase().includes(query);
-        const matchesTags = item.tags.some(tag => tag.toLowerCase().includes(query));
-        const matchesSubItems = item.subItems?.some(sub => sub.title.toLowerCase().includes(query)) || false;
-        if (!matchesTitle && !matchesReason && !matchesTags && !matchesSubItems) return false;
-      }
-      if (selectedRoute && !item.tags.includes(selectedRoute)) return false;
-      if (preset === 'essential' && !item.essential) return false;
-      if (preset === 'fast' && item.type === 'series' && !item.essential) return false;
-      if (preset === 'essential-background' && !item.essential) return false;
-      if (preset === 'movie-background' && item.type !== 'movie') return false;
-      return true;
-    }).slice(0, 3); // Only show top 3 recent
-  }, [eras, recentlyTouched, filterType, hideCompleted, watchedItems, skippedItems, searchQuery, preset, selectedRoute]);
-
   return (
     <section id="timeline-section" className="space-y-16">
       <AnimatePresence mode="popLayout">
@@ -218,38 +182,6 @@ export default function Timeline({ eras }: { eras: Era[] }) {
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
-          </motion.div>
-        )}
-
-        {recentlyTouchedItems.length > 0 && !searchQuery && !selectedRoute && (
-          <motion.div
-            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, height: 0 }}
-            className="relative pt-8 pb-4"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-glow-warning/20 border border-glow-warning/50 flex items-center justify-center text-glow-warning shadow-[0_0_10px_var(--color-glow-warning)]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight text-glow-warning" style={{ fontFamily: 'var(--font-display)' }}>
-                Continuar Viendo
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentlyTouchedItems.map(item => (
-                <div key={`recent-${item.id}`} className="relative">
-                  <MediaItemCard 
-                    item={item} 
-                    isCompleted={isCompleted}
-                    toggleItem={handleToggleItem}
-                    markMultiple={markMultiple}
-                    unmarkMultiple={unmarkMultiple}
-                    disableLayoutId
-                  />
-                </div>
-              ))}
             </div>
           </motion.div>
         )}

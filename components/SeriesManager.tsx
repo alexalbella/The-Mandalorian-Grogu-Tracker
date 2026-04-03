@@ -38,32 +38,9 @@ export default function SeriesManager() {
   useEffect(() => {
     const root = document.documentElement;
     if (activeSeries.theme === 'maul') {
-      root.style.setProperty('--color-glow-success', '#ef4444'); // red-500
-      root.style.setProperty('--color-surface-1', '#0a0000'); // very dark red/black
-      root.style.setProperty('--color-surface-2', '#140000');
-      root.style.setProperty('--color-surface-3', '#290000');
-      root.style.setProperty('--color-surface-4', '#3d0000');
-      root.style.setProperty('--color-route-mandalore', '#dc2626');
-      root.style.setProperty('--color-route-hutt', '#fbbf24');
-      root.style.setProperty('--color-route-bounty', '#991b1b');
-      root.style.setProperty('--color-route-empire', '#450a0a');
-      root.style.setProperty('--color-route-republic', '#b91c1c');
-      root.style.setProperty('--color-route-thrawn', '#7f1d1d');
-      root.style.setProperty('--color-route-meta', '#f87171');
+      root.setAttribute('data-theme', 'maul');
     } else {
-      // Reset to Mando theme (defaults from globals.css)
-      root.style.removeProperty('--color-glow-success');
-      root.style.removeProperty('--color-surface-1');
-      root.style.removeProperty('--color-surface-2');
-      root.style.removeProperty('--color-surface-3');
-      root.style.removeProperty('--color-surface-4');
-      root.style.removeProperty('--color-route-mandalore');
-      root.style.removeProperty('--color-route-hutt');
-      root.style.removeProperty('--color-route-bounty');
-      root.style.removeProperty('--color-route-empire');
-      root.style.removeProperty('--color-route-republic');
-      root.style.removeProperty('--color-route-thrawn');
-      root.style.removeProperty('--color-route-meta');
+      root.removeAttribute('data-theme');
     }
   }, [activeSeries.theme]);
 
