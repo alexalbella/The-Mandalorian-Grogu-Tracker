@@ -10,6 +10,7 @@ export type MediaItem = {
   type: 'movie' | 'series';
   duration: number; // in minutes
   reason: string;
+  synopsis?: string;
   essential: boolean;
   tags: string[];
   subItems?: SubItem[];
@@ -53,6 +54,7 @@ export const eras: Era[] = [
         type: "movie",
         duration: 98,
         reason: "Muestra el secuestro y rescate del bebé Rotta el Hutt (hijo de Jabba). Se espera que Rotta regrese en la película reclamando su posición como legítimo heredero del imperio criminal.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['hutt']
       },
@@ -62,6 +64,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 66,
         reason: "Arco de la Guardia de la Muerte. Presenta a la secta extremista mandaloriana (Death Watch) que años más tarde rescataría al niño Din Djarin, forjando sus creencias religiosas.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -72,19 +75,21 @@ export const eras: Era[] = [
       },
       {
         id: "tcw-t2-17",
-        title: "The Clone Wars - T2, Ep 17",
+        title: "The Clone Wars - T2, Ep 17: Bounty Hunters",
         type: "series",
         duration: 22,
         reason: "Bounty Hunters. Primera aparición de Embo, el letal cazarrecompensas de la raza Kyuzo (y su mascota Anooba), quien ha sido confirmado como antagonista en la película.",
+        synopsis: "Anakin, Obi-Wan y Ahsoka se alían con cazarrecompensas para proteger a un granjero de especias.",
         essential: false,
         tags: ['bounty-hunters']
       },
       {
         id: "tcw-t3-4",
-        title: "The Clone Wars - T3, Ep 4",
+        title: "The Clone Wars - T3, Ep 4: Sphere of Influence",
         type: "series",
         duration: 22,
         reason: "Sphere of Influence. Establece la larga relación de Embo trabajando como mercenario político para los Hutt, lo que explica su posible lealtad en el conflicto venidero.",
+        synopsis: "La familia de Papanoida es secuestrada y retenida para pedir rescate.",
         essential: false,
         tags: ['bounty-hunters', 'hutt']
       },
@@ -94,6 +99,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Arco de Obi-Wan Infiltrado. Embo demuestra por qué es considerado la élite de la galaxia, sobreviviendo a pruebas brutales junto a otros cazarrecompensas míticos como Cad Bane.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: false,
         tags: ['bounty-hunters'],
         subItems: [
@@ -109,6 +115,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 44,
         reason: "Bounty / Revenge. Muestra a Embo trabajando con un joven Boba Fett y forjando alianzas en el inframundo criminal, conexiones que podrían ser relevantes en Tatooine.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: false,
         tags: ['bounty-hunters'],
         subItems: [
@@ -118,19 +125,21 @@ export const eras: Era[] = [
       },
       {
         id: "tcw-t5-14",
-        title: "The Clone Wars - T5, Ep 14",
+        title: "The Clone Wars - T5, Ep 14: Eminence",
         type: "series",
         duration: 22,
         reason: "Eminence. Embo se enfrenta a mandalorianos y se entrelaza con el Sindicato de la Sombra y Darth Maul, mostrando su capacidad de supervivencia ante amenazas mayores.",
+        synopsis: "Savage y Maul sellan una alianza con Death Watch.",
         essential: false,
         tags: ['mandalore', 'bounty-hunters']
       },
       {
         id: "tcw-t6-5",
-        title: "The Clone Wars - T6, Ep 5",
+        title: "The Clone Wars - T6, Ep 5: An Old Friend",
         type: "series",
         duration: 22,
         reason: "An Old Friend. Una de las escenas de acción más destacadas de Embo, donde usa su sombrero como tabla de snowboard y sobrevive a un duelo directo contra Anakin Skywalker.",
+        synopsis: "Ahsoka avisa a Anakin y Obi-Wan sobre Maul, pero el ataque a Coruscant obliga a los Jedi a elegir.",
         essential: true,
         tags: ['bounty-hunters']
       },
@@ -140,6 +149,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 88,
         reason: "El Asedio de Mandalore. El evento traumático que dejó cicatrices en Bo-Katan y explica la caída de la civilización mandaloriana antes de la llegada del Imperio.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -163,6 +173,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 50,
         reason: "Muestra la destrucción de las instalaciones de clonación en Kamino y cómo el Imperio secuestra a los científicos para sus propios fines.",
+        synopsis: "El escuadrón clon experimental intenta encontrar su lugar en una galaxia que cambia rápidamente tras el fin de la Guerra Clon.",
         essential: false,
         tags: ['empire'],
         subItems: [
@@ -176,6 +187,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 125,
         reason: "Explora a fondo la base secreta del Monte Tantiss y menciona por primera vez el Proyecto Nigromante (el plan para clonar la Fuerza y resucitar a Palpatine), revelando la razón por la que Moff Gideon buscaba la sangre de Grogu.",
+        synopsis: "El escuadrón clon experimental intenta encontrar su lugar en una galaxia que cambia rápidamente tras el fin de la Guerra Clon.",
         essential: true,
         tags: ['empire'],
         subItems: [
@@ -200,6 +212,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 44,
         reason: "Spark of Rebellion. Introducción del guerrero Lasat Garazeb 'Zeb' Orrelios, quien ha sido confirmado para aparecer en la película como Ranger de la Nueva República.",
+        synopsis: "Ambientada cinco años antes de Una Nueva Esperanza, cuenta los orígenes de la Rebelión mientras el Imperio expande su tiranía.",
         essential: false,
         tags: ['new-republic'],
         subItems: [
@@ -209,19 +222,21 @@ export const eras: Era[] = [
       },
       {
         id: "rebels-t2-17",
-        title: "Star Wars Rebels - T2, Ep 17",
+        title: "Star Wars Rebels - T2, Ep 17: The Honorable Ones",
         type: "series",
         duration: 22,
         reason: "The Honorable Ones. Define la brújula moral de Zeb tras quedarse atrapado en una luna helada con su peor enemigo imperial, dando profundidad a su personaje.",
+        synopsis: "Zeb y el agente Kallus quedan aislados en un planeta helado.",
         essential: false,
         tags: ['new-republic']
       },
       {
         id: "rebels-t3-15",
-        title: "Star Wars Rebels - T3, Ep 15",
+        title: "Star Wars Rebels - T3, Ep 15: Trials of the Darksaber",
         type: "series",
         duration: 22,
         reason: "Trials of the Darksaber. Cuenta la historia de Tarre Vizsla, el primer Jedi Mandaloriano, y el profundo significado religioso del Sable Oscuro para el pueblo de Din Djarin.",
+        synopsis: "Sabine empieza a entrenar con el Sable Oscuro y, al hacerlo, se enfrenta a su pasado.",
         essential: true,
         tags: ['mandalore']
       },
@@ -231,6 +246,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 220,
         reason: "Muestra en acción las tácticas despiadadas y calculadoras del Gran Almirante Thrawn antes de su exilio, estableciéndolo como una amenaza estratégica formidable.",
+        synopsis: "Ambientada cinco años antes de Una Nueva Esperanza, cuenta los orígenes de la Rebelión mientras el Imperio expande su tiranía.",
         essential: true,
         tags: ['thrawn'],
         subItems: [
@@ -291,6 +307,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 320,
         reason: "El credo, la traición al Gremio de Cazarrecompensas, el descubrimiento de Grogu y el primer cara a cara contra el remanente imperial de Gideon.",
+        synopsis: "Tras la caída del Imperio, un mandaloriano solitario recorre una galaxia sin ley junto a su foundling, Grogu.",
         essential: true,
         tags: ['mandalore', 'empire'],
         subItems: [
@@ -310,6 +327,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 320,
         reason: "La búsqueda de los Jedi (Ahsoka y Luke Skywalker), alianzas con Bo-Katan y la dolorosa separación temporal de Din y Grogu.",
+        synopsis: "Tras la caída del Imperio, un mandaloriano solitario recorre una galaxia sin ley junto a su foundling, Grogu.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -329,6 +347,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 180,
         reason: "Introducción de los Gemelos Hutt y el Wookiee cazarrecompensas Black Krrsantan. Reclaman el imperio de Jabba y es muy probable que choquen con Rotta en el futuro. Boba se consolida como Daimyo local.",
+        synopsis: "Boba Fett y Fennec Shand regresan a Tatooine para disputar el territorio que antes controlaban Jabba y su sindicato criminal.",
         essential: false,
         tags: ['hutt', 'bounty-hunters'],
         subItems: [
@@ -344,6 +363,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 135,
         reason: "Crucial para la trama principal. Explica cómo Mando consigue su nueva nave (el caza N-1) y por qué Grogu abandona su entrenamiento con Luke para volver con Din. Además, Din y Boba se vuelven hermanos de armas.",
+        synopsis: "Boba Fett y Fennec Shand regresan a Tatooine para disputar el territorio que antes controlaban Jabba y su sindicato criminal.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -358,6 +378,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 320,
         reason: "La redención de Mando en las Aguas Vivas, la unión de los clanes, la reconquista del planeta Mandalore, la adopción oficial de 'Din Grogu', y el pacto de Mando para cazar imperiales para la Nueva República (punto de partida de la película).",
+        synopsis: "Tras la caída del Imperio, un mandaloriano solitario recorre una galaxia sin ley junto a su foundling, Grogu.",
         essential: true,
         tags: ['mandalore', 'new-republic'],
         subItems: [
@@ -377,6 +398,7 @@ export const eras: Era[] = [
         type: "series",
         duration: 360,
         reason: "Confirma el regreso del Gran Almirante Thrawn a la galaxia conocida. Su presencia es la principal razón por la que la Nueva República está al borde de una nueva guerra y necesita la ayuda de Din Djarin.",
+        synopsis: "Ahsoka Tano investiga una nueva amenaza en una galaxia vulnerable tras la caída del Imperio.",
         essential: true,
         tags: ['thrawn', 'new-republic'],
         subItems: [
@@ -396,17 +418,18 @@ export const eras: Era[] = [
         type: "series",
         duration: 360,
         reason: "Muestra cómo la piratería se ha salido de control en el Borde Exterior, explicando por qué los Rangers de Adelphi (el escuadrón de Carson Teva y Zeb) están tan desbordados que necesitan contratar a cazarrecompensas como Mando.",
+        synopsis: "Cuatro niños perdidos buscan su planeta natal mientras atraviesan lugares extraños y peligrosos de la galaxia.",
         essential: false,
         tags: ['new-republic'],
         subItems: [
-          { id: "skeleton-crew-e1", title: "Episodio 1", duration: 45 },
-          { id: "skeleton-crew-e2", title: "Episodio 2", duration: 45 },
-          { id: "skeleton-crew-e3", title: "Episodio 3", duration: 45 },
-          { id: "skeleton-crew-e4", title: "Episodio 4", duration: 45 },
-          { id: "skeleton-crew-e5", title: "Episodio 5", duration: 45 },
-          { id: "skeleton-crew-e6", title: "Episodio 6", duration: 45 },
-          { id: "skeleton-crew-e7", title: "Episodio 7", duration: 45 },
-          { id: "skeleton-crew-e8", title: "Episodio 8", duration: 45 }
+          { id: "skeleton-crew-e1", title: "Episodio 1: This Could Be a Real Adventure", duration: 45 },
+          { id: "skeleton-crew-e2", title: "Episodio 2: Way, Way Out Past the Barrier", duration: 45 },
+          { id: "skeleton-crew-e3", title: "Episodio 3: Very Interesting, As an Astrogation Problem", duration: 45 },
+          { id: "skeleton-crew-e4", title: "Episodio 4: Can’t Say I Remember No At Attin", duration: 45 },
+          { id: "skeleton-crew-e5", title: "Episodio 5: You Have a Lot to Learn About Pirates", duration: 45 },
+          { id: "skeleton-crew-e6", title: "Episodio 6: Zero Friends Again", duration: 45 },
+          { id: "skeleton-crew-e7", title: "Episodio 7: We’re Gonna Be In So Much Trouble", duration: 45 },
+          { id: "skeleton-crew-e8", title: "Episodio 8: The Real Good Guys", duration: 45 }
         ]
       }
     ]

@@ -30,6 +30,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 66,
         reason: "Introduce un tipo de 'Lado Oscuro' diferente al de los Sith: la brujería (magia pura) de las Hermanas de la Noche. Conocerás a la Madre Talzin, al hermano de Maul (Savage Opress) y se revelará el gran secreto: Maul sobrevivió.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['dathomir'],
         subItems: [
@@ -58,6 +59,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Muestra a un Maul convertido en una monstruosidad mitad araña cibernética, consumido por la locura en un planeta vertedero. Verás cómo la Madre Talzin restaura su mente y sus piernas, dándole al personaje agencia propia por primera vez para cazar a Kenobi.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['dathomir', 'sith'],
         subItems: [
@@ -81,6 +83,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Vital para la nueva serie. Maul pasa de asesino solitario a caudillo militar. Somete al Sol Negro, al Sindicato Pyke y a los Hutt para crear la Sombra Colectiva. Vence a Pre Vizsla, roba el Darksaber y conquista Mandalore, atrayendo a Darth Sidious.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['mandalore', 'crimson-dawn'],
         subItems: [
@@ -113,6 +116,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 44,
         reason: "Explora desde dentro cómo opera el Sindicato Pyke (que obedece a Maul) y cómo los bajos fondos sobreviven a las sombras de los Jedi. Aquí Ahsoka y los mandalorianos descubren que Maul sigue operando.",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['crimson-dawn'],
         subItems: [
@@ -126,6 +130,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Una obra maestra. Muestra el duelo definitivo entre Ahsoka y Maul. Maul predice la Orden 66 y la caída de la República. El final ocurre en el 19 ABY, y Maul-Shadow Lord empezará exactamente un año después (17 ABY).",
+        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -158,6 +163,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 360,
         reason: "Introduce a Marrok, el misterioso ex-inquisidor mercenario recubierto de magia oscura. Ver sus orígenes bajo el ala de Maul en Shadow Lord será fascinante tras conocer su destino en Ahsoka.",
+        synopsis: "Ahsoka Tano investiga una nueva amenaza en una galaxia vulnerable tras la caída del Imperio.",
         essential: true,
         tags: ['dathomir']
       },
@@ -167,6 +173,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Cierra definitivamente la historia de Maul. Lo vemos como el 'Viejo Maestro', descubrimos qué pasó con el Darksaber, y presenciamos su encuentro final, poético y perfecto, con Obi-Wan Kenobi en Tatooine.",
+        synopsis: "Ambientada cinco años antes de Una Nueva Esperanza, cuenta los orígenes de la Rebelión mientras el Imperio expande su tiranía.",
         essential: true,
         tags: ['sith', 'mandalore'],
         subItems: [

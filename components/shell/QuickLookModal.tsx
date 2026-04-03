@@ -186,7 +186,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                   <div>
                     <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-2">Sinopsis</h3>
                     <p className="text-text-body leading-relaxed text-sm sm:text-base">
-                      {getEditorialSummary(item.id, item.title)}
+                      {item.synopsis || getEditorialSummary(item.id, item.title)}
                     </p>
                   </div>
 
