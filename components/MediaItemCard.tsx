@@ -164,7 +164,7 @@ export default function MediaItemCard({
                 // If image fails, fallback to local SVG
                 setImgSrc(getFallbackImage(item.title));
               }}
-              unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com')}
+              unoptimized={imgSrc.startsWith('data:') || imgSrc.includes('tvmaze.com') || imgSrc.includes('tmdb.org')}
             />
             {isWatched && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
