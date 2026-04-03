@@ -14,7 +14,9 @@ const seriesConfigs: SeriesConfig[] = [
     subtitle: '& Grogu Tracker',
     theme: 'mando',
     eras: mandoEras,
-    quote: 'Que la Fuerza te acompañe. Este es el camino.'
+    quote: 'Que la Fuerza te acompañe. Este es el camino.',
+    releaseDate: '2026-05-22T00:00:00Z',
+    releaseType: 'movie'
   },
   {
     id: 'maul',
@@ -22,7 +24,9 @@ const seriesConfigs: SeriesConfig[] = [
     subtitle: 'Shadow Lord Tracker',
     theme: 'maul',
     eras: maulEras,
-    quote: 'Siempre dos hay. Ni más, ni menos. Un maestro y un aprendiz.'
+    quote: 'Siempre dos hay. Ni más, ni menos. Un maestro y un aprendiz.',
+    releaseDate: '2026-04-06T00:00:00Z',
+    releaseType: 'series'
   }
 ];
 

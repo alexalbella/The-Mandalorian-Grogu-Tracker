@@ -90,7 +90,19 @@ export default function MediaItemCard({
       'bobafett-5-7': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253027.jpg',
       'mando-t3': 'https://static.tvmaze.com/uploads/images/original_untouched/501/1253498.jpg',
       'ahsoka-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
-      'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg'
+      'skeleton-crew-t1': 'https://static.tvmaze.com/uploads/images/original_untouched/546/1365559.jpg',
+      // Maul Series
+      'ep1-maul': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg',
+      'tcw-t3-12-14': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tote-1-3': 'https://image.tmdb.org/t/p/w500/vDPJAmXkQ0M10m212m7o40gS4Vp.jpg', // Tales of the Empire
+      'tcw-t4-19-22': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t5-1-14-16': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'comic-son-of-dathomir': 'https://image.tmdb.org/t/p/w500/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg', // Fallback to Ep1 Maul
+      'tcw-t7-7-8': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'tcw-t7-9-12-maul': 'https://static.tvmaze.com/uploads/images/original_untouched/237/593387.jpg',
+      'solo-movie': 'https://image.tmdb.org/t/p/w500/4oD6VEccFxxqWE45bB0HR0sL18w.jpg',
+      'ahsoka-t1-maul': 'https://static.tvmaze.com/uploads/images/original_untouched/473/1184972.jpg',
+      'rebels-maul': 'https://static.tvmaze.com/uploads/images/original_untouched/353/884619.jpg'
     };
     
     return map[id] || getFallbackImage(item.title);

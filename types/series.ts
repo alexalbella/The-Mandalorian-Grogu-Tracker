@@ -9,4 +9,6 @@ export interface SeriesConfig {
   theme: SeriesTheme;
   eras: Era[];
   quote: string;
+  releaseDate: string;
+  releaseType: 'movie' | 'series';
 }

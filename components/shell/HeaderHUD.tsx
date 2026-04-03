@@ -220,7 +220,7 @@ export default function HeaderHUD({ config }: { config: SeriesConfig }) {
 
         {!isScrolled && (
           <div className="hidden lg:block">
-            <CountdownWidget remainingMinutes={remainingMinutes} isScrolled={isScrolled} />
+            <CountdownWidget config={config} remainingMinutes={remainingMinutes} isScrolled={isScrolled} />
           </div>
         )}
       </div>

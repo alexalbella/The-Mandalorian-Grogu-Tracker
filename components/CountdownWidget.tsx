@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Calendar, Flame, PlayCircle } from 'lucide-react';
+import { SeriesConfig } from '@/types/series';
 
-export default function CountdownWidget({ remainingMinutes, isScrolled = false }: { remainingMinutes: number, isScrolled?: boolean }) {
+export default function CountdownWidget({ config, remainingMinutes, isScrolled = false }: { config: SeriesConfig, remainingMinutes: number, isScrolled?: boolean }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0 });
   const [isMounted, setIsMounted] = useState(false);
   const [isReleased, setIsReleased] = useState(false);
@@ -11,8 +12,7 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
-    // Release date: May 22, 2026
-    const releaseDate = new Date('2026-05-22T00:00:00Z').getTime();
+    const releaseDate = new Date(config.releaseDate).getTime();
     
     const updateCountdown = () => {
       const now = new Date().getTime();
@@ -21,6 +21,7 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
       if (distance <= 0) {
         setIsReleased(true);
       } else {
+        setIsReleased(false);
         setTimeLeft({
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
           hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
@@ -31,7 +32,7 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000 * 60 * 60); // Update every hour
     return () => clearInterval(interval);
-  }, []);
+  }, [config.releaseDate]);
 
   if (!isMounted) {
     return (
@@ -48,10 +49,10 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
           </div>
           <div>
             <p className={`text-glow-success uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>¡El momento ha llegado!</p>
-            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-surface-1`}>Ya en cines</div>
+            <div className={`${isScrolled ? 'text-lg' : 'text-xl'} font-bold text-surface-1`}>Ya en {config.releaseType === 'movie' ? 'cines' : 'emisión'}</div>
           </div>
         </div>
-        {!isScrolled && (
+        {!isScrolled && config.theme === 'mando' && (
           <a 
             href="https://www.youtube.com/results?search_query=the+mandalorian+and+grogu+trailer" 
             target="_blank" 
@@ -74,7 +75,7 @@ export default function CountdownWidget({ remainingMinutes, isScrolled = false }
           <Calendar className={`${isScrolled ? 'w-4 h-4' : 'w-6 h-6'} text-text-muted`} />
         </div>
         <div>
-          <p className={`text-text-muted uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en Cines</p>
+          <p className={`text-text-muted uppercase tracking-wider font-semibold mb-1 ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>Estreno en {config.releaseType === 'movie' ? 'Cines' : 'Pantallas'}</p>
           <div className="flex items-baseline gap-2">
             <span className={`${isScrolled ? 'text-lg' : 'text-2xl'} font-bold font-mono text-glow-success`}>{timeLeft.days}</span>
             <span className={`${isScrolled ? 'text-xs' : 'text-sm'} text-text-muted`}>días</span>

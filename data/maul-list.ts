@@ -43,7 +43,7 @@ export const maulEras: Era[] = [
         title: "Tales of the Empire - Episodios 1 al 3",
         type: "series",
         duration: 45,
-        reason: "[AÑADIDO ESTRATÉGICO] Te muestra el ataque y la masacre de Dathomir desde la perspectiva de Morgan Elsbeth. Conocer el trauma de las brujas y la crueldad del Imperio y los Separatistas te dará mucho contexto sobre por qué Maul recluta a quienes recluta más adelante.",
+        reason: "Te muestra el ataque y la masacre de Dathomir desde la perspectiva de Morgan Elsbeth. Conocer el trauma de las brujas y la crueldad del Imperio y los Separatistas te dará mucho contexto sobre por qué Maul recluta a quienes recluta más adelante.",
         essential: true,
         tags: ['dathomir'],
         subItems: [
@@ -148,7 +148,7 @@ export const maulEras: Era[] = [
         title: "Han Solo: Una Historia de Star Wars (2018)",
         type: "movie",
         duration: 135,
-        reason: "[AÑADIDO ESTRATÉGICO] Ocurre en el 13 ABY. Revela que Maul es el jefe supremo de Crimson Dawn. Ver a personajes como Qi'ra o Dryden Vos te permitirá captar cualquier referencia o prototipo de este sindicato que seguro aparecerá en Maul-Shadow Lord.",
+        reason: "Ocurre en el 13 ABY. Revela que Maul es el jefe supremo de Crimson Dawn. Ver a personajes como Qi'ra o Dryden Vos te permitirá captar cualquier referencia o prototipo de este sindicato que seguro aparecerá en Maul-Shadow Lord.",
         essential: true,
         tags: ['crimson-dawn']
       },
@@ -157,7 +157,7 @@ export const maulEras: Era[] = [
         title: "Ahsoka - Temporada 1",
         type: "series",
         duration: 360,
-        reason: "[AÑADIDO ESTRATÉGICO] Introduce a Marrok, el misterioso ex-inquisidor mercenario recubierto de magia oscura. Ver sus orígenes bajo el ala de Maul en Shadow Lord será fascinante tras conocer su destino en Ahsoka.",
+        reason: "Introduce a Marrok, el misterioso ex-inquisidor mercenario recubierto de magia oscura. Ver sus orígenes bajo el ala de Maul en Shadow Lord será fascinante tras conocer su destino en Ahsoka.",
         essential: true,
         tags: ['dathomir']
       },
@@ -166,7 +166,7 @@ export const maulEras: Era[] = [
         title: "Star Wars Rebels - Eps Seleccionados (T2 y T3)",
         type: "series",
         duration: 88,
-        reason: "[AÑADIDO ESTRATÉGICO] Cierra definitivamente la historia de Maul. Lo vemos como el 'Viejo Maestro', descubrimos qué pasó con el Darksaber, y presenciamos su encuentro final, poético y perfecto, con Obi-Wan Kenobi en Tatooine.",
+        reason: "Cierra definitivamente la historia de Maul. Lo vemos como el 'Viejo Maestro', descubrimos qué pasó con el Darksaber, y presenciamos su encuentro final, poético y perfecto, con Obi-Wan Kenobi en Tatooine.",
         essential: true,
         tags: ['sith', 'mandalore'],
         subItems: [
