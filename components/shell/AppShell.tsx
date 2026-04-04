@@ -14,6 +14,7 @@ import UndoRedoWidget from './UndoRedoWidget';
 import AchievementToasts from '../AchievementToast';
 
 import { motion } from 'motion/react';
+import HeroParallax from '../HeroParallax';
 
 export default function AppShell({ config }: { config: SeriesConfig }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -72,6 +73,8 @@ export default function AppShell({ config }: { config: SeriesConfig }) {
   };
 
   return (
+    <>
+    <HeroParallax config={config} />
     <div className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
       {/* Main Content */}
       <motion.div 
@@ -114,5 +117,6 @@ export default function AppShell({ config }: { config: SeriesConfig }) {
       <AchievementToasts />
       <QuickLookModal eras={eras} />
     </div>
+    </>
   );
 }
