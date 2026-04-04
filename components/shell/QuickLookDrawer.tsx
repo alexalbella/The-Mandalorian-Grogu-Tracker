@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SeriesConfig } from '@/types/series';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import confetti from 'canvas-confetti';
+import { themeRegistry } from '@/lib/theme-registry';
 
 export default function QuickLookDrawer({ config }: { config: SeriesConfig }) {
   const eras = config.eras;
@@ -14,22 +15,11 @@ export default function QuickLookDrawer({ config }: { config: SeriesConfig }) {
     if (progressPercent === 100 && totalItems > 0) {
       const duration = 3 * 1000;
       const end = Date.now() + duration;
+      const theme = themeRegistry[config.theme];
 
       const frame = () => {
-        confetti({
-          particleCount: 5,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#10b981', '#3b82f6']
-        });
-        confetti({
-          particleCount: 5,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#10b981', '#3b82f6']
-        });
+        confetti({ particleCount: theme.confettiLoop.particleCount, angle: 60, spread: theme.confettiLoop.spread, origin: { x: 0 }, colors: theme.confettiLoop.colors });
+        confetti({ particleCount: theme.confettiLoop.particleCount, angle: 120, spread: theme.confettiLoop.spread, origin: { x: 1 }, colors: theme.confettiLoop.colors });
 
         if (Date.now() < end) {
           requestAnimationFrame(frame);
@@ -37,7 +27,7 @@ export default function QuickLookDrawer({ config }: { config: SeriesConfig }) {
       };
       frame();
     }
-  }, [progressPercent, totalItems]);
+  }, [progressPercent, totalItems, config.theme]);
 
   return (
     <>

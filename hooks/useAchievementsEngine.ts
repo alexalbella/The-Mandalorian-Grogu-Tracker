@@ -5,6 +5,7 @@ import { useUIStore } from '@/store/ui';
 import { ACHIEVEMENTS } from '@/data/achievements';
 import { Era, MediaItem } from '@/data/starwars-list';
 import confetti from 'canvas-confetti';
+import { themeRegistry, getActiveTheme } from '@/lib/theme-registry';
 
 export function useAchievementsEngine(eras: Era[]) {
   const { watchedItems, skippedItems } = useProgressStore();
@@ -66,11 +67,12 @@ export function useAchievementsEngine(eras: Era[]) {
       });
       // If it's the meta achievement, do special confetti
       if (newlyUnlocked.includes('meta-gold')) {
+        const theme = themeRegistry[getActiveTheme()];
         confetti({
           particleCount: 150,
           spread: 100,
           origin: { y: 0.6 },
-          colors: ['#10b981', '#f59e0b', '#3b82f6']
+          colors: theme.confetti.colors,
         });
       }
     }

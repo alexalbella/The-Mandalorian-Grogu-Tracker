@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useSpring, useMotionValue, useTransform } from 'motion/react';
 import confetti from 'canvas-confetti';
+import { themeRegistry, getActiveTheme } from '@/lib/theme-registry';
 
 interface DarksaberProgressProps {
   progress: number;
@@ -84,38 +85,18 @@ export default function DarksaberProgress({
       const crossedMilestone = milestones.find(m => prevProgressRef.current < m && progress >= m);
       
       if (crossedMilestone) {
+        const theme = themeRegistry[getActiveTheme()];
         if (crossedMilestone === 100) {
-          // Big celebration for 100%
           const duration = 3000;
           const end = Date.now() + duration;
           const frame = () => {
-            confetti({
-              particleCount: 5,
-              angle: 60,
-              spread: 55,
-              origin: { x: 0 },
-              colors: ['#4ade80', '#ffffff', '#22c55e']
-            });
-            confetti({
-              particleCount: 5,
-              angle: 120,
-              spread: 55,
-              origin: { x: 1 },
-              colors: ['#4ade80', '#ffffff', '#22c55e']
-            });
-            if (Date.now() < end) {
-              requestAnimationFrame(frame);
-            }
+            confetti({ particleCount: theme.confettiLoop.particleCount, angle: 60, spread: theme.confettiLoop.spread, origin: { x: 0 }, colors: theme.confettiLoop.colors });
+            confetti({ particleCount: theme.confettiLoop.particleCount, angle: 120, spread: theme.confettiLoop.spread, origin: { x: 1 }, colors: theme.confettiLoop.colors });
+            if (Date.now() < end) requestAnimationFrame(frame);
           };
           frame();
         } else {
-          // Smaller celebration for other milestones
-          confetti({
-            particleCount: 80,
-            spread: 60,
-            origin: { y: 0.6 },
-            colors: ['#4ade80', '#ffffff']
-          });
+          confetti({ particleCount: theme.confetti.particleCount, spread: theme.confetti.spread, origin: { y: 0.6 }, colors: theme.confetti.colors });
         }
       }
       

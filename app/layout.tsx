@@ -7,14 +7,14 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-displ
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'Mando & Grogu Tracker',
-  description: 'Dashboard checklist para controlar el visionado hasta The Mandalorian & Grogu',
+  title: 'Star Wars Saga Tracker',
+  description: 'Dashboard de seguimiento multi-saga para Star Wars: sigue The Mandalorian & Grogu y Maul antes de sus estrenos.',
   manifest: '/manifest.json',
-  themeColor: '#10b981',
+  themeColor: '#10b981', // updated dynamically per series via SeriesManager
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Mando Tracker',
+    title: 'SW Tracker',
   },
 };
 

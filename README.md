@@ -1,6 +1,6 @@
 <div align="center">
-  <h1>🌌 The Mandalorian & Grogu Tracker</h1>
-  <p><strong>El planificador de visionado definitivo para prepararte para el estreno en cines.</strong></p>
+  <h1>🌌 Star Wars Saga Tracker</h1>
+  <p><strong>El planificador de visionado definitivo para prepararte para los próximos estrenos de Star Wars.</strong></p>
 
   [![CI](https://github.com/alexalbella/The-Mandalorian-Grogu-Tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/alexalbella/The-Mandalorian-Grogu-Tracker/actions/workflows/ci.yml)
   [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
@@ -14,7 +14,7 @@
 
 <br />
 
-> Una aplicación web progresiva (PWA) para fans de Star Wars que quieren organizar y trackear su progreso de visionado antes del estreno de **The Mandalorian & Grogu**. No es solo una lista — es una experiencia gamificada con logros, rutas temáticas y cuenta atrás.
+> Aplicación web progresiva (PWA) multi-saga para fans de Star Wars. Actualmente cubre **The Mandalorian & Grogu** (estreno mayo 2026) y **Maul: Shadow Lord** (estreno abril 2026). No es solo una lista — es una experiencia gamificada con logros, rutas temáticas, hero con parallax y cuenta atrás por saga.
 
 ---
 
@@ -79,7 +79,7 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 | `npm run lint` | Ejecuta ESLint |
 | `npm test` | Ejecuta los tests con Vitest |
 | `npm run test:watch` | Tests en modo watch |
-| `npm run clean` | Limpia la cache de Next.js |
+| `npm run clean` | Elimina la carpeta `.next` (cache de build) |
 
 ## 📦 Estructura del proyecto
 
@@ -90,7 +90,8 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 │   ├── error.tsx           # Error boundary de pagina
 │   └── global-error.tsx    # Error boundary global
 ├── components/             # Componentes UI
-│   ├── SeriesManager.tsx   # Selector de serie (Mando / Maul)
+│   ├── SeriesManager.tsx   # Selector de serie (Mando / Maul) + sync de tema
+│   ├── HeroParallax.tsx    # Hero cinematografico con parallax y efecto hyperspace
 │   ├── MediaItemCard.tsx   # Tarjeta de pelicula/episodio
 │   ├── EraSection.tsx      # Seccion por era con acciones en lote
 │   ├── AchievementsPanel.tsx # Panel de logros con filtros
@@ -111,7 +112,7 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 │   └── ui.ts               # Estado de UI (filtros, presets, toasts)
 ├── tests/                  # Suite de tests (51 tests)
 ├── types/                  # Definiciones de tipos TypeScript
-├── lib/                    # Utilidades (cn, imageMap)
+├── lib/                    # Utilidades (cn, imageMap, theme-registry)
 ├── public/                 # Assets estaticos y manifest PWA
 └── .github/workflows/      # CI pipeline (lint + test + build)
 ```
