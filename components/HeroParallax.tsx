@@ -81,20 +81,19 @@ function HyperspaceStreaks() {
 export default function HeroParallax({ config }: { config: SeriesConfig }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useUIStore((state) => state.reducedMotion);
-  const [showHyperspace, setShowHyperspace] = useState(true);
+  // Skip hyperspace entirely if user prefers reduced motion
+  const [showHyperspace, setShowHyperspace] = useState(!reducedMotion);
 
   const isMaul = config.theme === 'maul';
   const accentColor = isMaul ? 'rgba(239,68,68,' : 'rgba(52,211,153,';
 
   // Remove hyperspace overlay after animation completes
   useEffect(() => {
-    if (reducedMotion) {
-      setShowHyperspace(false);
-      return;
-    }
+    if (!showHyperspace) return;
     const timer = setTimeout(() => setShowHyperspace(false), 1600);
     return () => clearTimeout(timer);
-  }, [reducedMotion]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Scroll progress for parallax (tracks hero element leaving viewport)
   const { scrollYProgress } = useScroll({
@@ -371,8 +370,8 @@ export default function HeroParallax({ config }: { config: SeriesConfig }) {
           className="w-px h-7 rounded-full"
           style={{
             background: `linear-gradient(to bottom, ${accentColor}0.8), transparent)`,
+            originY: 0,
           }}
-          style={{ originY: 0 }}
           animate={{ scaleY: [0, 1, 0] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
         />
