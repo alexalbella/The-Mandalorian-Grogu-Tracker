@@ -1,4 +1,4 @@
-import { Search, EyeOff, Eye, RotateCcw } from 'lucide-react';
+import { Search, EyeOff, Eye } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useProgressStore } from '@/store/progress';
 

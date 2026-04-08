@@ -6,7 +6,6 @@ import { Era } from '@/data/starwars-list';
 import { useProgressStore } from '@/store/progress';
 import { useUIStore } from '@/store/ui';
 import EraSection from '../EraSection';
-import MediaItemCard from '../MediaItemCard';
 import { Shield, CircleDollarSign, Target, Eye, Plane, BrainCircuit, X } from 'lucide-react';
 
 const routeNarratives: Record<string, { title: string, description: string, icon: any, colorClass: string, bgClass: string, borderClass: string }> = {

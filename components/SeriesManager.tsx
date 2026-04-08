@@ -6,6 +6,7 @@ import AppShell from '@/components/shell/AppShell';
 import { eras as mandoEras } from '@/data/starwars-list';
 import { maulEras } from '@/data/maul-list';
 import { SeriesConfig } from '@/types/series';
+import { themeRegistry } from '@/lib/theme-registry';
 
 const seriesConfigs: SeriesConfig[] = [
   {
@@ -34,14 +35,17 @@ export default function SeriesManager() {
   const [activeSeriesId, setActiveSeriesId] = useState<string>('mando');
   const activeSeries = seriesConfigs.find(s => s.id === activeSeriesId) || seriesConfigs[0];
 
-  // Update CSS variables based on theme
+  // Sync CSS theme attribute and <meta name="theme-color"> with active series
   useEffect(() => {
     const root = document.documentElement;
+    const metaThemeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    const { metaThemeColor: color } = themeRegistry[activeSeries.theme];
     if (activeSeries.theme === 'maul') {
       root.setAttribute('data-theme', 'maul');
     } else {
       root.removeAttribute('data-theme');
     }
+    if (metaThemeColor) metaThemeColor.content = color;
   }, [activeSeries.theme]);
 
   return (
