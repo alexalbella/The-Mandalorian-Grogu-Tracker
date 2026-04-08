@@ -134,8 +134,8 @@ export default function MediaItemCard({
             {/* "VISTO" seal stamp */}
             {isWatched && (
               <div className="absolute inset-0 flex items-center justify-center bg-surface-1/50">
-                <div className="-rotate-[15deg] border-2 border-glow-danger/50 rounded-sm px-1.5 py-0.5">
-                  <span className="font-mono text-[8px] font-bold tracking-[0.3em] text-glow-danger">VISTO</span>
+                <div className="-rotate-[15deg] border-2 border-glow-success/60 rounded-sm px-1.5 py-0.5">
+                  <span className="font-mono text-[8px] font-bold tracking-[0.3em] text-glow-success">VISTO</span>
                 </div>
               </div>
             )}

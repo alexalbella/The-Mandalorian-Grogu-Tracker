@@ -37,31 +37,28 @@ export default function QuickLookDrawer({ config }: { config: SeriesConfig }) {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="pt-12 pb-8 border-t border-surface-4"
+            className="pt-12 pb-8 border-t border-surface-4/40"
           >
-            <div className="bg-surface-2/50 backdrop-blur-xl border border-glow-success/30 rounded-3xl p-8 text-center space-y-8 relative overflow-hidden">
-              <div className="absolute inset-0 bg-glow-success/5 mix-blend-overlay pointer-events-none" />
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-glow-success/20 blur-[100px] rounded-full pointer-events-none" />
-              
+            <div className="bg-surface-2/40 border border-glow-success/20 rounded-sm p-8 text-center space-y-8 relative overflow-hidden">
               <div className="space-y-4 relative z-10">
-                <h2 className="text-3xl md:text-5xl font-bold text-glow-success" style={{ fontFamily: 'var(--font-display)' }}>
+                <h2 className="font-display font-semibold text-glow-success" style={{ fontSize: 'clamp(1.8rem, 5vw, 3.5rem)' }}>
                   ¡Estás listo para el estreno!
                 </h2>
-                <p className="text-text-muted max-w-2xl mx-auto text-lg">
+                <p className="text-text-muted max-w-2xl mx-auto text-base">
                   Has completado todo el material esencial. Ahora solo queda esperar a que {config.title} llegue a las pantallas.
                 </p>
               </div>
 
               {config.theme === 'mando' && (
-                <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-surface-4 shadow-2xl relative z-10">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src="https://www.youtube.com/embed/IHWlvwu8t1w" 
-                    title="The Mandalorian & Grogu Trailer" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerPolicy="strict-origin-when-cross-origin" 
+                <div className="aspect-video w-full max-w-4xl mx-auto rounded-sm overflow-hidden border border-surface-4/40 shadow-xl relative z-10">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/IHWlvwu8t1w"
+                    title="The Mandalorian & Grogu Trailer"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
                     className="w-full h-full"
                   ></iframe>

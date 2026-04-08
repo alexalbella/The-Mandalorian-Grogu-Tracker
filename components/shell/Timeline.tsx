@@ -149,25 +149,23 @@ export default function Timeline({ eras }: { eras: Era[] }) {
             initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0 }}
-            className={`relative p-6 md:p-8 rounded-3xl border ${routeNarratives[selectedRoute].bgClass} ${routeNarratives[selectedRoute].borderClass} mb-12`}
+            className={`relative p-6 md:p-8 rounded-sm border ${routeNarratives[selectedRoute].bgClass} ${routeNarratives[selectedRoute].borderClass} mb-12`}
           >
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              <div className={`w-16 h-16 shrink-0 rounded-2xl bg-surface-1 border ${routeNarratives[selectedRoute].borderClass} flex items-center justify-center ${routeNarratives[selectedRoute].colorClass} shadow-inner`}>
+            <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
+              <div className={`w-12 h-12 shrink-0 rounded-sm bg-surface-1/60 border ${routeNarratives[selectedRoute].borderClass} flex items-center justify-center ${routeNarratives[selectedRoute].colorClass}`}>
                 {(() => {
                   const Icon = routeNarratives[selectedRoute].icon;
-                  return <Icon className="w-8 h-8" />;
+                  return <Icon className="w-6 h-6" />;
                 })()}
               </div>
               <div className="flex-grow">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`text-xs font-bold uppercase tracking-widest ${routeNarratives[selectedRoute].colorClass}`}>
-                    Navegación Narrativa
-                  </span>
-                </div>
-                <h2 className="text-3xl font-bold text-text-heading mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                <span className={`block text-[9px] font-mono uppercase tracking-widest mb-1 ${routeNarratives[selectedRoute].colorClass} opacity-80`}>
+                  Ruta narrativa
+                </span>
+                <h2 className="font-display font-semibold text-text-heading mb-2" style={{ fontSize: 'clamp(1.3rem, 3vw, 2rem)' }}>
                   {routeNarratives[selectedRoute].title}
                 </h2>
-                <p className="text-text-body text-lg leading-relaxed max-w-3xl">
+                <p className="text-text-body text-sm leading-relaxed max-w-3xl">
                   {routeNarratives[selectedRoute].description}
                 </p>
               </div>
@@ -176,10 +174,10 @@ export default function Timeline({ eras }: { eras: Era[] }) {
                   useUIStore.getState().setSelectedRoute(null);
                   useUIStore.getState().setFocusMode(false);
                 }}
-                className="absolute top-6 right-6 p-2 rounded-full bg-surface-1/50 hover:bg-surface-2 border border-surface-4/50 text-text-muted hover:text-text-heading transition-colors"
+                className="absolute top-4 right-4 p-1.5 rounded-sm bg-surface-1/50 hover:bg-surface-2 border border-surface-4/50 text-text-muted hover:text-text-heading transition-colors"
                 title="Cerrar ruta"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           </motion.div>

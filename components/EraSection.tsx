@@ -65,31 +65,31 @@ export default function EraSection({
         <div className="md:w-[28%] shrink-0 relative z-10">
           <div className="sticky top-6 space-y-5 py-2">
 
-            {/* Large ghost era number (editorial outline treatment) */}
+            {/* Ghost era number */}
             <div className="relative select-none pointer-events-none h-16">
               <span
                 className="absolute -top-2 left-0 font-display font-bold leading-none"
                 style={{
                   fontSize: 'clamp(4rem, 8vw, 6rem)',
-                  WebkitTextStroke: `1px color-mix(in srgb, var(--color-glow-success) ${isEraCompleted ? 35 : 18}%, transparent)`,
+                  WebkitTextStroke: `1px color-mix(in srgb, var(--color-glow-success) ${isEraCompleted ? 30 : 12}%, var(--color-surface-4))`,
                   color: 'transparent',
-                  transition: 'all 0.4s',
+                  transition: 'all 0.5s',
                 }}
               >
                 {String(era.eraNumber).padStart(2, '0')}
               </span>
             </div>
 
-            {/* Classification label */}
+            {/* Era label */}
             <div className="space-y-1 pl-1">
               <span className="block font-mono text-[9px] tracking-[0.3em] text-text-muted uppercase">
-                {`// ERA-${String(era.eraNumber).padStart(2, '0')}`}
+                {`ERA ${String(era.eraNumber).padStart(2, '0')}`}
               </span>
               <h2
-                className={`font-display font-semibold uppercase tracking-wider leading-tight transition-colors ${
+                className={`font-display font-semibold leading-tight transition-colors ${
                   isEraCompleted ? 'text-glow-success' : 'text-text-heading'
                 }`}
-                style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.4rem)' }}
+                style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.5rem)' }}
               >
                 {era.eraLabel}
               </h2>
@@ -130,7 +130,7 @@ export default function EraSection({
                 <div className="flex items-center gap-1">
                   <button
                     onClick={handleToggleAll}
-                    className="p-1.5 rounded border border-surface-4/60 text-text-muted hover:text-text-body hover:bg-surface-3/60 hover:border-surface-4 transition-colors"
+                    className="p-1.5 rounded-sm border border-surface-4/50 text-text-muted hover:text-text-body hover:border-surface-4 transition-colors"
                     title={isEraCompleted ? 'Desmarcar toda la era' : 'Marcar toda la era'}
                     aria-label={isEraCompleted ? 'Desmarcar toda la era' : 'Marcar toda la era'}
                   >
@@ -144,7 +144,7 @@ export default function EraSection({
 
                   <button
                     onClick={() => toggleEraExpanded(era.id)}
-                    className="p-1.5 rounded border border-surface-4/60 text-text-muted hover:text-text-body hover:bg-surface-3/60 hover:border-surface-4 transition-colors md:hidden"
+                    className="p-1.5 rounded-sm border border-surface-4/50 text-text-muted hover:text-text-body hover:border-surface-4 transition-colors md:hidden"
                     aria-expanded={isExpanded}
                     aria-label={isExpanded ? 'Colapsar era' : 'Expandir era'}
                   >

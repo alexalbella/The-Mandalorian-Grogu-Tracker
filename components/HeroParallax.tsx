@@ -23,7 +23,7 @@ export default function HeroParallax({ config }: { config: SeriesConfig }) {
   const bottomOverlayOpacity = useTransform(scrollYProgress, [0.45, 1], [0, 1]);
 
   const isMaul = config.theme === 'maul';
-  const accentRgb = isMaul ? '196, 75, 63' : '201, 168, 76';
+  const accentRgb = isMaul ? '239, 68, 68' : '52, 211, 153';
   const remainingHours = Math.floor(remainingMinutes / 60);
   const remainingMins  = remainingMinutes % 60;
 

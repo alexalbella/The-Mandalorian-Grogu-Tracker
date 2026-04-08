@@ -16,20 +16,20 @@
   --color-text-body: #a69b8b;
   --color-text-muted: #756a5e;
 
-  /* ── Accent Tokens ── brass, copper, seal, steel */
-  --color-glow-success: #c9a84c;
-  --color-glow-warning: #d4783c;
-  --color-glow-danger: #c44b3f;
-  --color-glow-info: #6b8fa3;
+  /* ── Accent Tokens ── saga-specific via theme, danger/info are fixed */
+  --color-glow-success: #34d399;
+  --color-glow-warning: #fbbf24;
+  --color-glow-danger: #f87171;
+  --color-glow-info: #60a5fa;
 
   /* ── Route Tokens ── */
   --color-route-mandalore: #a69b8b;
-  --color-route-hutt: #d4783c;
-  --color-route-bounty: #c44b3f;
-  --color-route-empire: #6b8fa3;
-  --color-route-republic: #7a9bb5;
-  --color-route-thrawn: #8b7dba;
-  --color-route-meta: #c9a84c;
+  --color-route-hutt: #f59e0b;
+  --color-route-bounty: #dc2626;
+  --color-route-empire: #64748b;
+  --color-route-republic: #3b82f6;
+  --color-route-thrawn: #6366f1;
+  --color-route-meta: #34d399;
 
   --animate-shimmer: shimmer 2s infinite;
   @keyframes shimmer {
@@ -53,15 +53,14 @@
   --color-text-heading: #e8d4d4;
   --color-text-body: #a68b8b;
   --color-text-muted: #75605e;
-  --color-glow-success: #c44b3f;
-  --color-glow-warning: #d4783c;
-  --color-route-mandalore: #c44b3f;
-  --color-route-hutt: #d4783c;
-  --color-route-bounty: #8b3030;
-  --color-route-empire: #45201e;
-  --color-route-republic: #a64040;
-  --color-route-thrawn: #6b3a3a;
-  --color-route-meta: #c44b3f;
+  --color-glow-success: #ef4444;
+  --color-route-mandalore: #dc2626;
+  --color-route-hutt: #fbbf24;
+  --color-route-bounty: #991b1b;
+  --color-route-empire: #450a0a;
+  --color-route-republic: #b91c1c;
+  --color-route-thrawn: #7f1d1d;
+  --color-route-meta: #f87171;
 }
 
 body {

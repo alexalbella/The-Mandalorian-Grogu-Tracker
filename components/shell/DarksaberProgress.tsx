@@ -110,11 +110,11 @@ export default function DarksaberProgress({
   const width = useTransform(springProgress, (v) => `${Math.max(0, Math.min(100, v))}%`);
   const height = useTransform(springProgress, (v) => `${Math.max(0, Math.min(100, v))}%`);
 
-  // Transform progress to glow intensity
+  // Subtle glow — reduced spread to avoid neon feel
   const boxShadow = useTransform(springProgress, (v) => {
-    const opacity = Math.max(0.3, Math.min(1, v / 100));
-    const spread = Math.max(5, Math.min(25, (v / 100) * 25));
-    return `0 0 ${spread}px color-mix(in srgb, var(--color-glow-success) ${opacity * 100}%, transparent), inset 0 0 8px color-mix(in srgb, var(--color-glow-success) ${opacity * 100}%, transparent)`;
+    const opacity = Math.max(0.2, Math.min(0.7, v / 100));
+    const spread = Math.max(3, Math.min(10, (v / 100) * 10));
+    return `0 0 ${spread}px color-mix(in srgb, var(--color-glow-success) ${opacity * 100}%, transparent)`;
   });
   
   const isVertical = orientation === 'vertical';
@@ -131,7 +131,7 @@ export default function DarksaberProgress({
     <div className={`relative flex ${isVertical ? 'flex-col items-center h-full' : 'flex-row items-center w-full'} ${className}`}>
       
       {/* Blade Container */}
-      <div className={`relative bg-surface-2/50 overflow-hidden border border-surface-4 shadow-inner flex ${isVertical ? 'w-4 flex-1 rounded-t-full flex-col justify-end border-b-0' : 'h-2.5 w-full rounded-full'}`}>
+      <div className={`relative bg-surface-2/40 overflow-hidden border border-surface-4/50 flex ${isVertical ? 'w-4 flex-1 rounded-t-sm flex-col justify-end border-b-0' : 'h-2 w-full rounded-sm'}`}>
         
         {/* Milestones Background Markers */}
         {showMilestones && milestones.map((m) => (
@@ -145,21 +145,21 @@ export default function DarksaberProgress({
         ))}
 
         {/* The Blade */}
-        <motion.div 
-          className={`bg-surface-1 border-glow-success relative z-10 flex ${isVertical ? 'w-full border-x border-t rounded-t-full flex-col justify-end' : 'h-full border-y border-r rounded-r-full'}`}
+        <motion.div
+          className={`bg-surface-1/50 border-glow-success/60 relative z-10 flex ${isVertical ? 'w-full border-x border-t rounded-t-sm flex-col justify-end' : 'h-full border-y border-r rounded-r-sm'}`}
           style={{ 
             [isVertical ? 'height' : 'width']: isVertical ? height : width,
             boxShadow
           }}
         >
-          {/* Core white/bright center of the blade */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-glow-success/20 to-white/40 mix-blend-overlay" />
-          
-          {/* Flash Effect */}
-          <motion.div 
-            className="absolute inset-0 bg-white mix-blend-overlay"
+          {/* Blade fill gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-glow-success/60 via-glow-success/40 to-glow-success/20" />
+
+          {/* Flash Effect — warm instead of pure white */}
+          <motion.div
+            className="absolute inset-0 bg-glow-success/30 mix-blend-overlay"
             initial={{ opacity: 0 }}
-            animate={{ opacity: isFlashing ? 0.9 : 0 }}
+            animate={{ opacity: isFlashing ? 1 : 0 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
           />
           

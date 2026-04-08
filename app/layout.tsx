@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: 'Star Wars Saga Tracker',
   description: 'Dashboard de seguimiento multi-saga para Star Wars: sigue The Mandalorian & Grogu y Maul antes de sus estrenos.',
   manifest: '/manifest.json',
-  themeColor: '#c9a84c',
+  themeColor: '#10b981',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

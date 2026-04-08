@@ -89,7 +89,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
               setQuickLookOpen(false);
               setSelectedCard(null);
             }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-surface-1/75 backdrop-blur-sm"
           />
           
           <motion.div
@@ -97,7 +97,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
             initial={reducedMotion ? { opacity: 0, scale: 0.95 } : {}}
             animate={reducedMotion ? { opacity: 1, scale: 1 } : {}}
             exit={reducedMotion ? { opacity: 0, scale: 0.95 } : {}}
-            className="relative w-full max-w-4xl max-h-[90vh] bg-surface-1 border border-surface-4 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col"
+            className="relative w-full max-w-4xl max-h-[90vh] bg-surface-1 border border-surface-4/60 rounded-sm shadow-2xl overflow-hidden z-10 flex flex-col"
           >
             {/* Blurred Backdrop */}
             {imgSrc && (
@@ -118,7 +118,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                 setQuickLookOpen(false);
                 setSelectedCard(null);
               }}
-              className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors z-20"
+              className="absolute top-4 right-4 p-2 rounded-sm bg-surface-3/80 text-text-muted hover:text-text-body hover:bg-surface-3 transition-colors z-20"
             >
               <X className="w-5 h-5" />
             </button>
@@ -126,9 +126,9 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
             <div className="flex flex-col md:flex-row overflow-y-auto z-10">
               {/* Hero Poster */}
               <div className="relative w-full md:w-2/5 p-6 md:p-8 flex flex-col items-center justify-start shrink-0">
-                <motion.div 
+                <motion.div
                   layoutId={reducedMotion ? undefined : `poster-${item.id}`}
-                  className="relative w-full max-w-[240px] aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-white/10"
+                  className="relative w-full max-w-[240px] aspect-[2/3] rounded-sm overflow-hidden shadow-xl border border-surface-4/30"
                 >
                   {imgSrc && (
                     <Image
@@ -149,7 +149,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
 
                 <button
                   onClick={handleToggle}
-                  className={`w-full max-w-[240px] mt-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shadow-lg ${cta.style}`}
+                  className={`w-full max-w-[240px] mt-6 py-3 rounded-sm font-mono text-sm transition-colors flex items-center justify-center gap-2 ${cta.style}`}
                 >
                   <CtaIcon className="w-5 h-5" />
                   {cta.text}
@@ -159,7 +159,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
               {/* Content */}
               <div className="p-6 md:p-8 md:pl-0 flex-1 flex flex-col">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-surface-3/80 backdrop-blur-md px-2 py-1 rounded-md border border-surface-4">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono text-text-body bg-surface-3/60 px-2 py-1 rounded-sm border border-surface-4/50">
                     {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
                     {item.duration}m
                   </span>
@@ -175,7 +175,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
 
                 <motion.h2 
                   layoutId={reducedMotion ? undefined : `title-${item.id}`}
-                  className="text-3xl sm:text-4xl font-bold text-text-heading mb-6 leading-tight" 
+                  className="font-display font-semibold text-text-heading mb-6 leading-tight text-3xl sm:text-4xl" 
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {item.title}
@@ -191,7 +191,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                   </div>
 
                   {/* Why it matters */}
-                  <div className="bg-surface-2/50 border border-surface-4 rounded-xl p-4">
+                  <div className="bg-surface-2/40 border border-surface-4/40 rounded-sm p-4">
                     <h3 className="text-sm font-bold text-text-heading flex items-center gap-2 mb-2">
                       <Info className="w-4 h-4 text-glow-success" />
                       Por qué importa
@@ -230,10 +230,10 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                           return (
                             <div 
                               key={sub.id}
-                              className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer ${
-                                isSubWatched 
-                                  ? 'bg-glow-success/10 border-glow-success/20 hover:bg-glow-success/20' 
-                                  : 'bg-surface-2/50 border-surface-4 hover:bg-surface-3'
+                              className={`flex items-center justify-between p-3 rounded-sm border transition-colors cursor-pointer ${
+                                isSubWatched
+                                  ? 'bg-glow-success/[0.06] border-glow-success/20'
+                                  : 'bg-surface-2/30 border-surface-4/40 hover:bg-surface-2/60'
                               }`}
                               onClick={() => toggleItem(sub.id)}
                             >

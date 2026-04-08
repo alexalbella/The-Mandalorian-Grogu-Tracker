@@ -25,32 +25,32 @@ export interface SeriesThemeConfig {
 
 export const themeRegistry: Record<SeriesTheme, SeriesThemeConfig> = {
   mando: {
-    glow: '#c9a84c',
-    glowRgb: '201, 168, 76',
-    metaThemeColor: '#c9a84c',
+    glow: '#34d399',
+    glowRgb: '52, 211, 153',
+    metaThemeColor: '#10b981',
     confetti: {
-      colors: ['#c9a84c', '#e8d9a0', '#8b7632', '#ffffff'],
+      colors: ['#34d399', '#10b981', '#6ee7b7', '#ffffff'],
       particleCount: 80,
       spread: 60,
     },
     confettiLoop: {
-      colors: ['#c9a84c', '#e8d9a0', '#ffffff'],
-      particleCount: 4,
+      colors: ['#4ade80', '#22c55e', '#ffffff'],
+      particleCount: 5,
       spread: 55,
     },
   },
   maul: {
-    glow: '#c44b3f',
-    glowRgb: '196, 75, 63',
-    metaThemeColor: '#8b2020',
+    glow: '#ef4444',
+    glowRgb: '239, 68, 68',
+    metaThemeColor: '#b91c1c',
     confetti: {
-      colors: ['#c44b3f', '#8b2020', '#e8a0a0', '#ffffff'],
+      colors: ['#ef4444', '#b91c1c', '#fca5a5', '#ffffff'],
       particleCount: 80,
       spread: 60,
     },
     confettiLoop: {
-      colors: ['#c44b3f', '#8b2020', '#ffffff'],
-      particleCount: 4,
+      colors: ['#ef4444', '#b91c1c', '#ffffff'],
+      particleCount: 5,
       spread: 55,
     },
   },
