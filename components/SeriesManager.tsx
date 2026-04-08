@@ -51,24 +51,24 @@ export default function SeriesManager() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Series Tabs */}
-      <div className="sticky top-0 z-[60] bg-surface-1/90 backdrop-blur-md border-b border-surface-4 px-4 py-2 flex justify-center gap-2">
+      <div className="sticky top-0 z-[60] bg-surface-1/95 border-b border-surface-4/50 px-4 py-2 flex justify-center gap-1.5">
         {seriesConfigs.map((series) => {
           const isActive = activeSeriesId === series.id;
           return (
             <button
               key={series.id}
               onClick={() => setActiveSeriesId(series.id)}
-              className={`relative px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-colors ${
-                isActive ? 'text-white' : 'text-text-muted hover:text-text-body'
+              className={`relative px-4 py-2 rounded-sm text-xs font-mono uppercase tracking-widest transition-colors ${
+                isActive ? 'text-surface-1' : 'text-text-muted hover:text-text-body'
               }`}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeSeriesTab"
-                  className={`absolute inset-0 border rounded-full -z-10 ${
-                    series.theme === 'maul' 
-                      ? 'bg-red-950/50 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]' 
-                      : 'bg-surface-3 border-surface-4'
+                  className={`absolute inset-0 rounded-sm -z-10 border ${
+                    series.theme === 'maul'
+                      ? 'bg-glow-success/80 border-glow-success/60'
+                      : 'bg-glow-success border-glow-success/80'
                   }`}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />

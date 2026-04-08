@@ -34,37 +34,37 @@ export default function AchievementToasts() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              className="pointer-events-auto relative overflow-hidden bg-surface-1 border border-surface-4/80 rounded-2xl shadow-2xl p-4 w-80 flex items-start gap-4"
+              className="pointer-events-auto relative overflow-hidden bg-surface-2 border border-surface-4/60 rounded-sm shadow-lg p-4 w-72 flex items-start gap-3"
             >
               <div className="relative shrink-0">
-                <motion.div 
-                  initial={{ rotateY: 90 }}
-                  animate={{ rotateY: 360 }}
-                  transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="w-12 h-12 rounded-xl bg-glow-warning/20 border border-glow-warning/50 flex items-center justify-center text-glow-warning shadow-[0_0_15px_rgba(245,158,11,0.3)]"
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.15, type: 'spring', stiffness: 300 }}
+                  className="w-10 h-10 rounded-sm bg-glow-warning/10 border border-glow-warning/30 flex items-center justify-center text-glow-warning"
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-5 h-5" />
                 </motion.div>
               </div>
               <div className="flex-1 pt-0.5">
-                <p className="text-[10px] uppercase tracking-wider font-bold text-glow-warning mb-1">Logro Desbloqueado</p>
-                <h4 className="font-bold text-text-heading text-sm leading-tight mb-1" style={{ fontFamily: 'var(--font-display)' }}>{achievement.title}</h4>
-                <p className="text-xs text-text-muted line-clamp-2">{achievement.description}</p>
+                <p className="text-[9px] uppercase tracking-widest font-mono text-glow-warning mb-1">Logro desbloqueado</p>
+                <h4 className="font-display font-semibold text-text-heading text-sm leading-tight mb-1">{achievement.title}</h4>
+                <p className="text-[11px] text-text-muted line-clamp-2">{achievement.description}</p>
               </div>
-              <button 
+              <button
                 onClick={() => removeToast(toast.id)}
-                className="absolute top-2 right-2 p-1 text-text-muted hover:text-text-body rounded-md hover:bg-surface-2 transition-colors"
+                className="absolute top-2 right-2 p-1 text-text-muted hover:text-text-body rounded-sm hover:bg-surface-3 transition-colors"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
-              
+
               {/* Countdown bar */}
-              <motion.div 
+              <motion.div
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
-                transition={{ duration: 5, ease: "linear" }}
+                transition={{ duration: 5, ease: 'linear' }}
                 onAnimationComplete={() => removeToast(toast.id)}
-                className="absolute bottom-0 left-0 right-0 h-1 bg-glow-warning origin-left"
+                className="absolute bottom-0 left-0 right-0 h-[2px] bg-glow-warning/60 origin-left"
               />
             </motion.div>
           );

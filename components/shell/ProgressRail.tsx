@@ -3,7 +3,7 @@
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
 import DarksaberProgress from './DarksaberProgress';
-import { motion, useScroll, useSpring, useTransform } from 'motion/react';
+import { motion, useScroll, useSpring } from 'motion/react';
 
 export default function ProgressRail({ eras }: { eras: Era[] }) {
   const { progressPercent, watchedCount, totalItems } = useDashboardStats(eras);
@@ -14,43 +14,26 @@ export default function ProgressRail({ eras }: { eras: Era[] }) {
     restDelta: 0.001
   });
 
-  const springProgress = useSpring(progressPercent, {
-    stiffness: 50,
-    damping: 15,
-    mass: 1
-  });
-
-  // Dynamic glow based on progress
-  const glowOpacity = useTransform(springProgress, (v) => Math.max(0.05, Math.min(0.3, v / 100)));
-  const glowScale = useTransform(springProgress, (v) => 0.8 + (v / 100) * 0.4);
-
   return (
     <aside className="hidden lg:flex flex-col items-center w-24 shrink-0 pt-8 relative">
-      {/* Scroll Progress Indicator */}
-      <div className="absolute left-0 top-8 bottom-0 w-[2px] bg-surface-4/30 rounded-full overflow-hidden">
-        <motion.div 
-          className="w-full bg-glow-success/50 origin-top"
+      {/* Scroll position indicator */}
+      <div className="absolute left-0 top-8 bottom-0 w-[2px] bg-surface-4/20 rounded-full overflow-hidden">
+        <motion.div
+          className="w-full bg-glow-success/40 origin-top"
           style={{ scaleY, height: '100%' }}
         />
       </div>
 
-      <div className="sticky top-24 flex flex-col items-center gap-6 h-[calc(100vh-8rem)] starfield rounded-2xl p-4 border border-surface-4/30 relative overflow-hidden ml-4">
-        <motion.div 
-          className="absolute inset-0 pointer-events-none" 
-          style={{ opacity: glowOpacity, scale: glowScale }}
-        >
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[150%] h-[80%] bg-glow-success blur-[60px] rounded-full" />
-        </motion.div>
-        
-        <div className="text-center space-y-1 relative z-10">
-          <div className="text-xs font-mono text-text-muted uppercase tracking-widest">Progreso</div>
-          <div className="text-2xl font-bold text-glow-success">{progressPercent}%</div>
+      <div className="sticky top-24 flex flex-col items-center gap-5 h-[calc(100vh-8rem)] bg-surface-2/20 border border-surface-4/30 rounded-sm p-4 ml-4 relative overflow-hidden">
+        <div className="text-center space-y-0.5 relative z-10">
+          <div className="text-[9px] font-mono text-text-muted uppercase tracking-widest">Progreso</div>
+          <div className="text-xl font-display font-semibold text-glow-success">{progressPercent}%</div>
         </div>
-        
-        {/* Vertical Darksaber */}
+
+        {/* Vertical progress bar */}
         <DarksaberProgress progress={progressPercent} orientation="vertical" className="flex-1" />
-        
-        <div className="text-xs font-mono text-text-muted relative z-10">
+
+        <div className="text-[9px] font-mono text-text-muted relative z-10 tabular-nums">
           {watchedCount}/{totalItems}
         </div>
       </div>

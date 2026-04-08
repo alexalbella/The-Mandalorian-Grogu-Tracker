@@ -20,55 +20,13 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const routeStyles: Record<string, { bg: string, border: string, glow: string, text: string, progress: string }> = {
-  'mandalore': {
-    bg: 'bg-route-mandalore/10',
-    border: 'border-route-mandalore/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-mandalore)_15%,transparent)]',
-    text: 'text-route-mandalore',
-    progress: 'bg-route-mandalore'
-  },
-  'hutt': {
-    bg: 'bg-route-hutt/10',
-    border: 'border-route-hutt/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-hutt)_15%,transparent)]',
-    text: 'text-route-hutt',
-    progress: 'bg-route-hutt'
-  },
-  'bounty-hunters': {
-    bg: 'bg-route-bounty/10',
-    border: 'border-route-bounty/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-bounty)_15%,transparent)]',
-    text: 'text-route-bounty',
-    progress: 'bg-route-bounty'
-  },
-  'empire': {
-    bg: 'bg-route-empire/10',
-    border: 'border-route-empire/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-empire)_15%,transparent)]',
-    text: 'text-route-empire',
-    progress: 'bg-route-empire'
-  },
-  'new-republic': {
-    bg: 'bg-route-republic/10',
-    border: 'border-route-republic/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-republic)_15%,transparent)]',
-    text: 'text-route-republic',
-    progress: 'bg-route-republic'
-  },
-  'thrawn': {
-    bg: 'bg-route-thrawn/10',
-    border: 'border-route-thrawn/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-thrawn)_15%,transparent)]',
-    text: 'text-route-thrawn',
-    progress: 'bg-route-thrawn'
-  },
-  'meta': {
-    bg: 'bg-route-meta/10',
-    border: 'border-route-meta/30',
-    glow: 'shadow-[0_0_15px_color-mix(in_srgb,var(--color-route-meta)_15%,transparent)]',
-    text: 'text-route-meta',
-    progress: 'bg-route-meta'
-  }
+  'mandalore':      { bg: 'bg-route-mandalore/8',  border: 'border-route-mandalore/25', glow: '', text: 'text-route-mandalore', progress: 'bg-route-mandalore' },
+  'hutt':           { bg: 'bg-route-hutt/8',        border: 'border-route-hutt/25',       glow: '', text: 'text-route-hutt',       progress: 'bg-route-hutt' },
+  'bounty-hunters': { bg: 'bg-route-bounty/8',      border: 'border-route-bounty/25',     glow: '', text: 'text-route-bounty',     progress: 'bg-route-bounty' },
+  'empire':         { bg: 'bg-route-empire/8',      border: 'border-route-empire/25',     glow: '', text: 'text-route-empire',     progress: 'bg-route-empire' },
+  'new-republic':   { bg: 'bg-route-republic/8',    border: 'border-route-republic/25',   glow: '', text: 'text-route-republic',   progress: 'bg-route-republic' },
+  'thrawn':         { bg: 'bg-route-thrawn/8',      border: 'border-route-thrawn/25',     glow: '', text: 'text-route-thrawn',     progress: 'bg-route-thrawn' },
+  'meta':           { bg: 'bg-route-meta/8',        border: 'border-route-meta/25',       glow: '', text: 'text-route-meta',       progress: 'bg-route-meta' },
 };
 
 export default function AchievementsPanel({ 
@@ -167,22 +125,22 @@ export default function AchievementsPanel({
   };
 
   return (
-    <div className="bg-surface-1 border border-surface-4/80 rounded-2xl overflow-hidden mb-8 transition-all duration-300 shadow-xl">
-      <button 
+    <div className="bg-surface-1 border border-surface-4/50 rounded-sm overflow-hidden mb-8 transition-all duration-300">
+      <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-6 flex items-center justify-between hover:bg-surface-2/30 transition-colors group"
+        className="w-full p-5 flex items-center justify-between hover:bg-surface-2/20 transition-colors group"
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-surface-2 border border-surface-4 flex items-center justify-center text-text-muted group-hover:text-glow-success group-hover:border-glow-success/50 transition-colors shadow-inner">
-            <Map className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-sm bg-surface-2/60 border border-surface-4/50 flex items-center justify-center text-text-muted group-hover:text-glow-success group-hover:border-glow-success/40 transition-colors">
+            <Map className="w-5 h-5" />
           </div>
           <div className="text-left">
-            <h3 className="text-xl font-bold text-text-heading tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Atlas de Rutas</h3>
-            <p className="text-sm text-text-muted font-mono mt-0.5">{categories.length} rutas · {ACHIEVEMENTS.length} hitos narrativos</p>
+            <h3 className="font-display font-semibold text-lg text-text-heading leading-tight">Atlas de Rutas</h3>
+            <p className="text-[11px] text-text-muted font-mono mt-0.5">{categories.length} rutas · {ACHIEVEMENTS.length} hitos narrativos</p>
           </div>
         </div>
-        <div className="text-text-muted group-hover:text-text-body transition-colors bg-surface-2/50 p-2 rounded-full border border-surface-4/50">
-          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        <div className="text-text-muted group-hover:text-text-body transition-colors bg-surface-2/40 p-1.5 rounded-sm border border-surface-4/40">
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
 
@@ -202,9 +160,9 @@ export default function AchievementsPanel({
                 }
               }
             }}
-            className="border-t border-surface-4/80 bg-surface-1/30"
+            className="border-t border-surface-4/40 bg-surface-1/20"
           >
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" style={{ perspective: 1200 }}>
+            <div className="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {categories.map((category, index) => {
                 const progress = getCategoryProgress(category);
                 const highestUnlocked = getHighestUnlockedTier(category);

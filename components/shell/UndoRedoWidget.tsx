@@ -19,24 +19,24 @@ export default function UndoRedoWidget() {
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.9 }}
           animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
           exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.9 }}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-surface-2/90 backdrop-blur-md border border-surface-4 p-2 rounded-full shadow-xl shadow-black/50"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-1.5 bg-surface-2/95 border border-surface-4/60 p-1.5 rounded-sm shadow-md"
         >
           <button
             onClick={undo}
             disabled={!canUndo}
-            className={`p-2 rounded-full transition-colors ${canUndo ? 'text-text-body hover:text-text-heading hover:bg-surface-3' : 'text-surface-4 cursor-not-allowed'}`}
+            className={`p-1.5 rounded-sm transition-colors ${canUndo ? 'text-text-body hover:text-text-heading hover:bg-surface-3' : 'text-surface-4/50 cursor-not-allowed'}`}
             title="Deshacer"
           >
-            <Undo2 className="w-4 h-4" />
+            <Undo2 className="w-3.5 h-3.5" />
           </button>
-          <div className="w-px h-4 bg-surface-4 mx-1" />
+          <div className="w-px h-3.5 bg-surface-4/60" />
           <button
             onClick={redo}
             disabled={!canRedo}
-            className={`p-2 rounded-full transition-colors ${canRedo ? 'text-text-body hover:text-text-heading hover:bg-surface-3' : 'text-surface-4 cursor-not-allowed'}`}
+            className={`p-1.5 rounded-sm transition-colors ${canRedo ? 'text-text-body hover:text-text-heading hover:bg-surface-3' : 'text-surface-4/50 cursor-not-allowed'}`}
             title="Rehacer"
           >
-            <Redo2 className="w-4 h-4" />
+            <Redo2 className="w-3.5 h-3.5" />
           </button>
         </motion.div>
       )}

@@ -25,7 +25,7 @@ function AnimatedCounter({ value, format, suffix = '' }: { value: number, format
 
 function StatCard({ title, value, subtitle, icon, progress }: { title: string, value: React.ReactNode, subtitle: React.ReactNode, icon: React.ReactNode, progress?: number }) {
   return (
-    <div className="bg-surface-2/50 border border-surface-4/50 rounded-2xl p-6 relative overflow-hidden">
+    <div className="bg-surface-2/30 border border-surface-4/40 rounded-sm p-5 relative overflow-hidden">
       {progress !== undefined && (
         <div 
           className="absolute bottom-0 left-0 h-1 bg-glow-success/50 transition-all duration-1000 ease-out"
@@ -37,7 +37,7 @@ function StatCard({ title, value, subtitle, icon, progress }: { title: string, v
         {icon}
       </div>
       <div className="space-y-1">
-        <p className="text-3xl font-bold font-mono tracking-tight text-text-heading">{value}</p>
+        <p className="text-3xl font-display font-semibold text-text-heading">{value}</p>
         <div className="text-xs text-text-muted">{subtitle}</div>
       </div>
     </div>
@@ -59,7 +59,7 @@ export function StatsPanel({ eras }: { eras: Era[] }) {
   const routeName = selectedRoute ? selectedRoute.replace('-', ' ') : 'Plan';
 
   return (
-    <section className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-2 ring-glow-success/30 rounded-2xl shadow-[0_0_30px_rgba(20,255,140,0.1)]' : ''}`}>
+    <section className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-1 ring-glow-success/20 rounded-sm' : ''}`}>
       <StatCard 
         title={`Progreso: ${routeName}`}
         value={<AnimatedCounter value={progressPercent} suffix="%" />} 
@@ -112,7 +112,7 @@ export function DataManagementPanel() {
             a.download = `starwars-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
           }}
-          className="px-4 py-2 text-xs font-medium rounded-lg border border-surface-4 text-text-body hover:bg-surface-3 transition-colors flex items-center gap-2"
+          className="px-4 py-2 text-xs font-mono rounded-sm border border-surface-4/50 text-text-body hover:bg-surface-3/40 transition-colors flex items-center gap-2"
         >
           <Download className="w-3.5 h-3.5" />
           Exportar Progreso
@@ -182,7 +182,7 @@ export function DataManagementPanel() {
               window.location.reload();
             }
           }}
-          className="px-4 py-2 text-xs font-medium rounded-lg border border-glow-danger/30 text-glow-danger hover:bg-glow-danger/10 transition-colors flex items-center gap-2"
+          className="px-4 py-2 text-xs font-mono rounded-sm border border-glow-danger/30 text-glow-danger hover:bg-glow-danger/10 transition-colors flex items-center gap-2"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Resetear Todo
