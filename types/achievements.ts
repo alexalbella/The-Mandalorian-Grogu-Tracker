@@ -1,6 +1,8 @@
 export type AchievementTier = 'bronze' | 'silver' | 'gold';
 
-export type AchievementCategory = 'mandalore' | 'hutt' | 'bounty-hunters' | 'empire' | 'new-republic' | 'thrawn' | 'meta';
+export type AchievementCategory =
+  | 'mandalore' | 'hutt' | 'bounty-hunters' | 'empire' | 'new-republic' | 'thrawn' | 'meta'
+  | 'sith' | 'dathomir' | 'crimson-dawn' | 'maul-meta';
 
 export type Achievement = {
   id: string;
@@ -16,4 +18,5 @@ export type Achievement = {
     tag?: string;
     threshold: number; // 25, 50, 100
   };
+  seriesId?: string; // if set, only evaluated/shown for this series
 };

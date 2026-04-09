@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useSpring, useTransform } from 'motion/react';
-import { CheckCircle2, Clock, Flame, PlayCircle, Download, Upload, RotateCcw } from 'lucide-react';
+import { CheckCircle2, Clock, Flame, PlayCircle, Download, Upload, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useProgressStore } from '@/store/progress';
 import { useUIStore } from '@/store/ui';
@@ -46,50 +46,119 @@ function StatCard({ title, value, subtitle, icon, progress }: { title: string, v
 
 export function StatsPanel({ eras }: { eras: Era[] }) {
   const { totalItems, watchedCount, completedCount, progressPercent, totalMinutes, watchedMinutes, remainingMinutes } = useDashboardStats(eras);
-  const { streak } = useProgressStore();
+  const { streak, isCompleted } = useProgressStore();
   const selectedRoute = useUIStore(state => state.selectedRoute);
   const focusMode = useUIStore(state => state.focusMode);
+  const [eraBreakdownOpen, setEraBreakdownOpen] = useState(false);
 
   const formatTime = (mins: number) => {
     const hours = Math.floor(mins / 60);
     const minutes = mins % 60;
+    if (hours === 0) return `${minutes}m`;
     return `${hours}h ${minutes}m`;
   };
 
   const routeName = selectedRoute ? selectedRoute.replace('-', ' ') : 'Plan';
 
+  const eraStats = eras.map(era => {
+    let eraTotalMins = 0;
+    let eraWatchedMins = 0;
+    era.items.forEach(item => {
+      if (item.subItems && item.subItems.length > 0) {
+        item.subItems.forEach(sub => {
+          eraTotalMins += sub.duration;
+          if (isCompleted(sub.id)) eraWatchedMins += sub.duration;
+        });
+      } else {
+        eraTotalMins += item.duration;
+        if (isCompleted(item.id)) eraWatchedMins += item.duration;
+      }
+    });
+    const pct = eraTotalMins > 0 ? Math.round((eraWatchedMins / eraTotalMins) * 100) : 0;
+    return { label: era.eraLabel, eraTotalMins, eraWatchedMins, pct };
+  });
+
   return (
-    <section className={`grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-1 ring-glow-success/20 rounded-sm' : ''}`}>
-      <StatCard 
-        title={`Progreso: ${routeName}`}
-        value={<AnimatedCounter value={progressPercent} suffix="%" />} 
-        subtitle={
-          <div className="flex flex-col gap-1">
-            <span><AnimatedCounter value={completedCount} /> de {totalItems} completados</span>
-            <span className="text-glow-success/80"><AnimatedCounter value={watchedCount} /> vistos de verdad</span>
+    <section className={`space-y-3 transition-all duration-500 ${focusMode && selectedRoute ? 'ring-1 ring-glow-success/20 rounded-sm p-1' : ''}`}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          title={`Progreso: ${routeName}`}
+          value={<AnimatedCounter value={progressPercent} suffix="%" />}
+          subtitle={
+            <div className="flex flex-col gap-1">
+              <span><AnimatedCounter value={completedCount} /> de {totalItems} completados</span>
+              <span className="text-glow-success/80"><AnimatedCounter value={watchedCount} /> vistos de verdad</span>
+            </div>
+          }
+          icon={<CheckCircle2 className="w-5 h-5 text-glow-success" />}
+          progress={progressPercent}
+        />
+        <StatCard
+          title="Racha Actual"
+          value={<AnimatedCounter value={streak} suffix={streak === 1 ? ' día' : ' días'} />}
+          subtitle="Viendo Star Wars"
+          icon={<Flame className="w-5 h-5 text-glow-warning" />}
+        />
+        <StatCard
+          title="Tiempo Invertido"
+          value={<AnimatedCounter value={watchedMinutes} format={formatTime} />}
+          subtitle="Horas de visionado"
+          icon={<PlayCircle className="w-5 h-5 text-glow-info" />}
+        />
+        <StatCard
+          title="Tiempo Restante"
+          value={<AnimatedCounter value={remainingMinutes} format={formatTime} />}
+          subtitle={`De un total de ${formatTime(totalMinutes)}`}
+          icon={<Clock className="w-5 h-5 text-glow-warning" />}
+        />
+      </div>
+
+      {/* Era time breakdown */}
+      <div className="bg-surface-2/20 border border-surface-4/30 rounded-sm overflow-hidden">
+        <button
+          onClick={() => setEraBreakdownOpen(v => !v)}
+          className="w-full px-5 py-3 flex items-center justify-between hover:bg-surface-2/30 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <Clock className="w-3.5 h-3.5 text-text-muted group-hover:text-glow-success transition-colors" />
+            <span className="text-[10px] uppercase tracking-widest font-mono text-text-muted group-hover:text-text-body transition-colors">
+              Tiempo por Era
+            </span>
           </div>
-        }
-        icon={<CheckCircle2 className="w-5 h-5 text-glow-success" />}
-        progress={progressPercent}
-      />
-      <StatCard 
-        title="Racha Actual" 
-        value={<AnimatedCounter value={streak} suffix={streak === 1 ? ' día' : ' días'} />} 
-        subtitle="Viendo Star Wars"
-        icon={<Flame className="w-5 h-5 text-glow-warning" />}
-      />
-      <StatCard 
-        title="Tiempo Invertido" 
-        value={<AnimatedCounter value={watchedMinutes} format={formatTime} />} 
-        subtitle="Horas de visionado"
-        icon={<PlayCircle className="w-5 h-5 text-glow-info" />}
-      />
-      <StatCard 
-        title="Tiempo Restante" 
-        value={<AnimatedCounter value={remainingMinutes} format={formatTime} />} 
-        subtitle={`De un total de ${formatTime(totalMinutes)}`}
-        icon={<Clock className="w-5 h-5 text-glow-warning" />}
-      />
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-mono text-text-muted">
+              {formatTime(watchedMinutes)} / {formatTime(totalMinutes)}
+            </span>
+            {eraBreakdownOpen
+              ? <ChevronUp className="w-3.5 h-3.5 text-text-muted" />
+              : <ChevronDown className="w-3.5 h-3.5 text-text-muted" />}
+          </div>
+        </button>
+
+        {eraBreakdownOpen && (
+          <div className="border-t border-surface-4/30 divide-y divide-surface-4/20">
+            {eraStats.map(({ label, eraTotalMins, eraWatchedMins, pct }) => (
+              <div key={label} className="px-5 py-2.5 flex items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-text-body truncate">{label}</p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="w-24 h-px bg-surface-4/40 relative hidden sm:block">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-glow-success/70 transition-all duration-700"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-glow-success w-8 text-right">{pct}%</span>
+                  <span className="text-[10px] font-mono text-text-muted w-28 text-right">
+                    {formatTime(eraWatchedMins)} / {formatTime(eraTotalMins)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

@@ -104,7 +104,7 @@ export default function AppShell({ config }: { config: SeriesConfig }) {
         ) : (
           <>
             <motion.div variants={itemVariants}>
-              <RouteAtlas eras={eras} />
+              <RouteAtlas eras={eras} seriesId={config.id} />
             </motion.div>
             <motion.div variants={itemVariants}>
               <Timeline eras={eras} />

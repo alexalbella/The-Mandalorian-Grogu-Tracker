@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useProgressStore } from '@/store/progress';
 import { useAchievementsStore } from '@/store/achievements';
 import { useUIStore } from '@/store/ui';
@@ -7,14 +7,18 @@ import { Era, MediaItem } from '@/data/starwars-list';
 import confetti from 'canvas-confetti';
 import { themeRegistry, getActiveTheme } from '@/lib/theme-registry';
 
-export function useAchievementsEngine(eras: Era[]) {
+export function useAchievementsEngine(eras: Era[], seriesId: string = 'mando') {
   const { watchedItems, skippedItems } = useProgressStore();
-  const { 
-    unlockedAchievements, 
-    unlockAchievement 
+  const {
+    unlockedAchievements,
+    unlockAchievement
   } = useAchievementsStore();
 
   const allItems = eras.flatMap(e => e.items);
+  const activeAchievements = useMemo(
+    () => ACHIEVEMENTS.filter(a => !a.seriesId || a.seriesId === seriesId),
+    [seriesId]
+  );
   
   // Helper to calculate progress for a specific tag or global
   const calculateProgress = useCallback((rule: { type: 'tagProgress' | 'globalProgress', tag?: string }) => {
@@ -50,7 +54,7 @@ export function useAchievementsEngine(eras: Era[]) {
   useEffect(() => {
     let newlyUnlocked: string[] = [];
 
-    ACHIEVEMENTS.forEach(achievement => {
+    activeAchievements.forEach(achievement => {
       if (!unlockedAchievements.includes(achievement.id)) {
         const progress = calculateProgress(achievement.unlockRule);
         if (progress >= achievement.unlockRule.threshold) {
@@ -61,12 +65,11 @@ export function useAchievementsEngine(eras: Era[]) {
     });
 
     if (newlyUnlocked.length > 0) {
-      // Trigger toast or notification here (we can use a custom toast or just confetti for now)
       newlyUnlocked.forEach(id => {
         useUIStore.getState().addToast(id);
       });
-      // If it's the meta achievement, do special confetti
-      if (newlyUnlocked.includes('meta-gold')) {
+      // Special confetti for either saga's completion achievement
+      if (newlyUnlocked.includes('meta-gold') || newlyUnlocked.includes('maul-meta-gold')) {
         const theme = themeRegistry[getActiveTheme()];
         confetti({
           particleCount: 150,
@@ -76,7 +79,7 @@ export function useAchievementsEngine(eras: Era[]) {
         });
       }
     }
-  }, [watchedItems, skippedItems, unlockedAchievements, calculateProgress, unlockAchievement]);
+  }, [watchedItems, skippedItems, unlockedAchievements, calculateProgress, unlockAchievement, activeAchievements]);
 
   return {
     calculateProgress

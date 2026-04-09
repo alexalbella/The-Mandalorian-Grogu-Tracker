@@ -36,9 +36,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'mandalore', threshold: 100 }
   },
 
-  // Hutt
+  // Hutt (Mando saga only)
   {
     id: 'hutt-bronze',
+    seriesId: 'mando',
     category: 'hutt',
     title: 'Infiltrado del Inframundo',
     shortTitle: 'Insider',
@@ -50,6 +51,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'hutt-silver',
+    seriesId: 'mando',
     category: 'hutt',
     title: 'Negociador del Cártel',
     shortTitle: 'Cartel',
@@ -61,6 +63,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'hutt-gold',
+    seriesId: 'mando',
     category: 'hutt',
     title: 'Testigo de la Sucesión Hutt',
     shortTitle: 'Succession',
@@ -71,9 +74,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'hutt', threshold: 100 }
   },
 
-  // Bounty Hunters
+  // Bounty Hunters (Mando saga only)
   {
     id: 'bounty-hunters-bronze',
+    seriesId: 'mando',
     category: 'bounty-hunters',
     title: 'Explorador del Gremio',
     shortTitle: 'Scout',
@@ -85,6 +89,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'bounty-hunters-silver',
+    seriesId: 'mando',
     category: 'bounty-hunters',
     title: 'Cazador por Contrato',
     shortTitle: 'Contract',
@@ -96,6 +101,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'bounty-hunters-gold',
+    seriesId: 'mando',
     category: 'bounty-hunters',
     title: 'Leyenda del Gremio',
     shortTitle: 'Legend',
@@ -106,9 +112,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'bounty-hunters', threshold: 100 }
   },
 
-  // Empire
+  // Empire (Mando saga only)
   {
     id: 'empire-bronze',
+    seriesId: 'mando',
     category: 'empire',
     title: 'Observador Imperial',
     shortTitle: 'Observer',
@@ -120,6 +127,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'empire-silver',
+    seriesId: 'mando',
     category: 'empire',
     title: 'Analista del Remanente',
     shortTitle: 'Analyst',
@@ -131,6 +139,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'empire-gold',
+    seriesId: 'mando',
     category: 'empire',
     title: 'Archivista del Remanente',
     shortTitle: 'Archivist',
@@ -141,9 +150,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'empire', threshold: 100 }
   },
 
-  // New Republic
+  // New Republic (Mando saga only)
   {
     id: 'new-republic-bronze',
+    seriesId: 'mando',
     category: 'new-republic',
     title: 'Simpatizante de la República',
     shortTitle: 'Sympathizer',
@@ -155,6 +165,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'new-republic-silver',
+    seriesId: 'mando',
     category: 'new-republic',
     title: 'Oficial de la Nueva República',
     shortTitle: 'Officer',
@@ -166,6 +177,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'new-republic-gold',
+    seriesId: 'mando',
     category: 'new-republic',
     title: 'Defensor de la República',
     shortTitle: 'Defender',
@@ -176,9 +188,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'new-republic', threshold: 100 }
   },
 
-  // Thrawn
+  // Thrawn (Mando saga only)
   {
     id: 'thrawn-bronze',
+    seriesId: 'mando',
     category: 'thrawn',
     title: 'Rastreador de Rumores',
     shortTitle: 'Rumors',
@@ -190,6 +203,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'thrawn-silver',
+    seriesId: 'mando',
     category: 'thrawn',
     title: 'Estratega Táctico',
     shortTitle: 'Tactician',
@@ -201,6 +215,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: 'thrawn-gold',
+    seriesId: 'mando',
     category: 'thrawn',
     title: 'Heredero del Imperio',
     shortTitle: 'Heir to the Empire',
@@ -211,9 +226,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     unlockRule: { type: 'tagProgress', tag: 'thrawn', threshold: 100 }
   },
 
-  // Meta
+  // Meta — Mando saga
   {
     id: 'meta-gold',
+    seriesId: 'mando',
     category: 'meta',
     title: 'El Camino',
     shortTitle: 'The Way',
@@ -221,6 +237,136 @@ export const ACHIEVEMENTS: Achievement[] = [
     tier: 'gold',
     icon: 'Sparkles',
     accentClass: 'text-emerald-400 bg-emerald-400/10',
+    unlockRule: { type: 'globalProgress', threshold: 100 }
+  },
+
+  // ── Maul saga ─────────────────────────────────────────────────────────────
+
+  // Sith (Maul saga only)
+  {
+    id: 'sith-bronze',
+    seriesId: 'maul',
+    category: 'sith',
+    title: 'Testigo del Duelo de los Destinos',
+    shortTitle: 'Witness',
+    description: 'El sable doble de Maul ha dejado su marca. Conoces el origen de la venganza.',
+    tier: 'bronze',
+    icon: 'Zap',
+    accentClass: 'text-red-600 bg-red-600/10',
+    unlockRule: { type: 'tagProgress', tag: 'sith', threshold: 25 }
+  },
+  {
+    id: 'sith-silver',
+    seriesId: 'maul',
+    category: 'sith',
+    title: 'Fragmento Superviviente',
+    shortTitle: 'Survivor',
+    description: 'Entiendes que la muerte no fue el fin. Maul regresó, y con él su hambre de poder.',
+    tier: 'silver',
+    icon: 'Activity',
+    accentClass: 'text-red-500 bg-red-500/10',
+    unlockRule: { type: 'tagProgress', tag: 'sith', threshold: 50 }
+  },
+  {
+    id: 'sith-gold',
+    seriesId: 'maul',
+    category: 'sith',
+    title: 'Cronista del Lado Oscuro',
+    shortTitle: 'Chronicle',
+    description: 'Has presenciado el arco completo de un Sith que rompió todas las reglas y pagó el precio.',
+    tier: 'gold',
+    icon: 'ScrollText',
+    accentClass: 'text-red-400 bg-red-400/10',
+    unlockRule: { type: 'tagProgress', tag: 'sith', threshold: 100 }
+  },
+
+  // Dathomir (Maul saga only)
+  {
+    id: 'dathomir-bronze',
+    seriesId: 'maul',
+    category: 'dathomir',
+    title: 'Iniciado en la Brujería',
+    shortTitle: 'Initiate',
+    description: 'Las Hermanas de la Noche y sus rituales comienzan a revelarse en la oscuridad.',
+    tier: 'bronze',
+    icon: 'Moon',
+    accentClass: 'text-purple-600 bg-purple-600/10',
+    unlockRule: { type: 'tagProgress', tag: 'dathomir', threshold: 25 }
+  },
+  {
+    id: 'dathomir-silver',
+    seriesId: 'maul',
+    category: 'dathomir',
+    title: 'Acolito de Dathomir',
+    shortTitle: 'Acolyte',
+    description: 'Comprendes el poder y el sacrificio de la Madre Talzin. La magia oscura tiene un precio.',
+    tier: 'silver',
+    icon: 'Hexagon',
+    accentClass: 'text-purple-500 bg-purple-500/10',
+    unlockRule: { type: 'tagProgress', tag: 'dathomir', threshold: 50 }
+  },
+  {
+    id: 'dathomir-gold',
+    seriesId: 'maul',
+    category: 'dathomir',
+    title: 'Guardián de las Memorias',
+    shortTitle: 'Guardian',
+    description: 'Has documentado el nacimiento, el apogeo y el exterminio de las Hermanas de la Noche.',
+    tier: 'gold',
+    icon: 'Gem',
+    accentClass: 'text-purple-400 bg-purple-400/10',
+    unlockRule: { type: 'tagProgress', tag: 'dathomir', threshold: 100 }
+  },
+
+  // Crimson Dawn (Maul saga only)
+  {
+    id: 'crimson-dawn-bronze',
+    seriesId: 'maul',
+    category: 'crimson-dawn',
+    title: 'Contacto en las Sombras',
+    shortTitle: 'Contact',
+    description: 'Detectas los primeros hilos de una red criminal invisible que conecta todos los mundos.',
+    tier: 'bronze',
+    icon: 'Network',
+    accentClass: 'text-rose-700 bg-rose-700/10',
+    unlockRule: { type: 'tagProgress', tag: 'crimson-dawn', threshold: 25 }
+  },
+  {
+    id: 'crimson-dawn-silver',
+    seriesId: 'maul',
+    category: 'crimson-dawn',
+    title: 'Agente del Amanecer Carmesí',
+    shortTitle: 'Agent',
+    description: 'Conoces la estructura y los activos del sindicato que Maul lidera desde las sombras.',
+    tier: 'silver',
+    icon: 'Layers',
+    accentClass: 'text-rose-600 bg-rose-600/10',
+    unlockRule: { type: 'tagProgress', tag: 'crimson-dawn', threshold: 50 }
+  },
+  {
+    id: 'crimson-dawn-gold',
+    seriesId: 'maul',
+    category: 'crimson-dawn',
+    title: 'Archivista del Imperio Criminal',
+    shortTitle: 'Archivist',
+    description: 'Has trazado el mapa completo del dominio galáctico de Maul. Nadie escapa a la red.',
+    tier: 'gold',
+    icon: 'Globe',
+    accentClass: 'text-rose-500 bg-rose-500/10',
+    unlockRule: { type: 'tagProgress', tag: 'crimson-dawn', threshold: 100 }
+  },
+
+  // Meta — Maul saga
+  {
+    id: 'maul-meta-gold',
+    seriesId: 'maul',
+    category: 'maul-meta',
+    title: 'La Sombra',
+    shortTitle: 'Shadow Lord',
+    description: 'Has visto el ascenso y la caída del hombre más poderoso que la historia olvidó. El ciclo está completo.',
+    tier: 'gold',
+    icon: 'Flame',
+    accentClass: 'text-red-400 bg-red-400/10',
     unlockRule: { type: 'globalProgress', threshold: 100 }
   }
 ];
