@@ -13,6 +13,7 @@ export const maulEras: Era[] = [
         type: "movie",
         duration: 136,
         reason: "Es la presentación original de Maul al mundo. Aquí verás su faceta como peón silencioso de Darth Sidious, su icónico sable de luz de doble hoja y el legendario 'Duel of the Fates', donde asesina a Qui-Gon Jinn y Obi-Wan lo corta por la mitad, desatando la sed de venganza que lo definirá el resto de su vida.",
+        synopsis: "Darth Maul, aprendiz silencioso de Darth Sidious, recibe su primera misión: eliminar a los Jedi que protegen a la Reina Amidala. Tras asesinar al Maestro Qui-Gon Jinn en el legendario Duelo de los Destinos, es partido por la mitad por un joven Obi-Wan Kenobi —dando inicio a la venganza que definirá el resto de su vida.",
         essential: true,
         tags: ['sith']
       }
@@ -30,7 +31,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 66,
         reason: "Introduce un tipo de 'Lado Oscuro' diferente al de los Sith: la brujería (magia pura) de las Hermanas de la Noche. Conocerás a la Madre Talzin, al hermano de Maul (Savage Opress) y se revelará el gran secreto: Maul sobrevivió.",
-        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
+        synopsis: "En el planeta oscuro de Dathomir, la Madre Talzin forja un guerrero de guerra pura para el Conde Dooku: Savage Opress, hermano de sangre de Maul. Entre rituales de magia oscura y brutalidad descarnada, se revela el gran secreto: Darth Maul sobrevivió, disperso en los confines del espacio.",
         essential: true,
         tags: ['dathomir'],
         subItems: [
@@ -45,6 +46,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 45,
         reason: "Te muestra el ataque y la masacre de Dathomir desde la perspectiva de Morgan Elsbeth. Conocer el trauma de las brujas y la crueldad del Imperio y los Separatistas te dará mucho contexto sobre por qué Maul recluta a quienes recluta más adelante.",
+        synopsis: "Morgan Elsbeth presencia la masacre de Dathomir perpetrada por los Separatistas. El exterminio de las Hermanas de la Noche forja en ella una lealtad ciega al poder imperial, convirtiendo el dolor en pragmatismo implacable. Tres capítulos que explican por qué las huellas de Maul siguen vivas décadas después.",
         essential: true,
         tags: ['dathomir'],
         subItems: [
@@ -59,7 +61,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Muestra a un Maul convertido en una monstruosidad mitad araña cibernética, consumido por la locura en un planeta vertedero. Verás cómo la Madre Talzin restaura su mente y sus piernas, dándole al personaje agencia propia por primera vez para cazar a Kenobi.",
-        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
+        synopsis: "Savage Opress encuentra a Maul en el planeta vertedero de Lotho Minor: una criatura enloquecida, mitad hombre, mitad arácnido de chatarra. La Madre Talzin interviene con su magia para restaurar su mente y sus piernas, liberando al depredador definitivo sobre una galaxia desprevenida.",
         essential: true,
         tags: ['dathomir', 'sith'],
         subItems: [
@@ -83,7 +85,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Vital para la nueva serie. Maul pasa de asesino solitario a caudillo militar. Somete al Sol Negro, al Sindicato Pyke y a los Hutt para crear la Sombra Colectiva. Vence a Pre Vizsla, roba el Darksaber y conquista Mandalore, atrayendo a Darth Sidious.",
-        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
+        synopsis: "Maul convoca a las mayores organizaciones criminales de la galaxia y las somete una a una: el Sol Negro, los Pykes y los Hutt. Tras derrotar a Pre Vizsla en combate singular y apropiarse del Darksaber, conquista Mandalore —atrayendo inevitablemente la ira de su antiguo maestro, Darth Sidious.",
         essential: true,
         tags: ['mandalore', 'crimson-dawn'],
         subItems: [
@@ -99,6 +101,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 60,
         reason: "Rellena un hueco importantísimo: cuenta cómo Maul escapa de las torturas de Sidious, entra en guerra abierta contra Dooku y Grievous, e introduce a Rook Kast (que regresará en Maul-Shadow Lord). ¡Ojo a este huevo de pascua!",
+        synopsis: "Adaptación de guiones inéditos de The Clone Wars. Maul escapa de la prisión de Sidious y libra una guerra en dos frentes: contra Dooku y Grievous, y contra el propio Sidious. La Madre Talzin sacrifica todo para salvar a su hijo, y Rook Kast emerge como su leal lugarteniente en las sombras.",
         essential: true,
         tags: ['dathomir', 'mandalore']
       }
@@ -116,7 +119,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 44,
         reason: "Explora desde dentro cómo opera el Sindicato Pyke (que obedece a Maul) y cómo los bajos fondos sobreviven a las sombras de los Jedi. Aquí Ahsoka y los mandalorianos descubren que Maul sigue operando.",
-        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
+        synopsis: "Ahsoka Tano desciende al inframundo de Coruscant siguiendo una pista sobre un niño secuestrado, descubriendo los tentáculos del Sindicato Pyke —leales a Maul— en cada rincón del bajo mundo. La misión confirma que Maul sigue operando como señor del crimen desde las sombras de Mandalore.",
         essential: true,
         tags: ['crimson-dawn'],
         subItems: [
@@ -130,7 +133,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Una obra maestra. Muestra el duelo definitivo entre Ahsoka y Maul. Maul predice la Orden 66 y la caída de la República. El final ocurre en el 19 ABY, y Maul-Shadow Lord empezará exactamente un año después (17 ABY).",
-        synopsis: "Situada entre El Ataque de los Clones y La Venganza de los Sith, sigue a Anakin, Obi-Wan, Ahsoka y los Jedi en plena Guerra Clon.",
+        synopsis: "Ahsoka Tano y Bo-Katan Kryze sitían Mandalore mientras la Orden 66 convierte la galaxia al oscurantismo imperial. Maul, profeta de su propia derrota, ofrece a Ahsoka una alianza desesperada para matar a Sidious. El duelo final entre ambos es la última batalla libre antes de la Era Imperial.",
         essential: true,
         tags: ['mandalore'],
         subItems: [
@@ -154,6 +157,7 @@ export const maulEras: Era[] = [
         type: "movie",
         duration: 135,
         reason: "Ocurre en el 13 ABY. Revela que Maul es el jefe supremo de Crimson Dawn. Ver a personajes como Qi'ra o Dryden Vos te permitirá captar cualquier referencia o prototipo de este sindicato que seguro aparecerá en Maul-Shadow Lord.",
+        synopsis: "Un joven Han Solo descubre que el inframundo galáctico tiene un amo invisible: Darth Maul, líder supremo del Amanecer Carmesí. La película traza el mapa de los tentáculos criminales del imperio de Maul y establece los activos que heredará en su reinado como Shadow Lord.",
         essential: true,
         tags: ['crimson-dawn']
       },
@@ -173,7 +177,7 @@ export const maulEras: Era[] = [
         type: "series",
         duration: 88,
         reason: "Cierra definitivamente la historia de Maul. Lo vemos como el 'Viejo Maestro', descubrimos qué pasó con el Darksaber, y presenciamos su encuentro final, poético y perfecto, con Obi-Wan Kenobi en Tatooine.",
-        synopsis: "Ambientada cinco años antes de Una Nueva Esperanza, cuenta los orígenes de la Rebelión mientras el Imperio expande su tiranía.",
+        synopsis: "El 'Viejo Maestro' emerge en el Templo Sith de Malachor y recluta a Ezra Bridger como aprendiz. Tres temporadas cierran su arco: Maul pierde el Darksaber, descifra la visión de los Holocrones y en Tatooine encuentra un envejecido Obi-Wan Kenobi. Su muerte, serena y completa, da cierre definitivo al ciclo.",
         essential: true,
         tags: ['sith', 'mandalore'],
         subItems: [
