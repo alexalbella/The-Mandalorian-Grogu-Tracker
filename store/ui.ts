@@ -19,6 +19,7 @@ interface UIState {
   reducedMotion: boolean;
   compactMode: boolean;
   focusMode: boolean;
+  chronologicalMode: boolean;
   recentlyTouched: string[];
   toasts: { id: string; achievementId: string }[];
   
@@ -37,6 +38,7 @@ interface UIState {
   setReducedMotion: (reduced: boolean) => void;
   setCompactMode: (compact: boolean) => void;
   setFocusMode: (focus: boolean) => void;
+  setChronologicalMode: (chrono: boolean) => void;
   addRecentlyTouched: (id: string) => void;
   addToast: (achievementId: string) => void;
   removeToast: (id: string) => void;
@@ -59,6 +61,7 @@ export const useUIStore = create<UIState>()(
       reducedMotion: false,
       compactMode: false,
       focusMode: false,
+      chronologicalMode: false,
       recentlyTouched: [],
       toasts: [],
       
@@ -81,6 +84,7 @@ export const useUIStore = create<UIState>()(
       setReducedMotion: (reduced) => set({ reducedMotion: reduced }),
       setCompactMode: (compact) => set({ compactMode: compact }),
       setFocusMode: (focus) => set({ focusMode: focus }),
+      setChronologicalMode: (chrono) => set({ chronologicalMode: chrono }),
       addRecentlyTouched: (id) => set((state) => {
         const newTouched = [id, ...state.recentlyTouched.filter(i => i !== id)].slice(0, 10);
         return { recentlyTouched: newTouched };

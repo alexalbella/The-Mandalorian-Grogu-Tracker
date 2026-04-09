@@ -14,6 +14,7 @@ export type MediaItem = {
   essential: boolean;
   tags: string[];
   subItems?: SubItem[];
+  inUniverseYear?: number; // negative = BBY (Before Battle of Yavin), positive = ABY
 };
 
 export type Era = {
@@ -39,7 +40,8 @@ export const eras: Era[] = [
         reason: "Contexto sobre las carreras de vainas (Podracing) y los droides de foso (pit droids). Peli Motto tiene su taller lleno de chatarra de esta época, y es probable que veamos guiños visuales en Tatooine.",
         synopsis: "Un joven esclavo de Tatooine, Anakin Skywalker, es descubierto por los Jedi Qui-Gon Jinn y Obi-Wan Kenobi. Mientras la Trade Federation invade Naboo, el misterioso Sith Darth Maul acecha en las sombras —y el ecosistema de Tatooine queda grabado en la memoria galáctica.",
         essential: false,
-        tags: ['hutt']
+        tags: ['hutt'],
+        inUniverseYear: -32
       }
     ]
   },
@@ -57,7 +59,8 @@ export const eras: Era[] = [
         reason: "Muestra el secuestro y rescate del bebé Rotta el Hutt (hijo de Jabba). Se espera que Rotta regrese en la película reclamando su posición como legítimo heredero del imperio criminal.",
         synopsis: "Anakin Skywalker y su nueva Padawan Ahsoka Tano son enviados a rescatar a Rotta, el hijo de Jabba el Hutt, en el planeta hostil Teth. El éxito de la misión podría abrir las rutas de suministro Hutt a la República —y el fracaso costaría la guerra.",
         essential: true,
-        tags: ['hutt']
+        tags: ['hutt'],
+        inUniverseYear: -22
       },
       {
         id: "tcw-t2-12-14",
@@ -68,6 +71,7 @@ export const eras: Era[] = [
         synopsis: "Obi-Wan Kenobi viaja a Mandalore para investigar el resurgimiento de la Guardia de la Muerte (Death Watch), facción separatista extremista que amenaza el pacifismo de la Duquesa Satine Kryze. El destino del planeta mandaloriano y su creed quedan en la balanza.",
         essential: true,
         tags: ['mandalore'],
+        inUniverseYear: -21,
         subItems: [
           { id: "tcw-t2-12", title: "Episodio 12: El Complot de Mandalore", duration: 22 },
           { id: "tcw-t2-13", title: "Episodio 13: Viaje de Tentación", duration: 22 },
@@ -82,7 +86,8 @@ export const eras: Era[] = [
         reason: "Bounty Hunters. Primera aparición de Embo, el letal cazarrecompensas de la raza Kyuzo (y su mascota Anooba), quien ha sido confirmado como antagonista en la película.",
         synopsis: "Anakin, Obi-Wan y Ahsoka se alían con cazarrecompensas para proteger a un granjero de especias.",
         essential: false,
-        tags: ['bounty-hunters']
+        tags: ['bounty-hunters'],
+        inUniverseYear: -21
       },
       {
         id: "tcw-t3-4",
@@ -92,7 +97,8 @@ export const eras: Era[] = [
         reason: "Sphere of Influence. Establece la larga relación de Embo trabajando como mercenario político para los Hutt, lo que explica su posible lealtad en el conflicto venidero.",
         synopsis: "La familia de Papanoida es secuestrada y retenida para pedir rescate.",
         essential: false,
-        tags: ['bounty-hunters', 'hutt']
+        tags: ['bounty-hunters', 'hutt'],
+        inUniverseYear: -21
       },
       {
         id: "tcw-t4-15-18",
@@ -103,6 +109,7 @@ export const eras: Era[] = [
         synopsis: "Para infiltrarse en una conspiración contra el Canciller, Obi-Wan Kenobi finge su propia muerte y adopta la identidad del mercenario Rako Hardeen. Sobrevivir a 'La Caja' —una trampa mortal diseñada por Moralo Eval junto a Cad Bane y Embo— será su mayor prueba.",
         essential: false,
         tags: ['bounty-hunters'],
+        inUniverseYear: -20,
         subItems: [
           { id: "tcw-t4-15", title: "Episodio 15: Decepción", duration: 22 },
           { id: "tcw-t4-16", title: "Episodio 16: Amigos y Enemigos", duration: 22 },
@@ -119,6 +126,7 @@ export const eras: Era[] = [
         synopsis: "Un joven Boba Fett lidera una célula de cazarrecompensas —entre ellos Embo— en una misión de protección que degenera en matanza. Savage Opress y Maul emergen de las sombras con un plan de venganza que sacude el bajo mundo galáctico.",
         essential: false,
         tags: ['bounty-hunters'],
+        inUniverseYear: -20,
         subItems: [
           { id: "tcw-t4-20", title: "Episodio 20: Recompensa", duration: 22 },
           { id: "tcw-t4-22", title: "Episodio 22: Venganza", duration: 22 }
@@ -132,7 +140,8 @@ export const eras: Era[] = [
         reason: "Eminence. Embo se enfrenta a mandalorianos y se entrelaza con el Sindicato de la Sombra y Darth Maul, mostrando su capacidad de supervivencia ante amenazas mayores.",
         synopsis: "Savage y Maul sellan una alianza con Death Watch.",
         essential: false,
-        tags: ['mandalore', 'bounty-hunters']
+        tags: ['mandalore', 'bounty-hunters'],
+        inUniverseYear: -19
       },
       {
         id: "tcw-t6-5",
@@ -142,7 +151,8 @@ export const eras: Era[] = [
         reason: "An Old Friend. Una de las escenas de acción más destacadas de Embo, donde usa su sombrero como tabla de snowboard y sobrevive a un duelo directo contra Anakin Skywalker.",
         synopsis: "Ahsoka avisa a Anakin y Obi-Wan sobre Maul, pero el ataque a Coruscant obliga a los Jedi a elegir.",
         essential: true,
-        tags: ['bounty-hunters']
+        tags: ['bounty-hunters'],
+        inUniverseYear: -19
       },
       {
         id: "tcw-t7-9-12",
@@ -153,6 +163,7 @@ export const eras: Era[] = [
         synopsis: "Ahsoka Tano dirige el Asedio de Mandalore junto a Bo-Katan Kryze para capturar a Darth Maul mientras la Orden 66 sacude la galaxia. La civilización mandaloriana queda al borde del colapso; Ahsoka y su clon Rex luchan por sobrevivir al fin de la República.",
         essential: true,
         tags: ['mandalore'],
+        inUniverseYear: -19,
         subItems: [
           { id: "tcw-t7-9", title: "Episodio 9: Viejos Amigos no Olvidados", duration: 22 },
           { id: "tcw-t7-10", title: "Episodio 10: El Aprendiz Fantasma", duration: 22 },
@@ -177,6 +188,7 @@ export const eras: Era[] = [
         synopsis: "El Escuadrón de Élite regresa a Kamino justo cuando el Imperio prepara la destrucción definitiva de la instalación de clonación. Los laboratorios se hunden en el océano y con ellos el legado de los clones de la República Galáctica.",
         essential: false,
         tags: ['empire'],
+        inUniverseYear: -19,
         subItems: [
           { id: "bb-t1-15", title: "Episodio 15: Regreso a Kamino", duration: 25 },
           { id: "bb-t1-16", title: "Episodio 16: Kamino Perdido", duration: 25 }
@@ -191,6 +203,7 @@ export const eras: Era[] = [
         synopsis: "El Escuadrón de Élite descubre el Monte Tantiss, la base secreta donde el Imperio experimenta con sangre de niños fuerza-sensibles bajo el Proyecto Nigromante. La operación de rescate revela hasta dónde está dispuesto a llegar el Imperio para garantizar la inmortalidad de Palpatine.",
         essential: true,
         tags: ['empire'],
+        inUniverseYear: -18,
         subItems: [
           { id: "bb-t3-1", title: "Episodio 1: Confinados", duration: 25 },
           { id: "bb-t3-2", title: "Episodio 2: Caminos Desconocidos", duration: 25 },
@@ -216,6 +229,7 @@ export const eras: Era[] = [
         synopsis: "Ezra Bridger, un joven ladrón fuerza-sensible, se une al equipo del Espectro: un grupo de rebeldes que opera bajo el yugo imperial en Lothal. El debut del guerrero Lasat Garazeb 'Zeb' Orrelios marca el inicio de la resistencia organizada en el Borde Exterior.",
         essential: false,
         tags: ['new-republic'],
+        inUniverseYear: -5,
         subItems: [
           { id: "rebels-t1-1", title: "Episodio 1: La Chispa de la Rebelión (Parte 1)", duration: 22 },
           { id: "rebels-t1-2", title: "Episodio 2: La Chispa de la Rebelión (Parte 2)", duration: 22 }
@@ -229,7 +243,8 @@ export const eras: Era[] = [
         reason: "The Honorable Ones. Define la brújula moral de Zeb tras quedarse atrapado en una luna helada con su peor enemigo imperial, dando profundidad a su personaje.",
         synopsis: "Zeb y el agente Kallus quedan aislados en un planeta helado.",
         essential: false,
-        tags: ['new-republic']
+        tags: ['new-republic'],
+        inUniverseYear: -4
       },
       {
         id: "rebels-t3-15",
@@ -239,7 +254,8 @@ export const eras: Era[] = [
         reason: "Trials of the Darksaber. Cuenta la historia de Tarre Vizsla, el primer Jedi Mandaloriano, y el profundo significado religioso del Sable Oscuro para el pueblo de Din Djarin.",
         synopsis: "Sabine empieza a entrenar con el Sable Oscuro y, al hacerlo, se enfrenta a su pasado.",
         essential: true,
-        tags: ['mandalore']
+        tags: ['mandalore'],
+        inUniverseYear: -3
       },
       {
         id: "rebels-t3-t4",
@@ -250,6 +266,7 @@ export const eras: Era[] = [
         synopsis: "El Gran Almirante Thrawn asume el mando imperial en el Borde Exterior, y su inteligencia táctica despiadada amenaza con aplastar a los rebeldes. Estudia el arte y la cultura del enemigo para destruirlo con precisión quirúrgica —y nadie logra anticipar sus siguientes movimientos.",
         essential: true,
         tags: ['thrawn'],
+        inUniverseYear: -2,
         subItems: [
           { id: "rebels-t3-1", title: "T3 Ep 1: Pasos en la Sombra", duration: 44 },
           { id: "rebels-t3-5", title: "T3 Ep 5: El Último Combate de Hera", duration: 22 },
@@ -275,7 +292,8 @@ export const eras: Era[] = [
         reason: "Contexto visual de Mos Eisley, la cantina, los Jawas y los Moradores de las Arenas (Tuskens), tribus que Mando respeta y que probablemente veamos de nuevo.",
         synopsis: "Un joven granjero tatooiniano, Luke Skywalker, se ve arrastrado a la lucha galáctica al encontrar un mensaje secreto en el droide R2-D2. Junto a Han Solo, Obi-Wan Kenobi y los contrabandistas del Halcón Milenario, intentan rescatar a la Princesa Leia y destruir la Estrella de la Muerte.",
         essential: false,
-        tags: ['hutt']
+        tags: ['hutt'],
+        inUniverseYear: 0
       },
       {
         id: "ep5",
@@ -285,7 +303,8 @@ export const eras: Era[] = [
         reason: "La escena de Darth Vader contratando cazarrecompensas incluye a IG-88 (modelo base de IG-11/IG-12) y Bossk. Es una referencia clásica que el equipo de The Mandalorian suele homenajear.",
         synopsis: "El Imperio destruye la base rebelde en Hoth y Darth Vader contrata a una élite de cazarrecompensas —IG-88, Bossk, Boba Fett— para rastrear al Halcón Milenario. Luke viaja a Dagobah para entrenarse con el Maestro Yoda mientras sus amigos caen en una trampa en Bespin.",
         essential: false,
-        tags: ['bounty-hunters']
+        tags: ['bounty-hunters'],
+        inUniverseYear: 3
       },
       {
         id: "ep6",
@@ -295,7 +314,8 @@ export const eras: Era[] = [
         reason: "La muerte de Jabba el Hutt a manos de Leia. Es el evento detonante que crea el vacío de poder en Tatooine, un conflicto que Rotta, los Gemelos Hutt y Boba Fett se disputarán.",
         synopsis: "El crimen organizado de Jabba el Hutt cae ante los héroes de la Alianza en Tatooine. Luke Skywalker se enfrenta al Emperador y a su padre Darth Vader en la Estrella de la Muerte, mientras la Batalla de Endor decide el destino de la galaxia —y la muerte de Jabba crea el vacío de poder que definirá Tatooine por décadas.",
         essential: true,
-        tags: ['hutt']
+        tags: ['hutt'],
+        inUniverseYear: 4
       }
     ]
   },
@@ -314,6 +334,7 @@ export const eras: Era[] = [
         synopsis: "Un cazarrecompensas mandaloriano acepta un contrato misterioso que lo lleva a un objetivo inesperado: un anciano infante de la especie del Gran Maestro Yoda. El instinto paternal prevalece sobre el crédito, y el Gremio de Cazarrecompensas se convierte en su nuevo enemigo.",
         essential: true,
         tags: ['mandalore', 'empire'],
+        inUniverseYear: 9,
         subItems: [
           { id: "mando-t1-e1", title: "Capítulo 1: El Mandaloriano", duration: 40 },
           { id: "mando-t1-e2", title: "Capítulo 2: El Niño", duration: 40 },
@@ -334,6 +355,7 @@ export const eras: Era[] = [
         synopsis: "Din Djarin recorre la galaxia en busca de Jedis que puedan acoger a Grogu, cruzando caminos con Bo-Katan Kryze y recuperando el Sable Oscuro. El rescate del niño en el crucero de Moff Gideon culmina con la aparición legendaria de Luke Skywalker.",
         essential: true,
         tags: ['mandalore'],
+        inUniverseYear: 9,
         subItems: [
           { id: "mando-t2-e9", title: "Capítulo 9: El Marshal", duration: 40 },
           { id: "mando-t2-e10", title: "Capítulo 10: El Pasajero", duration: 40 },
@@ -354,6 +376,7 @@ export const eras: Era[] = [
         synopsis: "Boba Fett, resurgido del Sarlacc de Tatooine, reclama el trono del difunto Jabba como nuevo Daimyo. La aparición de los Gemelos Hutt y el wookiee Black Krrsantan advierte que el vacío de poder en el inframundo de Tatooine está lejos de resolverse.",
         essential: false,
         tags: ['hutt', 'bounty-hunters'],
+        inUniverseYear: 9,
         subItems: [
           { id: "bobafett-e1", title: "Capítulo 1: Forastero en Tierra Extraña", duration: 45 },
           { id: "bobafett-e2", title: "Capítulo 2: Las Tribus de Tatooine", duration: 45 },
@@ -370,6 +393,7 @@ export const eras: Era[] = [
         synopsis: "Din Djarin obtiene un elegante caza N-1 de Naboo y Grogu abandona el entrenamiento jedi con Luke Skywalker para reunirse con Mando. Los dos aliados unen fuerzas para defender Freetown contra los Pykes y la Sombra Colectiva.",
         essential: true,
         tags: ['mandalore'],
+        inUniverseYear: 9,
         subItems: [
           { id: "bobafett-e5", title: "Capítulo 5: El Retorno del Mandaloriano", duration: 45 },
           { id: "bobafett-e6", title: "Capítulo 6: Del Desierto Llega un Forastero", duration: 45 },
@@ -385,6 +409,7 @@ export const eras: Era[] = [
         synopsis: "Din Djarin busca redención en las Aguas Vivas de Mandalore para recuperar su estatus bajo el Credo. La unión de los clanes mandalorianos culmina en la reconquista del planeta natal, mientras el Imperio sombra de Moff Gideon es destruido y Din adopta oficialmente a Grogu como Din Grogu.",
         essential: true,
         tags: ['mandalore', 'new-republic'],
+        inUniverseYear: 9,
         subItems: [
           { id: "mando-t3-e17", title: "Capítulo 17: El Apóstata", duration: 40 },
           { id: "mando-t3-e18", title: "Capítulo 18: Las Minas de Mandalore", duration: 40 },
@@ -405,6 +430,7 @@ export const eras: Era[] = [
         synopsis: "Ahsoka Tano y Sabine Wren rastrean un mapa galáctico que revela la ubicación del Gran Almirante Thrawn en el exilio. La búsqueda los lleva más allá del mapa estelar conocido, a una galaxia distante donde Thrawn aguarda su regreso triunfal.",
         essential: true,
         tags: ['thrawn', 'new-republic'],
+        inUniverseYear: 9,
         subItems: [
           { id: "ahsoka-e1", title: "Parte 1: Maestro y Aprendiz", duration: 45 },
           { id: "ahsoka-e2", title: "Parte 2: Trabajo y Problemas", duration: 45 },
@@ -423,6 +449,7 @@ export const eras: Era[] = [
         duration: 360,
         reason: "Muestra cómo la piratería se ha salido de control en el Borde Exterior, explicando por qué los Rangers de Adelphi (el escuadrón de Carson Teva y Zeb) están tan desbordados que necesitan contratar a cazarrecompensas como Mando.",
         synopsis: "Cuatro niños de At Attin, un planeta secreto de la Nueva República, quedan atrapados en el caótico Borde Exterior. Su desesperada búsqueda por volver a casa expone el desbordamiento pirata que abruma a los Rangers de Adelphi —y explica por qué la Nueva República necesita contratar cazarrecompensas como Din Djarin.",
+        inUniverseYear: 9,
         essential: false,
         tags: ['new-republic'],
         subItems: [

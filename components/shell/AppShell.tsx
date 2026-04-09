@@ -9,6 +9,7 @@ import QuickLookModal from './QuickLookModal';
 import { StatsPanel, DataManagementPanel } from './DataPanel';
 import RouteAtlas from './RouteAtlas';
 import Timeline from './Timeline';
+import ChronologicalView from '../ChronologicalView';
 import ProgressRail from './ProgressRail';
 import UndoRedoWidget from './UndoRedoWidget';
 import AchievementToasts from '../AchievementToast';
@@ -19,6 +20,7 @@ import HeroParallax from '../HeroParallax';
 export default function AppShell({ config }: { config: SeriesConfig }) {
   const [isMounted, setIsMounted] = useState(false);
   const reducedMotion = useUIStore(state => state.reducedMotion);
+  const chronologicalMode = useUIStore(state => state.chronologicalMode);
   const eras = config.eras;
 
   useEffect(() => {
@@ -95,13 +97,20 @@ export default function AppShell({ config }: { config: SeriesConfig }) {
           <StatsPanel eras={eras} />
         </motion.div>
         
-        <motion.div variants={itemVariants}>
-          <RouteAtlas eras={eras} />
-        </motion.div>
-        
-        <motion.div variants={itemVariants}>
-          <Timeline eras={eras} />
-        </motion.div>
+        {chronologicalMode ? (
+          <motion.div variants={itemVariants}>
+            <ChronologicalView eras={eras} />
+          </motion.div>
+        ) : (
+          <>
+            <motion.div variants={itemVariants}>
+              <RouteAtlas eras={eras} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <Timeline eras={eras} />
+            </motion.div>
+          </>
+        )}
         
         <motion.div variants={itemVariants}>
           <DataManagementPanel />

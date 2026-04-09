@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Volume2, VolumeX, LayoutGrid, LayoutList, Zap, ZapOff, Eye } from 'lucide-react';
+import { Volume2, VolumeX, LayoutGrid, LayoutList, Zap, ZapOff, Eye, Clock } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { Era } from '@/data/starwars-list';
@@ -13,27 +13,21 @@ import { SeriesConfig } from '@/types/series';
 const CountdownWidget = dynamic(() => import('../CountdownWidget'), { ssr: false });
 
 function ViewModeSelector({ idPrefix = '' }: { idPrefix?: string }) {
-  const { compactMode, setCompactMode, focusMode, setFocusMode } = useUIStore();
+  const { compactMode, setCompactMode, focusMode, setFocusMode, chronologicalMode, setChronologicalMode } = useUIStore();
 
-  const currentMode = focusMode ? 'focus' : compactMode ? 'compact' : 'normal';
+  const currentMode = chronologicalMode ? 'chrono' : focusMode ? 'focus' : compactMode ? 'compact' : 'normal';
 
-  const setMode = (mode: 'normal' | 'compact' | 'focus') => {
-    if (mode === 'normal') {
-      setCompactMode(false);
-      setFocusMode(false);
-    } else if (mode === 'compact') {
-      setCompactMode(true);
-      setFocusMode(false);
-    } else {
-      setCompactMode(false);
-      setFocusMode(true);
-    }
+  const setMode = (mode: 'normal' | 'compact' | 'focus' | 'chrono') => {
+    setChronologicalMode(mode === 'chrono');
+    setFocusMode(mode === 'focus');
+    setCompactMode(mode === 'compact');
   };
 
   const modes = [
     { id: 'normal',   label: 'Normal',    icon: LayoutGrid },
     { id: 'compact',  label: 'Compacto',  icon: LayoutList },
     { id: 'focus',    label: 'Focus',     icon: Eye },
+    { id: 'chrono',   label: 'Cronología', icon: Clock },
   ];
 
   return (
@@ -44,7 +38,7 @@ function ViewModeSelector({ idPrefix = '' }: { idPrefix?: string }) {
         return (
           <button
             key={mode.id}
-            onClick={() => setMode(mode.id as 'normal' | 'compact' | 'focus')}
+            onClick={() => setMode(mode.id as 'normal' | 'compact' | 'focus' | 'chrono')}
             className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider transition-colors z-10 ${isActive ? 'text-surface-1 font-bold' : 'text-text-muted hover:text-text-body'}`}
           >
             {isActive && (
