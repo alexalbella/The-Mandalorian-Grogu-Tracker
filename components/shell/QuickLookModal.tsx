@@ -1,12 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Film, Tv, CheckCircle2, Circle, Play, RotateCcw, CheckCircle, Info } from 'lucide-react';
+import { X, Film, Tv, CheckCircle2, Circle, Play, RotateCcw, CheckCircle, Info, ChevronRight } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 import { useProgressStore } from '@/store/progress';
 import { Era } from '@/data/starwars-list';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
 import { getImageUrl } from '@/lib/imageMap';
 
 const routeNames: Record<string, string> = {
@@ -15,39 +14,38 @@ const routeNames: Record<string, string> = {
   'new-republic': 'Nueva República',
   'hutt': 'Hutt',
   'bounty-hunters': 'Cazarrecompensas',
-  'empire': 'Imperio'
+  'empire': 'Imperio',
+  // Maul saga
+  'sith': 'Señores Sith',
+  'dathomir': 'Hermanas de la Noche',
+  'crimson-dawn': 'Amanecer Carmesí',
 };
 
-const getEditorialSummary = (id: string, title: string) => {
-  const summaries: Record<string, string> = {
-    'ep1': 'El inicio de la saga Skywalker. Descubre los orígenes de Anakin Skywalker y el resurgimiento de los Sith en una galaxia al borde de la crisis.',
-    'ep2': 'La galaxia se divide. El inicio de las Guerras Clon marca un punto de no retorno para la República y la Orden Jedi.',
-    'ep3': 'La caída de los Jedi y el nacimiento del Imperio Galáctico. El destino de Anakin Skywalker se sella en fuego y traición.',
-    'ep4': 'Una nueva esperanza surge. Un joven granjero, una princesa rebelde y un contrabandista se unen para desafiar al Imperio.',
-    'ep5': 'El Imperio contraataca. La Rebelión sufre un duro golpe mientras oscuros secretos del pasado salen a la luz.',
-    'ep6': 'El retorno del Jedi. La batalla final por la libertad de la galaxia y la redención de Anakin Skywalker.',
-    'mando-t1': 'Un cazarrecompensas solitario encuentra un propósito inesperado al proteger a un misterioso niño buscado por los remanentes del Imperio.',
-    'mando-t2': 'La búsqueda de un Jedi. El Mandaloriano y Grogu viajan por la galaxia enfrentando viejos enemigos y forjando nuevas alianzas.',
-    'mando-t3': 'La redención de Mandalore. Din Djarin busca expiar sus pecados mientras su pueblo lucha por recuperar su mundo natal.',
-    'ahsoka-t1': 'Una antigua Jedi busca a un amigo perdido y a un enemigo formidable, mientras una nueva amenaza se cierne sobre la frágil Nueva República.',
-    'bobafett-1-4': 'El legendario cazarrecompensas reclama el trono de Jabba el Hutt, enfrentando los desafíos de gobernar el inframundo de Tatooine.',
-    'andor-t1': 'El despertar de una rebelión. Sigue el viaje de Cassian Andor desde un cínico ladrón hasta un héroe de la causa rebelde.',
-    'obi-wan': 'Años después de la caída de la República, un exiliado Obi-Wan Kenobi debe enfrentar sus mayores fracasos para proteger una nueva esperanza.',
-  };
-  return summaries[id] || `Una entrega fundamental en la saga de Star Wars. ${title} expande el universo y profundiza en las historias de los personajes que dan forma a la galaxia.`;
+const getFallbackSummary = (title: string) =>
+  `Una entrega fundamental en la saga. ${title} expande el universo y profundiza en los personajes clave.`;
+
+const formatYear = (year: number): string => {
+  if (year < 0) return `${Math.abs(year)} a.BY`;
+  if (year === 0) return 'Batalla de Yavin';
+  return `${year} d.BY`;
 };
 
 export default function QuickLookModal({ eras }: { eras: Era[] }) {
   const { quickLookOpen, setQuickLookOpen, selectedCard, setSelectedCard, reducedMotion } = useUIStore();
   const { isCompleted, toggleItem, markMultiple, unmarkMultiple } = useProgressStore();
 
-  const item = eras.flatMap(e => e.items).find(i => i.id === selectedCard);
+  const allItems = eras.flatMap(e => e.items);
+  const item = allItems.find(i => i.id === selectedCard);
 
   const imgSrc = item ? getImageUrl(item.id, item.title) : null;
 
   if (!item) return null;
 
-  const isWatched = item.subItems 
+  const completedSubCount = item.subItems
+    ? item.subItems.filter(sub => isCompleted(sub.id)).length
+    : 0;
+
+  const isWatched = item.subItems
     ? item.subItems.every(sub => isCompleted(sub.id)) && item.subItems.length > 0
     : isCompleted(item.id);
 
@@ -77,6 +75,12 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
   const cta = getCtaContent();
   const CtaIcon = cta.icon;
 
+  const relatedItems = item.tags.length > 0
+    ? allItems
+        .filter(i => i.id !== item.id && i.tags.some(t => item.tags.includes(t)))
+        .slice(0, 3)
+    : [];
+
   return (
     <AnimatePresence>
       {quickLookOpen && (
@@ -89,9 +93,9 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
               setQuickLookOpen(false);
               setSelectedCard(null);
             }}
-            className="absolute inset-0 bg-surface-1/75 backdrop-blur-sm"
+            className="absolute inset-0 bg-surface-1/85"
           />
-          
+
           <motion.div
             layoutId={reducedMotion ? undefined : item.id}
             initial={reducedMotion ? { opacity: 0, scale: 0.95 } : {}}
@@ -141,7 +145,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                     />
                   )}
                   {isWatched && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                       <CheckCircle2 className="w-16 h-16 text-glow-success drop-shadow-lg" />
                     </div>
                   )}
@@ -163,19 +167,29 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                     {item.type === 'movie' ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
                     {item.duration}m
                   </span>
+                  {item.inUniverseYear !== undefined && (
+                    <span className="text-[9px] font-mono text-text-muted bg-surface-3/60 px-2 py-1 rounded-sm border border-surface-4/50 uppercase tracking-widest">
+                      {formatYear(item.inUniverseYear)}
+                    </span>
+                  )}
+                  {item.subItems && (
+                    <span className="text-[9px] font-mono text-text-muted">
+                      {completedSubCount} / {item.subItems.length} episodios
+                    </span>
+                  )}
                   {item.essential && (
-                    <motion.span 
+                    <motion.span
                       layoutId={reducedMotion ? undefined : `essential-${item.id}`}
-                      className="inline-flex items-center px-2 py-1 rounded-md bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20"
+                      className="inline-flex items-center px-2 py-1 rounded-sm bg-glow-warning/10 text-glow-warning text-[10px] font-bold uppercase tracking-wider border border-glow-warning/20"
                     >
                       Esencial
                     </motion.span>
                   )}
                 </div>
 
-                <motion.h2 
+                <motion.h2
                   layoutId={reducedMotion ? undefined : `title-${item.id}`}
-                  className="font-display font-semibold text-text-heading mb-6 leading-tight text-3xl sm:text-4xl" 
+                  className="font-display font-semibold text-text-heading mb-6 leading-tight text-3xl sm:text-4xl"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   {item.title}
@@ -186,7 +200,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                   <div>
                     <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-2">Sinopsis</h3>
                     <p className="text-text-body leading-relaxed text-sm sm:text-base">
-                      {item.synopsis || getEditorialSummary(item.id, item.title)}
+                      {item.synopsis || getFallbackSummary(item.title)}
                     </p>
                   </div>
 
@@ -207,10 +221,10 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                       <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Rutas Afectadas</h3>
                       <div className="flex flex-wrap gap-2">
                         {item.tags.map(tag => (
-                          <motion.span 
-                            key={tag} 
+                          <motion.span
+                            key={tag}
                             layoutId={reducedMotion ? undefined : `tag-${item.id}-${tag}`}
-                            className="px-3 py-1.5 bg-surface-3/50 backdrop-blur-sm rounded-lg text-xs font-medium text-text-heading border border-surface-4 flex items-center gap-2"
+                            className="px-3 py-1.5 bg-surface-3/50 rounded-sm text-xs font-medium text-text-heading border border-surface-4 flex items-center gap-2"
                           >
                             <div className="w-1.5 h-1.5 rounded-full bg-glow-success" />
                             {routeNames[tag] || tag}
@@ -228,7 +242,7 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                         {item.subItems.map((sub, index) => {
                           const isSubWatched = isCompleted(sub.id);
                           return (
-                            <div 
+                            <div
                               key={sub.id}
                               className={`flex items-center justify-between p-3 rounded-sm border transition-colors cursor-pointer ${
                                 isSubWatched
@@ -250,6 +264,43 @@ export default function QuickLookModal({ eras }: { eras: Era[] }) {
                               </div>
                               <span className="text-xs font-mono text-text-muted">{sub.duration}m</span>
                             </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Ver también */}
+                  {relatedItems.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider mb-3">Ver también</h3>
+                      <div className="space-y-2">
+                        {relatedItems.map(related => {
+                          const relatedImg = getImageUrl(related.id, related.title);
+                          return (
+                            <button
+                              key={related.id}
+                              onClick={() => setSelectedCard(related.id)}
+                              className="w-full flex items-center gap-3 p-3 rounded-sm border border-surface-4/40 bg-surface-2/30 hover:bg-surface-2/60 transition-colors text-left"
+                            >
+                              <div className="relative w-10 h-14 rounded-sm overflow-hidden shrink-0 border border-surface-4/30">
+                                {relatedImg && (
+                                  <Image
+                                    src={relatedImg}
+                                    alt={related.title}
+                                    fill
+                                    className="object-cover"
+                                    sizes="40px"
+                                    unoptimized={relatedImg.startsWith('data:') || relatedImg.includes('tvmaze.com') || relatedImg.includes('tmdb.org')}
+                                  />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-text-body truncate">{related.title}</p>
+                                <p className="text-[10px] font-mono text-text-muted mt-0.5">{related.duration}m</p>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-text-muted shrink-0" />
+                            </button>
                           );
                         })}
                       </div>
