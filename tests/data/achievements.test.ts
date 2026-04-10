@@ -45,7 +45,7 @@ describe('Achievements data', () => {
   });
 
   it('each category should have bronze, silver and gold tiers', () => {
-    const categories = [...new Set(ACHIEVEMENTS.map(a => a.category))].filter(c => c !== 'meta');
+    const categories = [...new Set(ACHIEVEMENTS.map(a => a.category))].filter(c => c !== 'meta' && c !== 'maul-meta');
     categories.forEach(cat => {
       const tiers = ACHIEVEMENTS.filter(a => a.category === cat).map(a => a.tier);
       expect(tiers).toContain('bronze');
